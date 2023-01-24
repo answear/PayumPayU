@@ -16,28 +16,41 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^v3.13",
-        "phpro/grumphp": "^1.5.0",
-        "phpstan/phpstan": "^1.4",
-        "phpstan/phpstan-webmozart-assert": "^1.0",
-        "phpunit/phpunit": "^9.5",
         "php-http/guzzle6-adapter": "^1.1.1",
-        "roave/security-advisories": "dev-latest"
-    },
-    "config": {
-        "bin-dir": "bin",
-        "allow-plugins": {
-            "phpro/grumphp": true
-        }
+        "phpro/grumphp": "^1.15",
+        "phpstan/phpstan": "^1.9.14",
+        "phpstan/phpstan-webmozart-assert": "^1.2.2",
+        "phpunit/phpunit": "^9.5.28",
+        "roave/security-advisories": "dev-latest",
+        "symfony/phpunit-bridge": "^6.2"
     },
     "autoload": {
         "psr-4": {
-            "Answear\\Payum\\PayU": ""
+            "Answear\\Payum\\PayU\\": "src/"
         }
     },
-    "target-dir": "Answear/Payum/PayU",
+    "autoload-dev": {
+        "psr-4": {
+            "Answear\\Payum\\PayU\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "GrumPHP\\Composer\\DevelopmentIntegrator::integrate"
+        ],
+        "post-update-cmd": [
+            "GrumPHP\\Composer\\DevelopmentIntegrator::integrate"
+        ]
+    },
     "extra": {
         "grumphp": {
             "config-default-path": "grumphp.yaml"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpro/grumphp": true
         }
     }
 }

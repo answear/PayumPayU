@@ -4,4 +4,4 @@ includes:
 parameters:
     level: 5
     paths:
-        - %rootDir%/../../..
+        - %rootDir%/../../../src/
