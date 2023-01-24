@@ -1,0 +1,43 @@
+{
+    "name": "answear/payum-pay-u",
+    "type": "project",
+    "description": "PayU gateway for payum",
+    "keywords": [
+        "payment",
+        "payum",
+        "payu"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^6.5.8 || ^7.0",
+        "payum/core": "^1.7.3"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^v3.13",
+        "phpro/grumphp": "^1.5.0",
+        "phpstan/phpstan": "^1.4",
+        "phpstan/phpstan-webmozart-assert": "^1.0",
+        "phpunit/phpunit": "^9.5",
+        "php-http/guzzle6-adapter": "^1.1.1",
+        "roave/security-advisories": "dev-latest"
+    },
+    "config": {
+        "bin-dir": "bin",
+        "allow-plugins": {
+            "phpro/grumphp": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Answear\\Payum\\PayU": ""
+        }
+    },
+    "target-dir": "Answear/Payum/PayU",
+    "extra": {
+        "grumphp": {
+            "config-default-path": "grumphp.yaml"
+        }
+    }
+}
