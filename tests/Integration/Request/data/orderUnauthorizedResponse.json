@@ -1,0 +1,8 @@
+{
+    "status": {
+        "statusCode": "UNAUTHORIZED",
+        "code": "401",
+        "codeLiteral": "INVALID_OR_MISSING_ACCESS_TOKEN",
+        "statusDesc": "Incorrect authentication"
+    }
+}
