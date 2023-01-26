@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Answear\OverseasBundle\Tests;
+namespace Answear\Payum\PayU\Tests;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -15,7 +15,7 @@ trait MockGuzzleTrait
     protected array $clientHistory = [];
     protected MockHandler $guzzleHandler;
 
-    public function setupGuzzleClient(): Client
+    public function setupGuzzleClient(array $options = []): Client
     {
         $this->guzzleHandler = new MockHandler();
         $handlerStack = HandlerStack::create($this->guzzleHandler);
@@ -24,10 +24,10 @@ trait MockGuzzleTrait
         $history = Middleware::history($this->clientHistory);
         $handlerStack->push($history);
 
-        return new Client(['handler' => $handlerStack]);
+        return new Client(array_merge($options, ['handler' => $handlerStack]));
     }
 
-    public function mockGuzzleResponse(Response $response)
+    public function mockGuzzleResponse(Response $response): void
     {
         $this->guzzleHandler->append($response);
     }

@@ -1,0 +1,8 @@
+{
+    "status": {
+        "statusCode": "SUCCESS"
+    },
+    "redirectUri": "http://continue.url.com",
+    "orderId": "WZHF5FFDRJ140731GUEST000P01",
+    "extOrderId": "extOrderId123"
+}

@@ -144,6 +144,21 @@ class PayUGatewayFactoryTest extends TestCase
             ],
             new LogicException('The pos_id fields are required for config two_pos.'),
         ];
+
+        yield 'no string keys' => [
+            [
+                'configs' => [
+                    [
+                        'environment' => 'secure',
+                        'pos_id' => '123',
+                        'signature_key' => 's-key',
+                        'oauth_client_id' => 'cl-id',
+                        'oauth_secret' => 'sec',
+                    ],
+                ],
+            ],
+            new LogicException('Configurations keys must be a string.'),
+        ];
     }
 
     public function provideValidConfig(): iterable

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Answear\OverseasBundle\Tests\Util;
+namespace Answear\Payum\PayU\Tests\Util;
 
 class FileTestUtil
 {

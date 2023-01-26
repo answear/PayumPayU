@@ -1,6 +1,13 @@
 # PayU payment gateway for [payum](http://payum.org/)
 
+(or for standalone usage)
+
+PayU documentation: https://developers.payu.com/pl/restapi.html
+
+---
+
 Provide configuration for `payum`
+
 ```yaml
 payum:
     gateways:
@@ -20,3 +27,9 @@ payum:
                     oauth_client_id: 'secure_oauth_client_id'
                     oauth_secret: 'secure_oauth_secret'
 ```
+
+---
+
+### Missing features
+
+`OrderRequest` params `cardOnFile`, `recurring`, `mcpData`, `threeDsAuthentication`, `credit`

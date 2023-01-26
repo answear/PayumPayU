@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU;
 
-use Answear\Payum\PayU\Enum\Environment;
+use Answear\Payum\PayU\Authorization\Authorize;
+use Answear\Payum\PayU\Request\CreateOrder;
 use Answear\Payum\PayU\ValueObject\Configuration;
-use Http\Message\MessageFactory;
-use Payum\Core\Exception\Http\HttpException;
+use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
+use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
+use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
+use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
 use Payum\Core\Exception\InvalidArgumentException;
-use Payum\Core\HttpClientInterface;
-use Psr\Http\Message\ResponseInterface;
 use Webmozart\Assert\Assert;
 
 class Api
 {
-    private ?string $defaultConfig = null;
+    private ?string $defaultConfigKey = null;
 
-    protected HttpClientInterface $client;
-    protected MessageFactory $messageFactory;
-    /** @var array<string, Configuration> */
-    protected array $configurations = [];
-
-    public function __construct(array $configurations, HttpClientInterface $client, MessageFactory $messageFactory)
+    /**
+     * @param array<string, Configuration> $configurations
+     */
+    public function __construct(protected array $configurations)
     {
         try {
             Assert::allIsInstanceOf($configurations, Configuration::class);
@@ -31,42 +30,41 @@ class Api
         }
 
         if (1 === \count($configurations)) {
-            $this->defaultConfig = array_key_first($configurations);
+            $this->defaultConfigKey = array_key_first($configurations);
         }
-
-        $this->configurations = $configurations;
-        $this->client = $client;
-        $this->messageFactory = $messageFactory;
     }
 
-    protected function doRequest($method, array $fields): ResponseInterface
+    public function createOrder(OrderRequest $orderRequest, ?string $configKey = null): OrderCreatedResponse
     {
-        $headers = [];
+        Authorize::base($this->getConfig($configKey));
 
-        $request = $this->messageFactory->createRequest($method, $this->getApiEndpointFor(), $headers, http_build_query($fields));
-
-        $response = $this->client->send($request);
-
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-            throw HttpException::factory($request, $response);
-        }
-
-        return $response;
+        return CreateOrder::create($orderRequest);
     }
 
-    protected function getApiEndpointFor(?string $configKey = null): string
+    public function createRefund(RefundRequest $refundRequest, ?string $configKey = null): RefundCreatedResponse
     {
-        return Environment::Sandbox === $this->getConfig($configKey)->environment
-            ? 'http://sandbox.example.com'
-            : 'http://example.com';
+        throw new \LogicException('Not implemented');
+    }
+
+    /**
+     * @see OrderCreatedResponse::$orderId
+     */
+    public function retrieveOrder(string $orderId): mixed
+    {
+        throw new \LogicException('Not implemented');
+    }
+
+    public function retrievePayMethods(string $userId, string $userEmail, ?string $configKey = null): RefundCreatedResponse
+    {
+        throw new \LogicException('Not implemented');
     }
 
     private function getConfig(?string $configKey = null): Configuration
     {
-        if (null === $this->defaultConfig && null === $configKey) {
+        if (null === $this->defaultConfigKey && null === $configKey) {
             throw new \LogicException('Config key must be provided.');
         }
 
-        return $this->configurations[$configKey ?? $this->defaultConfig];
+        return $this->configurations[$configKey ?? $this->defaultConfigKey];
     }
 }

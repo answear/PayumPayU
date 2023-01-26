@@ -61,6 +61,9 @@ class PayUGatewayFactory extends GatewayFactory
 
         $emptyFields = [];
         foreach ($configs as $configName => $posConfig) {
+            if (!is_string($configName)) {
+                throw new LogicException('Configurations keys must be a string.');
+            }
             if (preg_match('/[^a-z_\-0-9]/i', $configName)) {
                 throw new LogicException(
                     sprintf('Invalid key for config %s.', $configName)
@@ -99,16 +102,16 @@ class PayUGatewayFactory extends GatewayFactory
         }
 
         return new Api(
-            array_map(fn(array $config) => new Configuration(
-                Environment::from($config['environment']),
-                $config['pos_id'],
-                $config['signature_key'],
-                $config['oauth_client_id'],
-                $config['oauth_secret']
-            ),
+            array_map(
+                static fn(array $config) => new Configuration(
+                    Environment::from($config['environment']),
+                    $config['pos_id'],
+                    $config['signature_key'],
+                    $config['oauth_client_id'],
+                    $config['oauth_secret']
+                ),
                 $configs->toUnsafeArray()
-            ),
-            $config['payum.http_client'], $config['httplug.message_factory']
+            )
         );
     }
 }
