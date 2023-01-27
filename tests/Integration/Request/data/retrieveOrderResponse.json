@@ -1,0 +1,45 @@
+{
+    "orders": [
+        {
+            "orderId": "WZHF5FFDRJ140731GUEST000P01",
+            "extOrderId": "358766",
+            "orderCreateDate": "2014-10-27T14:58:17.443+01:00",
+            "notifyUrl": "http://localhost/OrderNotify/",
+            "customerIp": "127.0.0.1",
+            "merchantPosId": "145227",
+            "description": "New order",
+            "currencyCode": "PLN",
+            "totalAmount": "3200",
+            "buyer":{
+                "email":"john.doe@example.org",
+                "phone":"111111111",
+                "firstName":"John",
+                "lastName":"Doe",
+                "language":"pl"
+            },
+            "status": "NEW",
+            "products": [
+                {
+                    "name": "Product1",
+                    "unitPrice": "1000",
+                    "quantity": "1"
+                },
+                {
+                    "name": "Product2",
+                    "unitPrice": "2200",
+                    "quantity": "1"
+                }
+            ]
+        }
+    ],
+    "status": {
+        "statusCode": "SUCCESS",
+        "statusDesc": "Request processing successful"
+    },
+    "properties": [
+        {
+            "name": "PAYMENT_ID",
+            "value": "1234567890"
+        }
+    ]
+}

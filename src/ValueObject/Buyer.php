@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Answear\Payum\PayU\ValueObject\Request\Order;
+namespace Answear\Payum\PayU\ValueObject;
 
 class Buyer
 {
@@ -35,5 +35,20 @@ class Buyer
             'language' => $this->language,
             'delivery' => $this->delivery?->toArray(),
         ];
+    }
+
+    public static function fromResponse(array $response): self
+    {
+        return new self(
+            $response['email'],
+            $response['firstName'],
+            $response['lastName'],
+            $response['phone'] ?? null,
+            $response['customerId'] ?? null,
+            $response['extCustomerId'] ?? null,
+            $response['nin'] ?? null,
+            $response['language'] ?? null,
+            isset($response['delivery']) ? Delivery::fromResponse($response['delivery']) : null
+        );
     }
 }

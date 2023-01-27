@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Request;
 
-use Answear\Payum\PayU\ValueObject\Request\Order\Buyer;
+use Answear\Payum\PayU\ValueObject\Buyer;
+use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
-use Answear\Payum\PayU\ValueObject\Request\Order\Product;
 use Webmozart\Assert\Assert;
 
 class OrderRequest

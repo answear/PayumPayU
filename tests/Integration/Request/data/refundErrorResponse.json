@@ -1,0 +1,9 @@
+{
+    "status": {
+        "statusCode": "ERROR_VALUE_MISSING",
+        "severity": "ERROR",
+        "code": "8300",
+        "codeLiteral": "MISSING_REFUND_SECTION",
+        "statusDesc": "Missing required field"
+    }
+}

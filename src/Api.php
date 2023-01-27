@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU;
 
 use Answear\Payum\PayU\Authorization\Authorize;
-use Answear\Payum\PayU\Request\CreateOrder;
+use Answear\Payum\PayU\Request\Order;
+use Answear\Payum\PayU\Request\Refund;
 use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
+use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
 use Payum\Core\Exception\InvalidArgumentException;
 use Webmozart\Assert\Assert;
@@ -34,24 +36,36 @@ class Api
         }
     }
 
+    /**
+     * @throws Exception\MalformedResponseException
+     * @throws \OpenPayU_Exception
+     */
     public function createOrder(OrderRequest $orderRequest, ?string $configKey = null): OrderCreatedResponse
     {
         Authorize::base($this->getConfig($configKey));
 
-        return CreateOrder::create($orderRequest);
+        return Order::create($orderRequest);
     }
 
-    public function createRefund(RefundRequest $refundRequest, ?string $configKey = null): RefundCreatedResponse
+    /**
+     * @throws Exception\MalformedResponseException
+     * @throws \OpenPayU_Exception
+     */
+    public function createRefund(string $orderId, RefundRequest $refundRequest, ?string $configKey = null): RefundCreatedResponse
     {
-        throw new \LogicException('Not implemented');
+        Authorize::base($this->getConfig($configKey));
+
+        return Refund::create($orderId, $refundRequest);
     }
 
     /**
      * @see OrderCreatedResponse::$orderId
      */
-    public function retrieveOrder(string $orderId): mixed
+    public function retrieveOrder(string $orderId, ?string $configKey = null): OrderRetrieveResponse
     {
-        throw new \LogicException('Not implemented');
+        Authorize::base($this->getConfig($configKey));
+
+        return Order::retrieve($orderId);
     }
 
     public function retrievePayMethods(string $userId, string $userEmail, ?string $configKey = null): RefundCreatedResponse

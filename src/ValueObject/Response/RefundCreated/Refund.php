@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\ValueObject\Response\RefundCreated;
 
 use Answear\Payum\PayU\Enum\RefundStatus;
+use Webmozart\Assert\Assert;
 
 class Refund
 {
@@ -18,5 +19,21 @@ class Refund
         public readonly RefundStatus $status,
         public readonly \DateTimeImmutable $statusDateTime,
     ) {
+    }
+
+    public static function fromResponse(array $response): self
+    {
+        Assert::numeric($response['amount']);
+
+        return new self(
+            $response['refundId'],
+            $response['extRefundId'],
+            (int) $response['amount'],
+            $response['currencyCode'],
+            $response['description'],
+            new \DateTimeImmutable($response['creationDateTime']),
+            RefundStatus::from($response['status']),
+            new \DateTimeImmutable($response['statusDateTime'])
+        );
     }
 }

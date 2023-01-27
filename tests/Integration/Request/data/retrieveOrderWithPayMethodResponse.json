@@ -1,0 +1,45 @@
+{
+    "orders": [
+        {
+            "orderId": "S2GZ99XFWL220125GUEST000P01",
+            "extOrderId": "220125-0101N1-PL",
+            "orderCreateDate": "2022-01-25T12:20:39.639+01:00",
+            "notifyUrl": "http://gogo.go/payment/notify/2hG7ENuL3HpvB",
+            "customerIp": "10.0.10.219",
+            "merchantPosId": "345503",
+            "validityTime": "259200",
+            "description": "Zapłata za zamówienie nr: 220125-0101N1-PL",
+            "currencyCode": "PLN",
+            "totalAmount": "17346",
+            "buyer": {
+                "customerId": "guest",
+                "email": "test@test-fake.pl",
+                "phone": "+48577777777",
+                "firstName": "bat",
+                "lastName": "batowisz",
+                "language": "pl"
+            },
+            "payMethod": {
+                "type": "CARD_TOKEN"
+            },
+            "status": "COMPLETED",
+            "products": [
+                {
+                    "name": "Zapłata za zamówienie nr: 220125-0101N1-PL",
+                    "unitPrice": "17346",
+                    "quantity": "1"
+                }
+            ]
+        }
+    ],
+    "status": {
+        "statusCode": "SUCCESS",
+        "statusDesc": "Request processing successful"
+    },
+    "properties": [
+        {
+            "name": "PAYMENT_ID",
+            "value": "5003299991"
+        }
+    ]
+}

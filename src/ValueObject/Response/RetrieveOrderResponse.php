@@ -6,7 +6,7 @@ namespace Answear\Payum\PayU\ValueObject\Response;
 
 use Answear\Payum\PayU\ValueObject\Response\RefundCreated\Refund;
 
-class RefundCreatedResponse
+class RetrieveOrderResponse
 {
     public function __construct(
         public readonly string $orderId,
