@@ -5,11 +5,11 @@
  */
 class OpenPayU_HttpCurl
 {
-    public static array $history;
+    public static array $history = [];
 
     public static function addResponse(int $responseCode, string $responseContent): void
     {
-        self::$history = ['responseCode' => $responseCode, 'responseContent' => $responseContent];
+        array_push(self::$history, ['responseCode' => $responseCode, 'responseContent' => $responseContent]);
     }
 
     /**
@@ -26,10 +26,12 @@ class OpenPayU_HttpCurl
             throw new OpenPayU_Exception_Configuration('The endpoint is empty');
         }
 
-        $response = ['code' => self::$history['responseCode'], 'response' => trim(self::$history['responseContent'])];
-        self::$history = [];
+        $historyValue = array_shift(self::$history);
+        if (empty($historyValue['responseCode']) || empty($historyValue['responseContent'])) {
+            throw new \InvalidArgumentException('Invalid testa value for history array.');
+        }
 
-        return $response;
+        return ['code' => $historyValue['responseCode'], 'response' => trim($historyValue['responseContent'])];
     }
 
     /**

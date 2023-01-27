@@ -1,0 +1,41 @@
+{
+    "cardTokens": [],
+    "pexTokens": [],
+    "payByLinks": [
+        {
+            "value": "dpp",
+            "brandImageUrl": "https://static.payu.com/images/mobile/logos/pbl_dpp.png",
+            "name": "PayPo | PayU Płacę później",
+            "status": "ENABLED",
+            "minAmount": 1000,
+            "maxAmount": 200000
+        },
+        {
+            "value": "m",
+            "brandImageUrl": "https://static.payu.com/images/mobile/logos/pbl_m.png",
+            "name": "mTransfer",
+            "status": "ENABLED",
+            "minAmount": 50,
+            "maxAmount": 99999999
+        },
+        {
+            "value": "o",
+            "brandImageUrl": "https://static.payu.com/images/mobile/logos/pbl_o.png",
+            "name": "Płacę z Bankiem Pekao S.A.",
+            "status": "DISABLED",
+            "minAmount": 50,
+            "maxAmount": 99999999
+        },
+        {
+            "value": "c",
+            "brandImageUrl": "https://static.payu.com/images/mobile/logos/pbl_c.png",
+            "name": "Płatność online kartą płatniczą",
+            "status": "TEMPORARY_DISABLED",
+            "minAmount": 0,
+            "maxAmount": 99999999
+        }
+    ],
+    "status": {
+        "statusCode": "SUCCESS"
+    }
+}

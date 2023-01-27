@@ -7,12 +7,12 @@ namespace Answear\Payum\PayU\Tests\Integration\Request;
 use Answear\Payum\PayU\Api;
 use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Enum\RefundStatus;
+use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Request\Refund\Refund;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreated\Refund as ResponseRefund;
-use Answear\Payum\PayU\ValueObject\Response\RefundCreated\StatusCode;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 use PHPUnit\Framework\TestCase;
 
@@ -35,7 +35,7 @@ class CreateRefundTest extends TestCase
         );
 
         $refundCreated = $this->getApiService()->createRefund($orderId, $refundRequest);
-        self::assertEquals(new ResponseStatus(StatusCode::Success, 'Refund queued for processing'), $refundCreated->status);
+        self::assertEquals(new ResponseStatus(ResponseStatusCode::Success, 'Refund queued for processing'), $refundCreated->status);
         self::assertSame($orderId, $refundCreated->orderId);
         $refund = $refundCreated->refund;
         self::assertEquals(
