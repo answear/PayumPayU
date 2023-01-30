@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Response;
 
-use Answear\Payum\PayU\ValueObject\Response\OrderCreated\Status;
+use Answear\Payum\PayU\ValueObject\Response\OrderCreated\OrderCreatedStatus;
 
 class OrderCreatedResponse
 {
     public function __construct(
-        public readonly Status $status,
+        public readonly OrderCreatedStatus $status,
         public readonly string $redirectUri,
         public readonly string $orderId,
         public readonly ?string $extOrderId,
@@ -19,7 +19,7 @@ class OrderCreatedResponse
     public static function fromResponse(array $response): self
     {
         return new self(
-            Status::fromResponse($response['status']),
+            OrderCreatedStatus::fromResponse($response['status']),
             $response['redirectUri'],
             $response['orderId'],
             $response['extOrderId'] ?? null,

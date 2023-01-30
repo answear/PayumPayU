@@ -10,5 +10,5 @@ enum OrderStatus: string
     case Pending = 'PENDING';
     case WaitingForConfirmation = 'WAITING_FOR_CONFIRMATION';
     case Completed = 'COMPLETED';
-    case Cancelled = 'CANCELED';
+    case Canceled = 'CANCELED';
 }

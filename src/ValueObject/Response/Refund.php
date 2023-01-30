@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Answear\Payum\PayU\ValueObject\Response\RefundCreated;
+namespace Answear\Payum\PayU\ValueObject\Response;
 
 use Answear\Payum\PayU\Enum\RefundStatus;
 use Webmozart\Assert\Assert;
@@ -16,8 +16,9 @@ class Refund
         public readonly string $currencyCode,
         public readonly string $description,
         public readonly \DateTimeImmutable $creationDateTime,
-        public readonly RefundStatus $status,
         public readonly \DateTimeImmutable $statusDateTime,
+        public readonly RefundStatus $status,
+        public readonly ?RefundStatusError $statusError = null
     ) {
     }
 
@@ -32,8 +33,9 @@ class Refund
             $response['currencyCode'],
             $response['description'],
             new \DateTimeImmutable($response['creationDateTime']),
+            new \DateTimeImmutable($response['statusDateTime']),
             RefundStatus::from($response['status']),
-            new \DateTimeImmutable($response['statusDateTime'])
+            isset($response['statusError']) ? RefundStatusError::fromResponse($response['statusError']) : null
         );
     }
 }

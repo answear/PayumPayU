@@ -13,7 +13,7 @@ use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
 use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
-use Answear\Payum\PayU\ValueObject\Response\OrderCreated\Status;
+use Answear\Payum\PayU\ValueObject\Response\OrderCreated\OrderCreatedStatus;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\StatusCode;
 use PHPUnit\Framework\TestCase;
 
@@ -55,7 +55,7 @@ class CreateOrderTest extends TestCase
         );
 
         $orderCreated = $this->getApiService()->createOrder($orderRequest);
-        self::assertEquals($orderCreated->status, new Status(StatusCode::Success));
+        self::assertEquals($orderCreated->status, new OrderCreatedStatus(StatusCode::Success));
         self::assertSame('http://continue.url.com', $orderCreated->redirectUri);
         self::assertSame('WZHF5FFDRJ140731GUEST000P01', $orderCreated->orderId);
         self::assertSame('extOrderId123', $orderCreated->extOrderId);

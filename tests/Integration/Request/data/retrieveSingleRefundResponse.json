@@ -1,0 +1,14 @@
+{
+    "refundId": "5000000108",
+    "extRefundId": "ext_QLQWXCSM1D200609GUEST000P01_1591707454318",
+    "amount": "999",
+    "currencyCode": "PLN",
+    "description": "Zwrot transakcji",
+    "creationDateTime": "2020-06-09T14:57:34.594+02:00",
+    "statusDateTime": "2020-06-09T14:57:55.370+02:00",
+    "status": "CANCELED",
+    "statusError": {
+        "code": "PROVIDER_TECHNICAL_ERROR",
+        "description": "Temporary problem on Provider Side"
+    }
+}
