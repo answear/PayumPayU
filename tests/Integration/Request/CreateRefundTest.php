@@ -8,6 +8,7 @@ use Answear\Payum\PayU\Api;
 use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Enum\RefundStatus;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
+use Answear\Payum\PayU\Exception\PayURequestException;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Request\Refund\Refund;
@@ -69,9 +70,28 @@ class CreateRefundTest extends TestCase
             )
         );
 
-        $this->expectException(\OpenPayU_Exception_Request::class);
-        $this->expectExceptionMessage('ERROR_VALUE_MISSING - Missing required field');
-        $this->getApiService()->createRefund($orderId, $refundRequest);
+        try {
+            $this->getApiService()->createRefund($orderId, $refundRequest);
+        } catch (\Throwable $exception) {
+            self::assertInstanceOf(PayURequestException::class, $exception);
+            self::assertSame('ERROR_VALUE_MISSING - Missing required field', $exception->getMessage());
+            self::assertSame(
+                [
+                    'status' => [
+                        'statusCode' => 'ERROR_VALUE_MISSING',
+                        'severity' => 'ERROR',
+                        'code' => '8300',
+                        'codeLiteral' => 'MISSING_REFUND_SECTION',
+                        'statusDesc' => 'Missing required field',
+                    ],
+                ],
+                $exception->response
+            );
+
+            return;
+        }
+
+        self::fail('Exception must be thrown.');
     }
 
     private function getApiService(): Api
