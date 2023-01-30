@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Answear\OverseasBundle\Tests;
+namespace Answear\Payum\PayU\Tests;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
