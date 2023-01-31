@@ -16,7 +16,6 @@ class OrderRequest
      * @param array<Product> $products
      */
     public function __construct(
-        public readonly string $merchantPosId,
         public readonly string $description,
         public readonly string $currencyCode,
         public readonly int $totalAmount,
@@ -27,10 +26,12 @@ class OrderRequest
         public readonly ?string $extOrderId = null,
         public readonly ?string $continueUrl = null,
         public readonly ?Buyer $buyer = null,
-        public readonly ?PayMethod $payMethod = null,
+        public ?PayMethod $payMethod = null,
         public readonly ?string $additionalDescription = null,
         public readonly ?string $visibleDescription = null,
         public readonly ?string $statementDescription = null,
+        public ?string $cardOnFile = null,
+        public ?string $recurring = null,
     ) {
         Assert::notEmpty($this->products);
         Assert::allIsInstanceOf($this->products, Product::class);
@@ -39,13 +40,13 @@ class OrderRequest
     /**
      * @return array<string, string|int|array|null>
      */
-    public function toArray(): array
+    public function toArray(string $merchantPosId): array
     {
         return [
             'extOrderId' => $this->extOrderId,
             'notifyUrl' => $this->notifyUrl,
             'customerIp' => $this->customerIp,
-            'merchantPosId' => $this->merchantPosId,
+            'merchantPosId' => $merchantPosId,
             'validityTime' => $this->validityTime,
             'description' => $this->description,
             'additionalDescription' => $this->additionalDescription,
@@ -57,6 +58,14 @@ class OrderRequest
             'buyer' => $this->buyer->toArray(),
             'products' => array_map(static fn(Product $product) => $product->toArray(), $this->products),
             'payMethods' => ['payMethod' => $this->payMethod->toArray()],
+            'cardOnFile' => $this->cardOnFile,
+            'recurring' => $this->recurring,
         ];
+    }
+
+    public function setRequiring(?string $recurring, PayMethod $payMethod): void
+    {
+        $this->recurring = $recurring;
+        $this->payMethod = $payMethod;
     }
 }

@@ -27,10 +27,10 @@ class Order
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public static function create(OrderRequest $orderRequest): OrderCreatedResponse
+    public static function create(OrderRequest $orderRequest, string $merchantPosId): OrderCreatedResponse
     {
         try {
-            $result = \OpenPayU_Order::create($orderRequest->toArray());
+            $result = \OpenPayU_Order::create($orderRequest->toArray($merchantPosId));
         } catch (\Throwable $exception) {
             throw ExceptionHelper::getPayUException($exception);
         }

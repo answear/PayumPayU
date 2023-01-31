@@ -21,4 +21,13 @@ class OrderCreatedStatus
             $response['codeLiteral'] ?? null,
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'statusCode' => $this->statusCode->value,
+            'statusDesc' => $this->statusDesc,
+            'codeLiteral' => $this->codeLiteral,
+        ];
+    }
 }
