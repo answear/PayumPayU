@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Answear\Payum\PayU\ValueObject\Request\Order;
+namespace Answear\Payum\PayU\ValueObject;
 
 class Delivery
 {
@@ -37,5 +37,21 @@ class Delivery
             'postalBox' => $this->postalBox,
             'state' => $this->state,
         ];
+    }
+
+    public static function fromResponse(array $response): self
+    {
+        return new self(
+            $response['street'],
+            $response['postalCode'],
+            $response['city'],
+            $response['countryCode'] ?? null,
+            $response['name'] ?? null,
+            $response['recipientName'] ?? null,
+            $response['recipientEmail'] ?? null,
+            $response['recipientPhone'] ?? null,
+            $response['postalBox'] ?? null,
+            $response['state'] ?? null,
+        );
     }
 }

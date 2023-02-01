@@ -8,7 +8,9 @@ class Refund
 {
     public function __construct(
         public readonly string $description,
-        public readonly ?string $amount,
+        public readonly ?int $amount,
+        public readonly ?string $extCustomerId = null,
+        public readonly ?string $extRefundId = null,
     ) {
     }
 
@@ -20,6 +22,8 @@ class Refund
         return [
             'description' => $this->description,
             'amount' => $this->amount,
+            'extCustomerId' => $this->extCustomerId,
+            'extRefundId' => $this->extRefundId,
         ];
     }
 }

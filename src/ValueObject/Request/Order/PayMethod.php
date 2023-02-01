@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Request\Order;
 
+use Answear\Payum\PayU\Enum\PayMethodType;
+
 class PayMethod
 {
     public function __construct(
