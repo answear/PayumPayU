@@ -14,4 +14,13 @@ class NotifyRefundResponse
         public readonly NotifyRefund $refund,
     ) {
     }
+
+    public static function fromResponse(array $content): self
+    {
+        return new self(
+            $content['orderId'],
+            $content['extOrderId'] ?? null,
+            NotifyRefund::fromResponse($content['refund'])
+        );
+    }
 }

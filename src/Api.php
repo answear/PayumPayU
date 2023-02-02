@@ -133,6 +133,20 @@ class Api
         return PayMethods::retrieve($lang);
     }
 
+    public function signatureIsValid(string $signatureHeader, string $data, ?string $configKey = null): bool
+    {
+        $config = $this->getConfig($configKey);
+
+        $signature = \OpenPayU_Util::parseSignature($signatureHeader);
+
+        return \OpenPayU_Util::verifySignature(
+            $data,
+            $signature['signature'],
+            $config->signatureKey,
+            $signature['algorithm']
+        );
+    }
+
     private function getConfig(?string $configKey = null): Configuration
     {
         if (null === $this->defaultConfigKey && null === $configKey) {

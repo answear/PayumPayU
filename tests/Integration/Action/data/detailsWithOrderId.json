@@ -18,7 +18,7 @@
     "client_id": "124077",
     "customerIp": "10.0.13.152",
     "creditCardMaskedNumber": null,
-    "status": "CANCELED",
+    "status": "PENDING",
     "payUResponse": {
         "status": {
             "statusCode": "SUCCESS"

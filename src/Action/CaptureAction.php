@@ -7,8 +7,8 @@ namespace Answear\Payum\PayU\Action;
 use Answear\Payum\PayU\ApiAwareTrait;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Exception\PayUException;
+use Answear\Payum\PayU\Model\Model;
 use Answear\Payum\PayU\Util\PaymentHelper;
-use Answear\Payum\PayU\ValueObject\Model;
 use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
 use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
@@ -53,7 +53,7 @@ class CaptureAction implements ApiAwareInterface, ActionInterface, GenericTokenF
             $this->setRecurringStandardPayment($orderRequest, $model);
         }
 
-        $orderCreatedResponse = $this->api->createOrder($orderRequest);
+        $orderCreatedResponse = $this->api->createOrder($orderRequest, $model->configKey());
         $model->setPayUResponse($orderCreatedResponse);
         if (StatusCode::Success === $orderCreatedResponse->status->statusCode) {
             $this->updateModel($model, $orderCreatedResponse, $firstModel);
@@ -147,6 +147,9 @@ class CaptureAction implements ApiAwareInterface, ActionInterface, GenericTokenF
     private function updateModel(Model $model, OrderCreatedResponse $orderCreatedResponse, ?Payment $firstModel): void
     {
         $model->setOrderId($orderCreatedResponse->orderId);
+        if ($firstModel instanceof \Answear\Payum\PayU\Model\Payment) {
+            $firstModel->setOrderId($orderCreatedResponse->orderId);
+        }
 
         /**
          * Documentation say nothing about this kind of responses with payMethod on order creating
