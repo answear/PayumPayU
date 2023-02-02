@@ -17,4 +17,5 @@ enum RefundStatusErrorCode: string
     case TechnicalError = 'TECHNICAL_ERROR';
     case RefundTooFast = 'REFUND_TOO_FAST';
     case RefundImpossible = 'REFUND_IMPOSSIBLE';
+    case Unknown = 'UNKNOWN';
 }

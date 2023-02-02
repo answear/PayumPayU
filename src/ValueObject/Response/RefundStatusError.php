@@ -10,6 +10,7 @@ class RefundStatusError
 {
     public function __construct(
         public readonly RefundStatusErrorCode $code,
+        public readonly string $rawCode,
         public readonly string $description,
     ) {
     }
@@ -17,7 +18,8 @@ class RefundStatusError
     public static function fromResponse(array $response): self
     {
         return new self(
-            RefundStatusErrorCode::from($response['code']),
+            RefundStatusErrorCode::tryFrom($response['code']) ?? RefundStatusErrorCode::Unknown,
+            $response['code'] ?? '',
             $response['description']
         );
     }
