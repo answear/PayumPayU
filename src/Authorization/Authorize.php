@@ -16,6 +16,15 @@ class Authorize
         \OpenPayU_Configuration::setSignatureKey($configuration->signatureKey);
     }
 
+    public static function withClientSecret(Configuration $configuration): void
+    {
+        self::base($configuration);
+
+        \OpenPayU_Configuration::setOauthClientId($configuration->oauthClientId);
+        \OpenPayU_Configuration::setOauthClientSecret($configuration->oauthClientId);
+        \OpenPayU_Configuration::setOauthGrantType(\OauthGrantType::CLIENT_CREDENTIAL);
+    }
+
     public static function withTrusted(Configuration $configuration, string $userId, string $userEmail): void
     {
         self::base($configuration);

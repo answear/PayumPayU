@@ -6,12 +6,15 @@ namespace Answear\Payum\PayU;
 
 use Answear\Payum\PayU\Authorization\Authorize;
 use Answear\Payum\PayU\Request\Order;
+use Answear\Payum\PayU\Request\PayMethods;
 use Answear\Payum\PayU\Request\Refund;
 use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
 use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
+use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\OrderRetrieveTransactionsResponseInterface;
+use Answear\Payum\PayU\ValueObject\Response\PayMethodsResponse;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
 use Payum\Core\Exception\InvalidArgumentException;
 use Webmozart\Assert\Assert;
@@ -59,7 +62,8 @@ class Api
     }
 
     /**
-     * @see OrderCreatedResponse::$orderId
+     * @throws Exception\MalformedResponseException
+     * @throws \OpenPayU_Exception
      */
     public function retrieveOrder(string $orderId, ?string $configKey = null): OrderRetrieveResponse
     {
@@ -68,15 +72,30 @@ class Api
         return Order::retrieve($orderId);
     }
 
-    public function retrievePayMethods(string $userId, string $userEmail, ?string $configKey = null): RefundCreatedResponse
+    /**
+     * @return array<OrderRetrieveTransactionsResponseInterface>
+     *
+     * @throws Exception\MalformedResponseException
+     * @throws \OpenPayU_Exception
+     */
+    public function retrieveTransactions(string $orderId, ?string $configKey = null): array
     {
-        throw new \LogicException('Not implemented');
+        Authorize::base($this->getConfig($configKey));
+
+        return Order::retrieveTransactions($orderId);
+    }
+
+    public function retrievePayMethods(?string $lang, ?string $configKey = null): PayMethodsResponse
+    {
+        Authorize::withClientSecret($this->getConfig($configKey));
+
+        return PayMethods::retrieve($lang);
     }
 
     private function getConfig(?string $configKey = null): Configuration
     {
         if (null === $this->defaultConfigKey && null === $configKey) {
-            throw new \LogicException('Config key must be provided.');
+            throw new \InvalidArgumentException('Config key must be provided.');
         }
 
         return $this->configurations[$configKey ?? $this->defaultConfigKey];

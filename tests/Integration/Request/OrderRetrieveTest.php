@@ -8,6 +8,7 @@ use Answear\Payum\PayU\Api;
 use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Enum\OrderStatus;
 use Answear\Payum\PayU\Enum\PayMethodType;
+use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Answear\Payum\PayU\ValueObject\Configuration;
@@ -15,7 +16,6 @@ use Answear\Payum\PayU\ValueObject\PayMethod;
 use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Response\Order;
 use Answear\Payum\PayU\ValueObject\Response\Property;
-use Answear\Payum\PayU\ValueObject\Response\RefundCreated\StatusCode;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 use PHPUnit\Framework\TestCase;
 
@@ -32,7 +32,7 @@ class OrderRetrieveTest extends TestCase
         $response = $this->getApiService()->retrieveOrder($orderId);
         self::assertEquals(
             new ResponseStatus(
-                StatusCode::Success,
+                ResponseStatusCode::Success,
                 'Request processing successful'
             ),
             $response->status
@@ -92,7 +92,7 @@ class OrderRetrieveTest extends TestCase
         $response = $this->getApiService()->retrieveOrder($orderId);
         self::assertEquals(
             new ResponseStatus(
-                StatusCode::Success,
+                ResponseStatusCode::Success,
                 'Request processing successful'
             ),
             $response->status

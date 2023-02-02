@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Answear\Payum\PayU\ValueObject\Response\RefundCreated;
+namespace Answear\Payum\PayU\Enum;
 
-enum StatusCode: string
+enum ResponseStatusCode: string
 {
     case Success = 'SUCCESS';
     case ErrorValueMissing = 'ERROR_VALUE_MISSING';

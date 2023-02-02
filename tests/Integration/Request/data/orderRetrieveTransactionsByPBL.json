@@ -1,0 +1,17 @@
+{
+    "transactions": [
+        {
+            "payMethod": {
+                "value": "m"
+            },
+            "bankAccount": {
+                "number": "80607787095718703296721164",
+                "name": "JAN KOWALSKI",
+                "city": "WARSZAWA",
+                "postalCode": "02-638",
+                "street": "UL.NOWOWIEJSKIEGO 8",
+                "address": "Warszawa Nowowiejskiego 8"
+            }
+        }
+    ]
+}
