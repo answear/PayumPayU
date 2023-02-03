@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Request;
 
 use Answear\Payum\PayU\Exception\MalformedResponseException;
+use Answear\Payum\PayU\Exception\PayUException;
+use Answear\Payum\PayU\Util\ExceptionHelper;
 use Answear\Payum\PayU\Util\JsonHelper;
 use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
@@ -23,11 +25,15 @@ class Order
 
     /**
      * @throws MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws PayUException
      */
     public static function create(OrderRequest $orderRequest): OrderCreatedResponse
     {
-        $result = \OpenPayU_Order::create($orderRequest->toArray());
+        try {
+            $result = \OpenPayU_Order::create($orderRequest->toArray());
+        } catch (\Throwable $exception) {
+            throw ExceptionHelper::getPayUException($exception);
+        }
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());
@@ -40,11 +46,15 @@ class Order
 
     /**
      * @throws MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws PayUException
      */
     public static function retrieve(string $orderId): OrderRetrieveResponse
     {
-        $result = \OpenPayU_Order::retrieve($orderId);
+        try {
+            $result = \OpenPayU_Order::retrieve($orderId);
+        } catch (\Throwable $exception) {
+            throw ExceptionHelper::getPayUException($exception);
+        }
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());
@@ -58,12 +68,16 @@ class Order
     /**
      * @return array<OrderRetrieveTransactionsResponseInterface>
      *
-     * @throws \OpenPayU_Exception
      * @throws MalformedResponseException
+     * @throws PayUException
      */
     public static function retrieveTransactions(string $orderId): array
     {
-        $result = \OpenPayU_Order::retrieveTransaction($orderId);
+        try {
+            $result = \OpenPayU_Order::retrieveTransaction($orderId);
+        } catch (\Throwable $exception) {
+            throw ExceptionHelper::getPayUException($exception);
+        }
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());

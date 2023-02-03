@@ -42,7 +42,7 @@ class Api
 
     /**
      * @throws Exception\MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws Exception\PayUException
      */
     public function createOrder(OrderRequest $orderRequest, ?string $configKey = null): OrderCreatedResponse
     {
@@ -53,7 +53,7 @@ class Api
 
     /**
      * @throws Exception\MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws Exception\PayUException
      */
     public function createRefund(string $orderId, RefundRequest $refundRequest, ?string $configKey = null): RefundCreatedResponse
     {
@@ -64,7 +64,7 @@ class Api
 
     /**
      * @throws Exception\MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws Exception\PayUException
      */
     public function retrieveOrder(string $orderId, ?string $configKey = null): OrderRetrieveResponse
     {
@@ -77,7 +77,7 @@ class Api
      * @return array<OrderRetrieveTransactionsResponseInterface>
      *
      * @throws Exception\MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws Exception\PayUException
      */
     public function retrieveTransactions(string $orderId, ?string $configKey = null): array
     {
@@ -90,7 +90,7 @@ class Api
      * @return array<RefundResponse>
      *
      * @throws Exception\MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws Exception\PayUException
      */
     public function retrieveRefundList(string $orderId, ?string $configKey = null): array
     {
@@ -101,7 +101,7 @@ class Api
 
     /**
      * @throws Exception\MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws Exception\PayUException
      */
     public function retrieveSingleRefund(string $orderId, string $refundId, ?string $configKey = null): RefundResponse
     {
@@ -110,6 +110,10 @@ class Api
         return Refund::retrieveSingleRefund($orderId, $refundId);
     }
 
+    /**
+     * @throws Exception\MalformedResponseException
+     * @throws Exception\PayUException
+     */
     public function retrievePayMethods(?string $lang, ?string $configKey = null): PayMethodsResponse
     {
         Authorize::withClientSecret($this->getConfig($configKey));

@@ -7,6 +7,7 @@ namespace Answear\Payum\PayU\Tests\Integration\Request;
 use Answear\Payum\PayU\Api;
 use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Enum\PayMethodType;
+use Answear\Payum\PayU\Exception\PayUAuthorizationException;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Answear\Payum\PayU\ValueObject\Configuration;
@@ -70,7 +71,7 @@ class CreateOrderTest extends TestCase
 
         $orderRequest = $this->createMock(OrderRequest::class);
 
-        $this->expectException(\OpenPayU_Exception_Authorization::class);
+        $this->expectException(PayUAuthorizationException::class);
         $this->expectExceptionMessage('UNAUTHORIZED - Incorrect authentication');
         $this->getApiService()->createOrder($orderRequest);
     }

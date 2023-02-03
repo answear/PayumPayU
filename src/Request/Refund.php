@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Request;
 
 use Answear\Payum\PayU\Exception\MalformedResponseException;
+use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Service\PayURefundService;
+use Answear\Payum\PayU\Util\ExceptionHelper;
 use Answear\Payum\PayU\Util\JsonHelper;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\Refund as RefundResponse;
@@ -19,17 +21,21 @@ class Refund
 {
     /**
      * @throws MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws PayUException
      */
     public static function create(string $orderId, RefundRequest $refundRequest): RefundCreatedResponse
     {
-        $result = \OpenPayU_Refund::create(
-            $orderId,
-            $refundRequest->refund->description,
-            $refundRequest->refund->amount,
-            $refundRequest->refund->extCustomerId,
-            $refundRequest->refund->extRefundId
-        );
+        try {
+            $result = \OpenPayU_Refund::create(
+                $orderId,
+                $refundRequest->refund->description,
+                $refundRequest->refund->amount,
+                $refundRequest->refund->extCustomerId,
+                $refundRequest->refund->extRefundId
+            );
+        } catch (\Throwable $exception) {
+            throw ExceptionHelper::getPayUException($exception);
+        }
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());
@@ -44,11 +50,15 @@ class Refund
      * @return array<RefundResponse>
      *
      * @throws MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws PayUException
      */
     public static function retrieveRefundList(string $orderId): array
     {
-        $result = PayURefundService::retrieveRefundList($orderId);
+        try {
+            $result = PayURefundService::retrieveRefundList($orderId);
+        } catch (\Throwable $exception) {
+            throw ExceptionHelper::getPayUException($exception);
+        }
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());
@@ -64,11 +74,15 @@ class Refund
 
     /**
      * @throws MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws PayUException
      */
     public static function retrieveSingleRefund(string $orderId, string $refundId): RefundResponse
     {
-        $result = PayURefundService::retrieveSingleRefund($orderId, $refundId);
+        try {
+            $result = PayURefundService::retrieveSingleRefund($orderId, $refundId);
+        } catch (\Throwable $exception) {
+            throw ExceptionHelper::getPayUException($exception);
+        }
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());

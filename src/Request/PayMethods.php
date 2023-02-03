@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Request;
 
 use Answear\Payum\PayU\Exception\MalformedResponseException;
+use Answear\Payum\PayU\Exception\PayUException;
+use Answear\Payum\PayU\Util\ExceptionHelper;
 use Answear\Payum\PayU\Util\JsonHelper;
 use Answear\Payum\PayU\ValueObject\Response\PayMethodsResponse;
 
@@ -16,11 +18,15 @@ class PayMethods
 {
     /**
      * @throws MalformedResponseException
-     * @throws \OpenPayU_Exception
+     * @throws PayUException
      */
     public static function retrieve(?string $lang = null): PayMethodsResponse
     {
-        $result = \OpenPayU_Retrieve::payMethods($lang);
+        try {
+            $result = \OpenPayU_Retrieve::payMethods($lang);
+        } catch (\Throwable $exception) {
+            throw ExceptionHelper::getPayUException($exception);
+        }
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());
