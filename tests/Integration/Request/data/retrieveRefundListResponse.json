@@ -1,0 +1,24 @@
+{
+    "refunds": [
+        {
+            "refundId": "5000000142",
+            "extRefundId":    "ext_QX9ZR7M6QP200601GUEST000P01",
+            "amount": "400",
+            "currencyCode": "PLN",
+            "description": "Zwrot transakcji BLIK",
+            "creationDateTime": "2020-06-01T13:05:39.489+02:00",
+            "statusDateTime": "2020-06-01T13:06:03.530+02:00",
+            "status": "FINALIZED"
+        },
+        {
+            "refundId": "5000000143",
+            "extRefundId": "ext_QX9ZR7M6QP200601GUEST000P01",
+            "amount": "700",
+            "currencyCode": "PLN",
+            "description": "Zwrot transakcji P",
+            "creationDateTime": "2020-06-01T13:18:03.648+02:00",
+            "statusDateTime": "2020-06-01T13:18:33.661+02:00",
+            "status": "CANCELED"
+        }
+    ]
+}

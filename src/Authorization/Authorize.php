@@ -11,6 +11,7 @@ class Authorize
     public static function base(Configuration $configuration): void
     {
         self::clear();
+
         \OpenPayU_Configuration::setEnvironment($configuration->environment->value);
         \OpenPayU_Configuration::setMerchantPosId($configuration->posId);
         \OpenPayU_Configuration::setSignatureKey($configuration->signatureKey);
@@ -21,7 +22,7 @@ class Authorize
         self::base($configuration);
 
         \OpenPayU_Configuration::setOauthClientId($configuration->oauthClientId);
-        \OpenPayU_Configuration::setOauthClientSecret($configuration->oauthClientId);
+        \OpenPayU_Configuration::setOauthClientSecret($configuration->oauthClientSecret);
         \OpenPayU_Configuration::setOauthGrantType(\OauthGrantType::CLIENT_CREDENTIAL);
     }
 
@@ -30,7 +31,7 @@ class Authorize
         self::base($configuration);
 
         \OpenPayU_Configuration::setOauthClientId($configuration->oauthClientId);
-        \OpenPayU_Configuration::setOauthClientSecret($configuration->oauthClientId);
+        \OpenPayU_Configuration::setOauthClientSecret($configuration->oauthClientSecret);
         \OpenPayU_Configuration::setOauthGrantType(\OauthGrantType::TRUSTED_MERCHANT);
         \OpenPayU_Configuration::setOauthEmail($userEmail);
         \OpenPayU_Configuration::setOauthExtCustomerId($userId);

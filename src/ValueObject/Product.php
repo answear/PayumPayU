@@ -27,7 +27,7 @@ class Product
             'name' => $this->name,
             'unitPrice' => $this->unitPrice,
             'quantity' => $this->quantity,
-            'virtual' => BooleanTransformer::toString($this->virtual),
+            'virtual' => BooleanTransformer::stringOrNull($this->virtual),
             'listingDate' => $this->listingDate?->format(\DateTimeInterface::ATOM),
         ];
     }
@@ -41,7 +41,7 @@ class Product
             $response['name'],
             (int) $response['unitPrice'],
             (int) $response['quantity'],
-            BooleanTransformer::toBoolean($response['virtual'] ?? null),
+            BooleanTransformer::boolOrNull($response['virtual'] ?? null),
             isset($response['listingDate']) ? new \DateTimeImmutable($response['listingDate']) : null
         );
     }

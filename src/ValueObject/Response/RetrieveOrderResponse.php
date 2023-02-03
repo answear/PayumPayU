@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Response;
 
-use Answear\Payum\PayU\ValueObject\Response\RefundCreated\Refund;
-
 class RetrieveOrderResponse
 {
     public function __construct(

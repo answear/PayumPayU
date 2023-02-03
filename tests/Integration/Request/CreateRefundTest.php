@@ -12,7 +12,7 @@ use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Request\Refund\Refund;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
-use Answear\Payum\PayU\ValueObject\Response\RefundCreated\Refund as ResponseRefund;
+use Answear\Payum\PayU\ValueObject\Response\Refund as ResponseRefund;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 use PHPUnit\Framework\TestCase;
 
@@ -46,8 +46,8 @@ class CreateRefundTest extends TestCase
                 'PLN',
                 'Uznanie 5000009987 Refund',
                 new \DateTimeImmutable('2020-07-02T09:19:03.896+02:00'),
-                RefundStatus::Pending,
                 new \DateTimeImmutable('2020-07-02T09:19:04.013+02:00'),
+                RefundStatus::Pending,
             ),
             $refund
         );

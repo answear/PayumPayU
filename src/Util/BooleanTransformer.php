@@ -9,7 +9,7 @@ class BooleanTransformer
     private const TRUE_VALUES = [1, '1', 'true', true, 'yes'];
     private const FALSE_VALUES = [0, '0', 'false', false, 'no'];
 
-    public static function toBoolean(mixed $value): ?bool
+    public static function boolOrNull(mixed $value): ?bool
     {
         if (null === $value) {
             return null;
@@ -26,7 +26,7 @@ class BooleanTransformer
         throw new \InvalidArgumentException('Invalid bool value.');
     }
 
-    public static function toString(?bool $value): ?string
+    public static function stringOrNull(?bool $value): ?string
     {
         if (null === $value) {
             return null;

@@ -19,6 +19,9 @@ class PayMethod
 
     public static function fromResponse(array $response): self
     {
-        return new self(isset($response['type']) ? PayMethodType::from($response['type']) : null, $response['value'] ?? null);
+        return new self(
+            isset($response['type']) ? PayMethodType::from($response['type']) : null,
+            $response['value'] ?? null
+        );
     }
 }

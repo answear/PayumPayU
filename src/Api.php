@@ -15,6 +15,7 @@ use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
 use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\OrderRetrieveTransactionsResponseInterface;
 use Answear\Payum\PayU\ValueObject\Response\PayMethodsResponse;
+use Answear\Payum\PayU\ValueObject\Response\Refund as RefundResponse;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
 use Payum\Core\Exception\InvalidArgumentException;
 use Webmozart\Assert\Assert;
@@ -83,6 +84,30 @@ class Api
         Authorize::base($this->getConfig($configKey));
 
         return Order::retrieveTransactions($orderId);
+    }
+
+    /**
+     * @return array<RefundResponse>
+     *
+     * @throws Exception\MalformedResponseException
+     * @throws \OpenPayU_Exception
+     */
+    public function retrieveRefundList(string $orderId, ?string $configKey = null): array
+    {
+        Authorize::base($this->getConfig($configKey));
+
+        return Refund::retrieveRefundList($orderId);
+    }
+
+    /**
+     * @throws Exception\MalformedResponseException
+     * @throws \OpenPayU_Exception
+     */
+    public function retrieveSingleRefund(string $orderId, string $refundId, ?string $configKey = null): RefundResponse
+    {
+        Authorize::base($this->getConfig($configKey));
+
+        return Refund::retrieveSingleRefund($orderId, $refundId);
     }
 
     public function retrievePayMethods(?string $lang, ?string $configKey = null): PayMethodsResponse
