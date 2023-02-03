@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Request;
 
+use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
@@ -63,9 +64,9 @@ class OrderRequest
         ];
     }
 
-    public function setRequiring(?string $recurring, PayMethod $payMethod): void
+    public function setRequiring(?RecurringEnum $recurring, PayMethod $payMethod): void
     {
-        $this->recurring = $recurring;
+        $this->recurring = $recurring->value;
         $this->payMethod = $payMethod;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Action;
 
 use Answear\Payum\PayU\ApiAwareTrait;
+use Answear\Payum\PayU\Enum\ModelFields;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Model\Model;
@@ -79,7 +80,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
     private function orderNotify(Model $model, array $orderData): void
     {
         /** @see https://developers.payu.com/pl/restapi.html#update_notification_for_order_status */
-        $orderId = $orderData[Model::ORDER_ID] ?? null;
+        $orderId = $orderData[ModelFields::ORDER_ID] ?? null;
         if (null === $orderId) {
             throw new \LogicException('No orderId on notify.');
         }
