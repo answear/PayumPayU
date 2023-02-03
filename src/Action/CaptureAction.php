@@ -52,7 +52,7 @@ class CaptureAction implements ApiAwareInterface, ActionInterface, GenericTokenF
             $this->setRecurringStandardPayment($orderRequest, $model);
         }
 
-        $orderCreatedResponse = $this->api->createOrder($orderRequest, $model->configKey());
+        $orderCreatedResponse = $this->api->createOrder($orderRequest, PaymentHelper::getConfigKey($model, $firstModel));
         $model->setPayUResponse($orderCreatedResponse);
         if (StatusCode::Success === $orderCreatedResponse->status->statusCode) {
             $this->updateModel($model, $orderCreatedResponse, $firstModel);
@@ -146,7 +146,7 @@ class CaptureAction implements ApiAwareInterface, ActionInterface, GenericTokenF
     private function updateModel(Model $model, OrderCreatedResponse $orderCreatedResponse, ?Payment $firstModel): void
     {
         $model->setOrderId($orderCreatedResponse->orderId);
-        if ($firstModel instanceof \Answear\Payum\PayU\Model\Payment) {
+        if ($firstModel instanceof \Answear\Payum\Model\Payment) {
             $firstModel->setOrderId($orderCreatedResponse->orderId);
         }
 

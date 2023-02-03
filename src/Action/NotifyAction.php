@@ -47,13 +47,13 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         Assert::notNull($token, 'Token must be set on notify action.');
 
         $this->gateway->execute($httpRequest = new GetHttpRequest());
-        $this->assertRequestValid($httpRequest, $model);
+        $this->assertRequestValid($httpRequest, $model, $firstModel);
 
         $content = json_decode($httpRequest->content, true, 512, JSON_THROW_ON_ERROR);
         if (isset($content[self::REFUND_KEY])) {
             $this->refundNotify($request, $model, $firstModel, $content[self::REFUND_KEY]);
         } else {
-            $this->orderNotify($model, $content[self::ORDER_KEY] ?? []);
+            $this->orderNotify($model, $content[self::ORDER_KEY] ?? [], $firstModel);
         }
 
         $this->updateRequestStatus($model, $firstModel, $token);
@@ -70,14 +70,14 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
 
     private function refundNotify(Notify $request, Model $model, Payment $firstModel, array $refundData): void
     {
-        $orderId = $this->getOrderId($model, $firstModel);
-        $this->updatePaymentStatus($model, $orderId);
+        $orderId = PaymentHelper::getOrderId($model, $firstModel);
+        $this->updatePaymentStatus($model, $orderId, $firstModel);
         $model->updateRefundData($refundData);
 
         $request->setModel($model);
     }
 
-    private function orderNotify(Model $model, array $orderData): void
+    private function orderNotify(Model $model, array $orderData, ?Payment $firstModel): void
     {
         /** @see https://developers.payu.com/pl/restapi.html#update_notification_for_order_status */
         $orderId = $orderData[ModelFields::ORDER_ID] ?? null;
@@ -86,12 +86,12 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         }
         $model->setOrderId($orderId);
 
-        $this->updatePaymentStatus($model, $orderId);
+        $this->updatePaymentStatus($model, $orderId, $firstModel);
     }
 
-    private function updatePaymentStatus(Model $model, string $orderId): void
+    private function updatePaymentStatus(Model $model, string $orderId, ?Payment $firstModel): void
     {
-        $response = $this->api->retrieveOrder($orderId, $model->configKey());
+        $response = $this->api->retrieveOrder($orderId, PaymentHelper::getConfigKey($model, $firstModel));
         if (ResponseStatusCode::Success === $response->status->statusCode) {
             $model->setStatus($response->orders[0]->status);
             foreach ($response->properties as $property) {
@@ -110,7 +110,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         $this->gateway->execute($status);
     }
 
-    private function assertRequestValid(GetHttpRequest $httpRequest, Model $model): void
+    private function assertRequestValid(GetHttpRequest $httpRequest, Model $model, ?Payment $firstModel): void
     {
         if (!property_exists($httpRequest, 'headers')) {
             $exception = new PayUException('Request is not valid');
@@ -128,18 +128,8 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
             $signatureHeader = reset($signatureHeader);
         }
 
-        if (!$this->api->signatureIsValid($signatureHeader, $httpRequest->content, $model->configKey())) {
+        if (!$this->api->signatureIsValid($signatureHeader, $httpRequest->content, PaymentHelper::getConfigKey($model, $firstModel))) {
             throw new \InvalidArgumentException('Signature is not valid', 400);
         }
-    }
-
-    private function getOrderId(Model $model, Payment $firstModel): string
-    {
-        $orderId = null;
-        if ($firstModel instanceof \Answear\Payum\PayU\Model\Payment) {
-            $orderId = $firstModel->getOrderId();
-        }
-
-        return $orderId ?? $model->orderId();
     }
 }

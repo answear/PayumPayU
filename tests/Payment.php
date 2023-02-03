@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests;
 
-use Answear\Payum\PayU\Model\PaidForInterface;
+use Answear\Payum\Model\PaidForInterface;
 
-class Payment extends \Answear\Payum\PayU\Model\Payment
+class Payment extends \Answear\Payum\Model\Payment
 {
     private string $gatewayName;
     private string $orderId;
@@ -24,9 +24,9 @@ class Payment extends \Answear\Payum\PayU\Model\Payment
         $this->gatewayName = $gatewayName;
     }
 
-    public function getOrderId(): string
+    public function getOrderId(): ?string
     {
-        return $this->orderId;
+        return $this->orderId ?? null;
     }
 
     public function setOrderId(string $orderId): void
@@ -34,9 +34,9 @@ class Payment extends \Answear\Payum\PayU\Model\Payment
         $this->orderId = $orderId;
     }
 
-    public function getConfigKey(): string
+    public function getConfigKey(): ?string
     {
-        return $this->configKey;
+        return $this->configKey ?? null;
     }
 
     public function setConfigKey(string $configKey): void

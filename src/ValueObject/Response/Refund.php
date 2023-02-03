@@ -38,4 +38,19 @@ class Refund
             isset($response['statusError']) ? RefundStatusError::fromResponse($response['statusError']) : null
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'refundId' => $this->refundId,
+            'extRefundId' => $this->extRefundId,
+            'amount' => $this->amount,
+            'currencyCode' => $this->currencyCode,
+            'description' => $this->description,
+            'creationDateTime' => $this->creationDateTime->format(\DateTimeInterface::ATOM),
+            'statusDateTime' => $this->statusDateTime->format(\DateTimeInterface::ATOM),
+            'status' => $this->status->value,
+            'statusError' => $this->statusError?->toArray(),
+        ];
+    }
 }

@@ -78,6 +78,7 @@ class RetrieveRefundsTest extends TestCase
                 RefundStatus::Canceled,
                 new RefundStatusError(
                     RefundStatusErrorCode::ProviderTechnicalError,
+                    RefundStatusErrorCode::ProviderTechnicalError->value,
                     'Temporary problem on Provider Side'
                 )
             ),
