@@ -12,6 +12,7 @@ use Answear\Payum\PayU\Util\JsonHelper;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\Refund as RefundResponse;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
+use Psr\Log\LoggerInterface;
 
 /**
  * @interal
@@ -19,13 +20,25 @@ use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
  */
 class Refund
 {
+    public function __construct(private LoggerInterface $logger)
+    {
+    }
+
     /**
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public static function create(string $orderId, RefundRequest $refundRequest): RefundCreatedResponse
+    public function create(string $orderId, RefundRequest $refundRequest): RefundCreatedResponse
     {
         try {
+            $this->logger->info(
+                '[Request] Create refund',
+                [
+                    'orderId' => $orderId,
+                    'request' => $refundRequest->toArray(),
+                ]
+            );
+
             $result = \OpenPayU_Refund::create(
                 $orderId,
                 $refundRequest->refund->description,
@@ -39,6 +52,13 @@ class Refund
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());
+            $this->logger->info(
+                '[Response] Create refund',
+                [
+                    'orderId' => $orderId,
+                    'response' => $response,
+                ]
+            );
 
             return RefundCreatedResponse::fromResponse($response);
         } catch (\Throwable $e) {
@@ -52,7 +72,7 @@ class Refund
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public static function retrieveRefundList(string $orderId): array
+    public function retrieveRefundList(string $orderId): array
     {
         try {
             $result = PayURefundService::retrieveRefundList($orderId);
@@ -76,7 +96,7 @@ class Refund
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public static function retrieveSingleRefund(string $orderId, string $refundId): RefundResponse
+    public function retrieveSingleRefund(string $orderId, string $refundId): RefundResponse
     {
         try {
             $result = PayURefundService::retrieveSingleRefund($orderId, $refundId);

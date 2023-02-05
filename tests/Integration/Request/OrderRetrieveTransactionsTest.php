@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests\Integration\Request;
 
-use Answear\Payum\PayU\Api;
-use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
-use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\PayMethod;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByCreditCard;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByPBL;
-use PHPUnit\Framework\TestCase;
 
-class OrderRetrieveTransactionsTest extends TestCase
+class OrderRetrieveTransactionsTest extends AbstractRequestTest
 {
     /**
      * @test
@@ -81,21 +77,6 @@ class OrderRetrieveTransactionsTest extends TestCase
                 'address' => 'Warszawa Nowowiejskiego 8',
             ],
             $transaction->bankAccount
-        );
-    }
-
-    private function getApiService(): Api
-    {
-        return new Api(
-            [
-                'one_pos' => new Configuration(
-                    Environment::Sandbox,
-                    '123',
-                    's-key',
-                    'cl-id',
-                    'sec',
-                ),
-            ],
         );
     }
 }

@@ -4,21 +4,17 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests\Integration\Request;
 
-use Answear\Payum\PayU\Api;
-use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Exception\PayUAuthorizationException;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Buyer;
-use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
 use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\OrderCreatedStatus;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\StatusCode;
-use PHPUnit\Framework\TestCase;
 
-class CreateOrderTest extends TestCase
+class CreateOrderTest extends AbstractRequestTest
 {
     /**
      * @test
@@ -73,20 +69,5 @@ class CreateOrderTest extends TestCase
         $this->expectException(PayUAuthorizationException::class);
         $this->expectExceptionMessage('UNAUTHORIZED - Incorrect authentication');
         $this->getApiService()->createOrder($orderRequest);
-    }
-
-    private function getApiService(): Api
-    {
-        return new Api(
-            [
-                'one_pos' => new Configuration(
-                    Environment::Sandbox,
-                    '123',
-                    's-key',
-                    'cl-id',
-                    'sec',
-                ),
-            ],
-        );
     }
 }

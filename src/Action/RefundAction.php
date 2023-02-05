@@ -13,14 +13,12 @@ use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Model\Payment;
 use Webmozart\Assert\Assert;
 
 class RefundAction implements ActionInterface, ApiAwareInterface
 {
     use ApiAwareTrait;
-    use GatewayAwareTrait;
 
     /**
      * @param Refund $request

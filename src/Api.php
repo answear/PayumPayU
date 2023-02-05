@@ -18,17 +18,23 @@ use Answear\Payum\PayU\ValueObject\Response\PayMethodsResponse;
 use Answear\Payum\PayU\ValueObject\Response\Refund as RefundResponse;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
 use Payum\Core\Exception\InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use Webmozart\Assert\Assert;
 
 class Api
 {
     private ?string $defaultConfigKey = null;
+    private Order $orderRequestService;
+    private PayMethods $payMethodsRequestService;
+    private Refund $refundRequestService;
 
     /**
      * @param array<string, Configuration> $configurations
      */
-    public function __construct(protected array $configurations)
-    {
+    public function __construct(
+        protected array $configurations,
+        private LoggerInterface $logger
+    ) {
         try {
             Assert::allIsInstanceOf($configurations, Configuration::class);
         } catch (\Throwable $e) {
@@ -49,7 +55,7 @@ class Api
         $config = $this->getConfig($configKey);
         Authorize::base($config);
 
-        return Order::create($orderRequest, $config->posId);
+        return $this->getOrderRequest()->create($orderRequest, $config->posId);
     }
 
     /**
@@ -60,7 +66,7 @@ class Api
     {
         Authorize::base($this->getConfig($configKey));
 
-        return Refund::create($orderId, $refundRequest);
+        return $this->getRefundRequest()->create($orderId, $refundRequest);
     }
 
     /**
@@ -71,7 +77,7 @@ class Api
     {
         Authorize::base($this->getConfig($configKey));
 
-        return Order::retrieve($orderId);
+        return $this->getOrderRequest()->retrieve($orderId);
     }
 
     /**
@@ -84,7 +90,7 @@ class Api
     {
         Authorize::base($this->getConfig($configKey));
 
-        return Order::retrieveTransactions($orderId);
+        return $this->getOrderRequest()->retrieveTransactions($orderId);
     }
 
     /**
@@ -97,7 +103,7 @@ class Api
     {
         Authorize::base($this->getConfig($configKey));
 
-        return Refund::retrieveRefundList($orderId);
+        return $this->getRefundRequest()->retrieveRefundList($orderId);
     }
 
     /**
@@ -108,7 +114,7 @@ class Api
     {
         Authorize::base($this->getConfig($configKey));
 
-        return Refund::retrieveSingleRefund($orderId, $refundId);
+        return $this->getRefundRequest()->retrieveSingleRefund($orderId, $refundId);
     }
 
     /**
@@ -119,7 +125,7 @@ class Api
     {
         Authorize::withClientSecret($this->getConfig($configKey));
 
-        return PayMethods::retrieve($lang);
+        return $this->getPayMethodsRequest()->retrieve($lang);
     }
 
     /**
@@ -130,7 +136,7 @@ class Api
     {
         Authorize::withTrusted($this->getConfig($configKey), $userId, $userEmail);
 
-        return PayMethods::retrieve($lang);
+        return $this->getPayMethodsRequest()->retrieve($lang);
     }
 
     public function signatureIsValid(string $signatureHeader, string $data, ?string $configKey = null): bool
@@ -147,6 +153,11 @@ class Api
         );
     }
 
+    public function getLogger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+
     private function getConfig(?string $configKey = null): Configuration
     {
         if (null === $this->defaultConfigKey && null === $configKey) {
@@ -154,5 +165,32 @@ class Api
         }
 
         return $this->configurations[$configKey ?? $this->defaultConfigKey];
+    }
+
+    private function getOrderRequest(): Order
+    {
+        if (!isset($this->orderRequestService)) {
+            $this->orderRequestService = new Order($this->logger);
+        }
+
+        return $this->orderRequestService;
+    }
+
+    private function getPayMethodsRequest(): PayMethods
+    {
+        if (!isset($this->payMethodsRequestService)) {
+            $this->payMethodsRequestService = new PayMethods();
+        }
+
+        return $this->payMethodsRequestService;
+    }
+
+    private function getRefundRequest(): Refund
+    {
+        if (!isset($this->refundRequestService)) {
+            $this->refundRequestService = new Refund($this->logger);
+        }
+
+        return $this->refundRequestService;
     }
 }
