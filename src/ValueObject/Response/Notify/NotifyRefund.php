@@ -11,6 +11,7 @@ class NotifyRefund
 {
     public function __construct(
         public readonly string $refundId,
+        public readonly ?string $extRefundId,
         public readonly int $amount,
         public readonly string $currencyCode,
         public readonly RefundStatus $status,
@@ -27,6 +28,7 @@ class NotifyRefund
 
         return new self(
             $response['refundId'],
+            $response['extRefundId'] ?? null,
             (int) $response['amount'],
             $response['currencyCode'],
             RefundStatus::from($response['status']),

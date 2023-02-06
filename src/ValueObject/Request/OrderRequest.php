@@ -56,9 +56,9 @@ class OrderRequest
             'currencyCode' => $this->currencyCode,
             'totalAmount' => $this->totalAmount,
             'continueUrl' => $this->continueUrl,
-            'buyer' => $this->buyer->toArray(),
+            'buyer' => $this->buyer?->toArray(),
             'products' => array_map(static fn(Product $product) => $product->toArray(), $this->products),
-            'payMethods' => ['payMethod' => $this->payMethod->toArray()],
+            'payMethods' => null === $this->payMethod ? null : ['payMethod' => $this->payMethod->toArray()],
             'cardOnFile' => $this->cardOnFile,
             'recurring' => $this->recurring,
         ];
@@ -66,7 +66,7 @@ class OrderRequest
 
     public function setRequiring(?RecurringEnum $recurring, PayMethod $payMethod): void
     {
-        $this->recurring = $recurring->value;
+        $this->recurring = $recurring?->value;
         $this->payMethod = $payMethod;
     }
 }

@@ -31,13 +31,18 @@ class CaptureActionTest extends TestCase
 
         $captureToken = new Token();
         $capture = new Capture($captureToken);
+        $capture->setModel(new \Answear\Payum\PayU\Tests\Payment());
         $capture->setModel(FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
 
+        $redirected = false;
         try {
             $captureAction->execute($capture);
         } catch (HttpRedirect $httpRedirect) {
+            $redirected = true;
             self::assertSame('http://redirect-after-create-payment.url', $httpRedirect->getUrl());
         }
+
+        self::assertTrue($redirected);
     }
 
     /**
@@ -64,9 +69,11 @@ class CaptureActionTest extends TestCase
         $capture->setModel($payment);
         $capture->setModel(FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
 
+        $withException = false;
         try {
             $captureAction->execute($capture);
         } catch (PayUException $exception) {
+            $withException = true;
             self::assertSame('Create payment fails.', $exception->getMessage());
             self::assertSame(
                 [
@@ -121,6 +128,8 @@ class CaptureActionTest extends TestCase
             );
             self::assertSame($payment, $exception->payment);
         }
+
+        self::assertTrue($withException);
     }
 
     /**
@@ -132,6 +141,7 @@ class CaptureActionTest extends TestCase
 
         $captureToken = new Token();
         $capture = new Capture($captureToken);
+        $capture->setModel(new \Answear\Payum\PayU\Tests\Payment());
         $capture->setModel(FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/detailsWithOrderId.json'));
 
         $this->expectException(\LogicException::class);

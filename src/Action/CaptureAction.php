@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Action;
 
+use Answear\Payum\Model\Payment;
 use Answear\Payum\PayU\ApiAwareTrait;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Enum\RecurringEnum;
@@ -18,7 +19,7 @@ use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Model\Payment;
+use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
@@ -77,8 +78,9 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
     public function supports($request): bool
     {
         return
-            $request instanceof Capture &&
-            $request->getModel() instanceof \ArrayAccess;
+            $request instanceof Capture
+            && $request->getModel() instanceof \ArrayAccess
+            && $request->getFirstModel() instanceof PaymentInterface;
     }
 
     private function prepareOrderRequest(TokenInterface $token, Model $model): OrderRequest
@@ -141,15 +143,15 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
         return reset($tokens);
     }
 
-    private function updateModel(Model $model, OrderCreatedResponse $orderCreatedResponse, ?Payment $firstModel): void
+    private function updateModel(Model $model, OrderCreatedResponse $orderCreatedResponse, ?PaymentInterface $firstModel): void
     {
         $model->setOrderId($orderCreatedResponse->orderId);
-        if ($firstModel instanceof \Answear\Payum\Model\Payment) {
+        if ($firstModel instanceof Payment) {
             $firstModel->setOrderId($orderCreatedResponse->orderId);
         }
 
         /**
-         * Documentation say nothing about this kind of responses with payMethod on order creating
+         * Documentation says nothing about this kind of responses with payMethod on order creating
          * Keep it but with more knowledge need to refactor
          */
         if (isset($orderCreatedResponse->payMethods['payMethod'])) {

@@ -10,7 +10,7 @@ class ByPBL implements OrderRetrieveTransactionsResponseInterface
 {
     public function __construct(
         public readonly PayMethod $payMethod,
-        public readonly array $bankAccount,
+        public readonly ?array $bankAccount,
     ) {
     }
 
@@ -23,7 +23,7 @@ class ByPBL implements OrderRetrieveTransactionsResponseInterface
     {
         return new self(
             PayMethod::fromResponse($response['payMethod']),
-            $response['bankAccount'],
+            $response['bankAccount'] ?? null,
         );
     }
 }

@@ -13,7 +13,7 @@ use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Model\Payment;
+use Payum\Core\Model\PaymentInterface;
 use Webmozart\Assert\Assert;
 
 class RefundAction implements ActionInterface, ApiAwareInterface
@@ -39,7 +39,7 @@ class RefundAction implements ActionInterface, ApiAwareInterface
             PaymentHelper::getConfigKey($model, $firstModel)
         );
 
-        $this->updateRefundData($model, $refundCreatedResponse, $request);
+        $this->updateRefundData($model, $firstModel, $refundCreatedResponse, $request);
     }
 
     public function supports($request): bool
@@ -47,13 +47,14 @@ class RefundAction implements ActionInterface, ApiAwareInterface
         return
             $request instanceof Refund
             && $request->getModel() instanceof \ArrayObject
-            && $request->getFirstModel() instanceof Payment;
+            && $request->getFirstModel() instanceof PaymentInterface;
     }
 
-    private function updateRefundData(Model $model, RefundCreatedResponse $response, Refund $request): void
+    private function updateRefundData(Model $model, PaymentInterface $firstModel, RefundCreatedResponse $response, Refund $request): void
     {
         $model->updateRefundData($response->refund->toArray());
         $request->setModel($model);
+        $firstModel->setDetails($model);
         $request->refundCreatedResponse = $response;
     }
 

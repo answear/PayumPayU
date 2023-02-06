@@ -92,7 +92,7 @@ class PayUGatewayFactoryTest extends TestCase
                     'one pos' => [],
                 ],
             ],
-            new LogicException('Invalid key for config one pos.'),
+            new LogicException('Invalid configuration key for config one pos.'),
         ];
 
         yield 'no fields' => [
@@ -157,7 +157,7 @@ class PayUGatewayFactoryTest extends TestCase
                     ],
                 ],
             ],
-            new LogicException('Configurations keys must be a string.'),
+            new LogicException('Configuration key must be a string. "0" provided'),
         ];
     }
 

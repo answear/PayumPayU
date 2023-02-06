@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Answear\Payum\Action\Request;
 
-use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
-use Payum\Core\Model\Payment;
+use Payum\Core\Model\PaymentInterface;
 
 class Refund extends \Payum\Core\Request\Refund
 {
-    public ?RefundCreatedResponse $refundCreatedResponse = null;
+    public ?object $refundCreatedResponse = null;
 
     public function __construct(
-        Payment $model,
+        PaymentInterface $model,
         public readonly string $description,
         public readonly ?int $amount,
         public readonly ?string $extCustomerId = null,

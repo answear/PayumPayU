@@ -22,7 +22,7 @@ class ConvertPaymentAction implements ActionInterface
     /**
      * 259200s - 72h - 3 days
      */
-    private const VALIDITY_TIME = 259200;
+    private const DEFAULT_VALIDITY_TIME = 259200;
 
     /**
      * @param Convert $request
@@ -38,13 +38,13 @@ class ConvertPaymentAction implements ActionInterface
             [
                 ModelFields::TOTAL_AMOUNT => $payment->getTotalAmount(),
                 ModelFields::CURRENCY => $payment->getCurrencyCode(),
-                ModelFields::EXT_ORDER_ID => $payment->getNumber(),
+                ModelFields::EXT_ORDER_ID => $details->extOrderId() ?? $payment->getNumber(),
                 ModelFields::DESCRIPTION => $payment->getDescription(),
                 ModelFields::CLIENT_EMAIL => $payment->getClientEmail(),
                 ModelFields::CLIENT_ID => $payment->getClientId(),
                 ModelFields::CUSTOMER_IP => UserIpHelper::getIp(),
                 ModelFields::CREDIT_CARD_MASKED_NUMBER => $payment->getCreditCard() ? $payment->getCreditCard()->getMaskedNumber() : null,
-                ModelFields::VALIDITY_TIME => self::VALIDITY_TIME,
+                ModelFields::VALIDITY_TIME => $details->validityTime() ?? self::DEFAULT_VALIDITY_TIME,
             ]
         );
         if ($payment instanceof Payment) {
@@ -97,8 +97,8 @@ class ConvertPaymentAction implements ActionInterface
     public function supports($request): bool
     {
         return
-            $request instanceof Convert &&
-            $request->getSource() instanceof PaymentInterface &&
-            'array' === $request->getTo();
+            $request instanceof Convert
+            && $request->getSource() instanceof PaymentInterface
+            && 'array' === $request->getTo();
     }
 }
