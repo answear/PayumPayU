@@ -28,7 +28,6 @@ class CreateOrderTest extends TestCase
         \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/orderCreatedResponse.json'));
 
         $orderRequest = new OrderRequest(
-            'merchantPosId435',
             'description',
             'PL',
             267435,

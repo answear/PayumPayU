@@ -8,6 +8,7 @@ use Answear\Payum\PayU\Enum\PayByLinkStatus;
 
 class PayByLink
 {
+    private const AMOUNT_MIN = 0;
     private const AMOUNT_MAX = 99999999;
 
     public function __construct(
@@ -27,7 +28,7 @@ class PayByLink
             $response['name'],
             $response['brandImageUrl'],
             PayByLinkStatus::from($response['status']),
-            (!isset($response['minAmount']) || 0 === $response['minAmount']) ? null : $response['minAmount'],
+            (!isset($response['minAmount']) || self::AMOUNT_MIN === $response['minAmount']) ? null : $response['minAmount'],
             (!isset($response['maxAmount']) || self::AMOUNT_MAX === $response['maxAmount']) ? null : $response['maxAmount'],
         );
     }

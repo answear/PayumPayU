@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU;
 
-use Answear\Payum\PayU\Action\AuthorizeAction;
 use Answear\Payum\PayU\Action\CancelAction;
 use Answear\Payum\PayU\Action\CaptureAction;
 use Answear\Payum\PayU\Action\ConvertPaymentAction;
@@ -29,7 +28,6 @@ class PayUGatewayFactory extends GatewayFactory
                 'payum.factory_name' => self::FACTORY_NAME,
                 'payum.factory_title' => 'PayU',
                 'payum.action.capture' => new CaptureAction(),
-                'payum.action.authorize' => new AuthorizeAction(),
                 'payum.action.refund' => new RefundAction(),
                 'payum.action.cancel' => new CancelAction(),
                 'payum.action.notify' => new NotifyAction(),

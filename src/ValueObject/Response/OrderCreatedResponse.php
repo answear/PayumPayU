@@ -12,7 +12,8 @@ class OrderCreatedResponse
         public readonly OrderCreatedStatus $status,
         public readonly string $redirectUri,
         public readonly string $orderId,
-        public readonly ?string $extOrderId,
+        public readonly ?string $extOrderId = null,
+        public readonly ?array $payMethods = null,
     ) {
     }
 
@@ -23,6 +24,18 @@ class OrderCreatedResponse
             $response['redirectUri'],
             $response['orderId'],
             $response['extOrderId'] ?? null,
+            $response['payMethods'] ?? null
         );
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'status' => $this->status->toArray(),
+            'redirectUri' => $this->redirectUri,
+            'orderId' => $this->orderId,
+            'extOrderId' => $this->extOrderId,
+            'payMethods' => $this->payMethods,
+        ];
     }
 }

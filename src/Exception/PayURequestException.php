@@ -8,8 +8,6 @@ use Answear\Payum\PayU\Util\JsonHelper;
 
 class PayURequestException extends PayUException
 {
-    public ?array $response = null;
-
     public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null)
     {
         if ($previous instanceof \OpenPayU_Exception_Request && $previous->getOriginalResponse()) {

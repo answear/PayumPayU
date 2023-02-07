@@ -1,0 +1,21 @@
+{
+    "totalAmount": 95500,
+    "firstName": "Testy",
+    "lastName": "Mjzykdwmh",
+    "description": "Platnost za objedn\u00e1vku \u010d.: 221214-0026UJ-CZ",
+    "currencyCode": "CZK",
+    "language": "cs",
+    "validityTime": 259200,
+    "buyer": {
+        "email": "test@email-fake.domain",
+        "firstName": "Testy",
+        "lastName": "Mjzykdwmh",
+        "phone": "+420733999019",
+        "language": "cs"
+    },
+    "extOrderId": "221214-0026UJ-CZ",
+    "client_email": "test@email-fake.domain",
+    "client_id": "124077",
+    "customerIp": "10.0.13.152",
+    "creditCardMaskedNumber": null
+}

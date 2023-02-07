@@ -46,9 +46,10 @@ class Api
      */
     public function createOrder(OrderRequest $orderRequest, ?string $configKey = null): OrderCreatedResponse
     {
-        Authorize::base($this->getConfig($configKey));
+        $config = $this->getConfig($configKey);
+        Authorize::base($config);
 
-        return Order::create($orderRequest);
+        return Order::create($orderRequest, $config->posId);
     }
 
     /**
@@ -114,9 +115,20 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrievePayMethods(?string $lang, ?string $configKey = null): PayMethodsResponse
+    public function retrievePayMethods(?string $lang = null, ?string $configKey = null): PayMethodsResponse
     {
         Authorize::withClientSecret($this->getConfig($configKey));
+
+        return PayMethods::retrieve($lang);
+    }
+
+    /**
+     * @throws Exception\MalformedResponseException
+     * @throws Exception\PayUException
+     */
+    public function retrievePayMethodsForUser(string $userId, string $userEmail, ?string $lang = null, ?string $configKey = null): PayMethodsResponse
+    {
+        Authorize::withTrusted($this->getConfig($configKey), $userId, $userEmail);
 
         return PayMethods::retrieve($lang);
     }

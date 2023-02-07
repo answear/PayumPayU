@@ -1,0 +1,31 @@
+{
+    "totalAmount": 95500,
+    "firstName": "Testy",
+    "lastName": "Mjzykdwmh",
+    "description": "Platnost za objedn\u00e1vku \u010d.: 221214-0026UJ-CZ",
+    "currencyCode": "CZK",
+    "language": "cs",
+    "validityTime": 259200,
+    "buyer": {
+        "email": "test@email-fake.domain",
+        "firstName": "Testy",
+        "lastName": "Mjzykdwmh",
+        "phone": "+420733999019",
+        "language": "cs"
+    },
+    "extOrderId": "221214-0026UJ-CZ",
+    "client_email": "test@email-fake.domain",
+    "client_id": "124077",
+    "customerIp": "10.0.13.152",
+    "creditCardMaskedNumber": null,
+    "status": "CANCELED",
+    "payUResponse": {
+        "status": {
+            "statusCode": "SUCCESS"
+        },
+        "redirectUri": "https:\/\/merch-prod.snd.payu.com\/pay\/?orderId=3MRW8ST2Z6221214GUEST000P01&token=eyJhbGciOiJIUzI1NiJ9.eyJvcmRlcklkIjoiM01SVzhTVDJaNjIyMTIxNEdVRVNUMDAwUDAxIiwicG9zSWQiOiI5eWJZVWFZOSIsImF1dGhvcml0aWVzIjpbIlJPTEVfQ0xJRU5UIl0sInBheWVyRW1haWwiOiJ0ZXN0eS5hdXRvbWF0eWN6bmUrZGVjMTQyMDIyMjMyODUzNDgwMDIzQGFuc3dlYXIuY29tIiwiZXhwIjoxNjcxMzE2Mjk1LCJpc3MiOiJQQVlVIiwiYXVkIjoiYXBpLWdhdGV3YXkiLCJzdWIiOiJQYXlVIHN1YmplY3QiLCJqdGkiOiI3NmYyOGZkMi1jOWIxLTRiYzAtOTM5Zi0xNjQ5NjY0ZWNlZDMifQ.NpmBZw0vQP7WEWQEd-ZhXoyg8oo_eKy8gEyfAjri21g",
+        "orderId": "3MRW8ST2Z6221214GUEST000P01",
+        "extOrderId": "221214-0026UJ-CZ"
+    },
+    "orderId": "3MRW8ST2Z6221214GUEST000P01"
+}
