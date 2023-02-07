@@ -2,10 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Answear\Payum\PayU\ValueObject;
+namespace Answear\Payum\PayU\Model;
 
+use Answear\Payum\PayU\Enum\OrderStatus;
 use Answear\Payum\PayU\Util\BooleanTransformer;
+use Answear\Payum\PayU\ValueObject\Buyer;
+use Answear\Payum\PayU\ValueObject\Delivery;
+use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
+use Answear\Payum\PayU\ValueObject\Response;
 use Payum\Core\Bridge\Spl\ArrayObject;
 
 class Model extends ArrayObject
@@ -55,6 +60,10 @@ class Model extends ArrayObject
     public const CLIENT_EMAIL = 'clientEmail';
     public const CREDIT_CARD_MASKED_NUMBER = 'creditCardMaskedNumber';
     public const PAYU_RESPONSE = 'payuResponse';
+    public const CONFIG_KEY = 'configKey';
+    public const REFUND = 'refund';
+    public const REFUND_ID = 'refundId';
+    public const PROPERTIES = 'properties';
 
     public static function ensureArrayObject($input): self
     {
@@ -214,5 +223,32 @@ class Model extends ArrayObject
     public function setPayUResponse(Response\OrderCreatedResponse $orderCreatedResponse): void
     {
         $this[self::PAYU_RESPONSE] = $orderCreatedResponse->toArray();
+    }
+
+    public function configKey(): ?string
+    {
+        return $this[self::CONFIG_KEY] ?? null;
+    }
+
+    public function status(): OrderStatus
+    {
+        return OrderStatus::tryFrom($this[self::STATUS]) ?? OrderStatus::New;
+    }
+
+    public function setStatus(OrderStatus|string $status): void
+    {
+        $status = $status instanceof OrderStatus ? $status->value : $status;
+
+        $this[self::STATUS] = $status;
+    }
+
+    public function updateRefundData(array $singleRefundData): void
+    {
+        $this[self::REFUND] = array_replace($this[self::REFUND] ?? [], [$singleRefundData[self::REFUND_ID] => $singleRefundData]);
+    }
+
+    public function setProperty(Response\Property $property): void
+    {
+        $this[self::PROPERTIES] = array_replace($this[self::PROPERTIES] ?? [], [$property->name => $property->value]);
     }
 }

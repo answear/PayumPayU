@@ -1,0 +1,14 @@
+{
+    "orderId": "2DVZMPMFPN140219GUEST000P01",
+    "extOrderId": "extOrderID",
+    "refund": {
+        "refundId": "912128",
+        "amount": "15516",
+        "currencyCode": "PLN",
+        "status": "FINALIZED",
+        "statusDateTime": "2014-08-20T19:43:31.418+02:00",
+        "reason": "refund",
+        "reasonDescription": "na życzenie klienta",
+        "refundDate": "2014-08-20T19:43:30.150+02:00"
+    }
+}

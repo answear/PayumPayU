@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Action;
 
+use Answear\Payum\PayU\Enum\OrderStatus;
+use Answear\Payum\PayU\Model\Model;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetStatusInterface;
 
@@ -17,10 +18,29 @@ class StatusAction implements ActionInterface
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
+        $model = Model::ensureArrayObject($request->getModel());
 
-        $model = ArrayObject::ensureArrayObject($request->getModel());
+        switch (true) {
+            case OrderStatus::New === $model->status():
+                $request->markNew();
 
-        throw new \LogicException('Not implemented');
+                return;
+            case OrderStatus::Pending === $model->status():
+            case OrderStatus::WaitingForConfirmation === $model->status():
+                $request->markPending();
+
+                return;
+            case OrderStatus::Completed === $model->status():
+                $request->markCaptured();
+
+                return;
+            case OrderStatus::Canceled === $model->status():
+                $request->markCanceled();
+
+                return;
+        }
+
+        $request->markUnknown();
     }
 
     public function supports($request): bool
