@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests\Integration\Action;
 
+use Answear\Payum\Model\PaidForInterface;
 use Answear\Payum\PayU\Action\ConvertPaymentAction;
-use Answear\Payum\PayU\Model\PaidForInterface;
 use Answear\Payum\PayU\Tests\Payment;
 use Payum\Core\Model\CreditCard;
 use Payum\Core\Request\Convert;

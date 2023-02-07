@@ -191,21 +191,17 @@ class Model extends ArrayObject
 
     public function updateRefundData(array $singleRefundData): void
     {
+        $refundId = $singleRefundData[ModelFields::REFUND_ID];
+        $currentRefund = $this[ModelFields::REFUND][$refundId] ?? [];
+
         $this[ModelFields::REFUND] = array_replace(
             $this[ModelFields::REFUND] ?? [],
-            [$singleRefundData[ModelFields::REFUND_ID] => $singleRefundData]
+            [$refundId => array_merge($currentRefund, $singleRefundData)]
         );
     }
 
     public function setProperty(Response\Property $property): void
     {
         $this[ModelFields::PROPERTIES] = array_replace($this[ModelFields::PROPERTIES] ?? [], [$property->name => $property->value]);
-    }
-
-    public function update(array $data): void
-    {
-        foreach ($data as $key => $value) {
-            $this[$key] = $value;
-        }
     }
 }

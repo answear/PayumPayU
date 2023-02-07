@@ -23,4 +23,12 @@ class RefundStatusError
             $response['description']
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'code' => $this->rawCode,
+            'description' => $this->description,
+        ];
+    }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Answear\Payum\PayU\Model;
+namespace Answear\Payum\Model;
 
 interface PaidForInterface
 {

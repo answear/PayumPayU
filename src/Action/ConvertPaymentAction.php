@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Action;
 
+use Answear\Payum\Model\Payment;
 use Answear\Payum\PayU\Enum\ModelFields;
 use Answear\Payum\PayU\Enum\OrderStatus;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\Model\Model;
-use Answear\Payum\PayU\Model\Payment;
 use Answear\Payum\PayU\Util\UserIpHelper;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Payum\Core\Action\ActionInterface;
@@ -37,7 +37,7 @@ class ConvertPaymentAction implements ActionInterface
         /** @var PaymentInterface $payment */
         $payment = $request->getSource();
         $details = Model::ensureArrayObject($payment->getDetails());
-        $details->update(
+        $details->replace(
             [
                 ModelFields::TOTAL_AMOUNT => $payment->getTotalAmount(),
                 ModelFields::CURRENCY => $payment->getCurrencyCode(),
@@ -70,7 +70,7 @@ class ConvertPaymentAction implements ActionInterface
         }
 
         if (RecurringEnum::First === $details->recurring() && !empty($payment->getCreditCard()?->getToken())) {
-            $details->update(
+            $details->replace(
                 [
                     ModelFields::PAY_METHODS => [
                         ModelFields::PAY_METHOD => [
