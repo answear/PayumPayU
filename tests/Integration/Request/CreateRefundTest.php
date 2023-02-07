@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests\Integration\Request;
 
-use Answear\Payum\PayU\Api;
-use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Enum\RefundStatus;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Exception\PayURequestException;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
-use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Request\Refund\Refund;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\Refund as ResponseRefund;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
-use PHPUnit\Framework\TestCase;
 
-class CreateRefundTest extends TestCase
+class CreateRefundTest extends AbstractRequestTest
 {
     /**
      * @test
@@ -92,20 +88,5 @@ class CreateRefundTest extends TestCase
         }
 
         self::fail('Exception must be thrown.');
-    }
-
-    private function getApiService(): Api
-    {
-        return new Api(
-            [
-                'one_pos' => new Configuration(
-                    Environment::Sandbox,
-                    '123',
-                    's-key',
-                    'cl-id',
-                    'sec',
-                ),
-            ],
-        );
     }
 }

@@ -14,14 +14,11 @@ use Answear\Payum\PayU\Util\UserIpHelper;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
 
 class ConvertPaymentAction implements ActionInterface
 {
-    use GatewayAwareTrait;
-
     /**
      * 259200s - 72h - 3 days
      */

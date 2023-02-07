@@ -4,23 +4,19 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests\Integration\Request;
 
-use Answear\Payum\PayU\Api;
-use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Enum\OrderStatus;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Exception\PayUNetworkException;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Buyer;
-use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\PayMethod;
 use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Response\Order;
 use Answear\Payum\PayU\ValueObject\Response\Property;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
-use PHPUnit\Framework\TestCase;
 
-class OrderRetrieveTest extends TestCase
+class OrderRetrieveTest extends AbstractRequestTest
 {
     /**
      * @test
@@ -150,20 +146,5 @@ class OrderRetrieveTest extends TestCase
         $this->expectException(PayUNetworkException::class);
         $this->expectExceptionMessage('DATA_NOT_FOUND - Could not find data for given criteria.');
         $this->getApiService()->retrieveOrder('WZHF5FFDRJ140731GUEST000P01');
-    }
-
-    private function getApiService(): Api
-    {
-        return new Api(
-            [
-                'one_pos' => new Configuration(
-                    Environment::Sandbox,
-                    '123',
-                    's-key',
-                    'cl-id',
-                    'sec',
-                ),
-            ],
-        );
     }
 }

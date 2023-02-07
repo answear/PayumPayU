@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests\Integration\Request;
 
-use Answear\Payum\PayU\Api;
-use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Enum\RefundStatus;
 use Answear\Payum\PayU\Enum\RefundStatusErrorCode;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
-use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Response\Refund;
 use Answear\Payum\PayU\ValueObject\Response\RefundStatusError;
-use PHPUnit\Framework\TestCase;
 
-class RetrieveRefundsTest extends TestCase
+class RetrieveRefundsTest extends AbstractRequestTest
 {
     /**
      * @test
@@ -83,21 +79,6 @@ class RetrieveRefundsTest extends TestCase
                 )
             ),
             $refundList
-        );
-    }
-
-    private function getApiService(): Api
-    {
-        return new Api(
-            [
-                'one_pos' => new Configuration(
-                    Environment::Sandbox,
-                    '123',
-                    's-key',
-                    'cl-id',
-                    'sec',
-                ),
-            ],
         );
     }
 }

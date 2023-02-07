@@ -21,6 +21,7 @@ use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Security\TokenInterface;
+use Psr\Log\LoggerInterface;
 use Webmozart\Assert\Assert;
 
 class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
@@ -28,10 +29,18 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
     use ApiAwareTrait;
     use GatewayAwareTrait;
 
+    private LoggerInterface $logger;
+
     private const SIGNATURE_HEADER = 'openpayu-signature';
     private const ORDER_KEY = 'order';
     private const REFUND_KEY = 'refund';
     private const PAYMENT_ID_PROPERTY = 'PAYMENT_ID';
+
+    public function setApi($api): void
+    {
+        $this->api = $api;
+        $this->logger = $this->api->getLogger();
+    }
 
     /**
      * @param Notify $request
@@ -50,6 +59,14 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         $this->assertRequestValid($httpRequest, $model, $firstModel);
 
         $content = json_decode($httpRequest->content, true, 512, JSON_THROW_ON_ERROR);
+        $this->logger->info(
+            'Notify action',
+            [
+                'orderId' => $model->orderId(),
+                'model' => $model->getArrayCopy(),
+                'content' => $content,
+            ]
+        );
         if (isset($content[self::REFUND_KEY])) {
             $this->refundNotify($request, $model, $firstModel, $content[self::REFUND_KEY]);
         } else {
@@ -57,6 +74,14 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         }
 
         $this->updateRequestStatus($model, $firstModel, $token);
+
+        $this->logger->info(
+            'Notify action successful',
+            [
+                'orderId' => $model->orderId(),
+                'model' => $model->getArrayCopy(),
+            ]
+        );
 
         throw new HttpResponse('OK', 200);
     }

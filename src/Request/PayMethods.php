@@ -20,7 +20,7 @@ class PayMethods
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public static function retrieve(?string $lang = null): PayMethodsResponse
+    public function retrieve(?string $lang = null): PayMethodsResponse
     {
         try {
             $result = \OpenPayU_Retrieve::payMethods($lang);

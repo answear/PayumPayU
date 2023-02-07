@@ -10,6 +10,7 @@ use Answear\Payum\PayU\Action\NotifyAction;
 use Answear\Payum\PayU\Action\RefundAction;
 use Answear\Payum\PayU\Action\StatusAction;
 use Answear\Payum\PayU\Enum\Environment;
+use Answear\Payum\PayU\Service\PayULogger;
 use Answear\Payum\PayU\ValueObject\Configuration;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\LogicException;
@@ -26,6 +27,7 @@ class PayUGatewayFactory extends GatewayFactory
             [
                 'payum.factory_name' => self::FACTORY_NAME,
                 'payum.factory_title' => 'PayU',
+                'payum.logger' => null,
                 'payum.action.capture' => new CaptureAction(),
                 'payum.action.refund' => new RefundAction(),
                 'payum.action.notify' => new NotifyAction(),
@@ -107,7 +109,8 @@ class PayUGatewayFactory extends GatewayFactory
                     $config['oauth_secret']
                 ),
                 $configs->toUnsafeArray()
-            )
+            ),
+            new PayULogger($config['payum.logger'] ?? null)
         );
     }
 }

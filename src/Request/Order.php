@@ -14,6 +14,7 @@ use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByCreditCard;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByPBL;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\OrderRetrieveTransactionsResponseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * @interal
@@ -23,20 +24,40 @@ class Order
 {
     private const CREDIT_CARD_VALUE = 'c';
 
+    public function __construct(private LoggerInterface $logger)
+    {
+    }
+
     /**
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public static function create(OrderRequest $orderRequest, string $merchantPosId): OrderCreatedResponse
+    public function create(OrderRequest $orderRequest, string $merchantPosId): OrderCreatedResponse
     {
         try {
-            $result = \OpenPayU_Order::create($orderRequest->toArray($merchantPosId));
+            $orderRequestData = $orderRequest->toArray($merchantPosId);
+            $this->logger->info(
+                '[Request] Create order',
+                [
+                    'posId' => $merchantPosId,
+                    'request' => $orderRequestData,
+                ]
+            );
+
+            $result = \OpenPayU_Order::create($orderRequestData);
         } catch (\Throwable $exception) {
             throw ExceptionHelper::getPayUException($exception);
         }
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());
+            $this->logger->info(
+                '[Response] Create order',
+                [
+                    'posId' => $merchantPosId,
+                    'response' => $response,
+                ]
+            );
 
             return OrderCreatedResponse::fromResponse($response);
         } catch (\Throwable $e) {
@@ -48,7 +69,7 @@ class Order
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public static function retrieve(string $orderId): OrderRetrieveResponse
+    public function retrieve(string $orderId): OrderRetrieveResponse
     {
         try {
             $result = \OpenPayU_Order::retrieve($orderId);
@@ -71,7 +92,7 @@ class Order
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public static function retrieveTransactions(string $orderId): array
+    public function retrieveTransactions(string $orderId): array
     {
         try {
             $result = \OpenPayU_Order::retrieveTransaction($orderId);

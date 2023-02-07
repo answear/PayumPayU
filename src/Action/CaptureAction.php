@@ -18,7 +18,6 @@ use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Model\Payment;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
@@ -26,10 +25,9 @@ use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
 use Payum\Core\Security\TokenInterface;
 
-class CaptureAction implements ApiAwareInterface, ActionInterface, GenericTokenFactoryAwareInterface
+class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenFactoryAwareInterface
 {
     use ApiAwareTrait;
-    use GatewayAwareTrait;
     use GenericTokenFactoryAwareTrait;
 
     /**
