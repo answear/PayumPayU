@@ -6,6 +6,7 @@ namespace Answear\Payum\PayU\Action;
 
 use Answear\Payum\PayU\ApiAwareTrait;
 use Answear\Payum\PayU\Enum\PayMethodType;
+use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Model\Model;
 use Answear\Payum\PayU\Util\PaymentHelper;
@@ -31,8 +32,6 @@ class CaptureAction implements ApiAwareInterface, ActionInterface, GenericTokenF
     use GatewayAwareTrait;
     use GenericTokenFactoryAwareTrait;
 
-    private const RECURRING_STANDARD = 'STANDARD';
-
     /**
      * @param Capture $request
      */
@@ -49,7 +48,7 @@ class CaptureAction implements ApiAwareInterface, ActionInterface, GenericTokenF
         }
 
         $orderRequest = $this->prepareOrderRequest($token, $model);
-        if (self::RECURRING_STANDARD === $model->recurring()) {
+        if (RecurringEnum::Standard === $model->recurring()) {
             $this->setRecurringStandardPayment($orderRequest, $model);
         }
 
