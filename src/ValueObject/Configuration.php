@@ -10,6 +10,7 @@ class Configuration
 {
     public function __construct(
         public readonly Environment $environment,
+        public readonly string $publicShopId,
         public readonly string $posId,
         public readonly string $signatureKey,
         public readonly string $oauthClientId,

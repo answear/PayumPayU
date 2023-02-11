@@ -5,35 +5,28 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU;
 
 use Answear\Payum\PayU\Authorization\Authorize;
-use Answear\Payum\PayU\Request\Order;
-use Answear\Payum\PayU\Request\PayMethods;
-use Answear\Payum\PayU\Request\Refund;
 use Answear\Payum\PayU\ValueObject\Configuration;
 use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
-use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
-use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
-use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\OrderRetrieveTransactionsResponseInterface;
-use Answear\Payum\PayU\ValueObject\Response\PayMethodsResponse;
-use Answear\Payum\PayU\ValueObject\Response\Refund as RefundResponse;
-use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
+use Answear\Payum\PayU\ValueObject\Response;
 use Payum\Core\Exception\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Webmozart\Assert\Assert;
 
 class Api
 {
-    private ?string $defaultConfigKey = null;
-    private Order $orderRequestService;
-    private PayMethods $payMethodsRequestService;
-    private Refund $refundRequestService;
+    private readonly ?string $defaultConfigKey;
+    private Request\Shop $shopRequestService;
+    private Request\Order $orderRequestService;
+    private Request\PayMethods $payMethodsRequestService;
+    private Request\Refund $refundRequestService;
 
     /**
      * @param array<string, Configuration> $configurations
      */
     public function __construct(
         protected array $configurations,
-        private LoggerInterface $logger
+        private readonly LoggerInterface $logger
     ) {
         try {
             Assert::allIsInstanceOf($configurations, Configuration::class);
@@ -41,16 +34,26 @@ class Api
             throw new InvalidArgumentException($e->getMessage(), $e->getCode(), $e);
         }
 
-        if (1 === \count($configurations)) {
-            $this->defaultConfigKey = array_key_first($configurations);
-        }
+        $this->defaultConfigKey = (1 === \count($configurations)) ? array_key_first($configurations) : null;
     }
 
     /**
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function createOrder(OrderRequest $orderRequest, ?string $configKey = null): OrderCreatedResponse
+    public function shopInfo(?string $configKey = null): Response\ShopInfo
+    {
+        $config = $this->getConfig($configKey);
+        Authorize::withClientSecret($config);
+
+        return $this->getShopRequest()->getShopInfo($config->publicShopId);
+    }
+
+    /**
+     * @throws Exception\MalformedResponseException
+     * @throws Exception\PayUException
+     */
+    public function createOrder(OrderRequest $orderRequest, ?string $configKey = null): Response\OrderCreatedResponse
     {
         $config = $this->getConfig($configKey);
         Authorize::base($config);
@@ -62,7 +65,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function createRefund(string $orderId, RefundRequest $refundRequest, ?string $configKey = null): RefundCreatedResponse
+    public function createRefund(string $orderId, RefundRequest $refundRequest, ?string $configKey = null): Response\RefundCreatedResponse
     {
         Authorize::base($this->getConfig($configKey));
 
@@ -73,7 +76,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrieveOrder(string $orderId, ?string $configKey = null): OrderRetrieveResponse
+    public function retrieveOrder(string $orderId, ?string $configKey = null): Response\OrderRetrieveResponse
     {
         Authorize::base($this->getConfig($configKey));
 
@@ -81,7 +84,7 @@ class Api
     }
 
     /**
-     * @return array<OrderRetrieveTransactionsResponseInterface>
+     * @return array<Response\OrderTransactions\OrderRetrieveTransactionsResponseInterface>
      *
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
@@ -94,7 +97,7 @@ class Api
     }
 
     /**
-     * @return array<RefundResponse>
+     * @return array<Response\Refund>
      *
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
@@ -110,7 +113,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrieveSingleRefund(string $orderId, string $refundId, ?string $configKey = null): RefundResponse
+    public function retrieveSingleRefund(string $orderId, string $refundId, ?string $configKey = null): Response\Refund
     {
         Authorize::base($this->getConfig($configKey));
 
@@ -121,7 +124,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrievePayMethods(?string $lang = null, ?string $configKey = null): PayMethodsResponse
+    public function retrievePayMethods(?string $lang = null, ?string $configKey = null): Response\PayMethodsResponse
     {
         Authorize::withClientSecret($this->getConfig($configKey));
 
@@ -132,8 +135,12 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrievePayMethodsForUser(string $userId, string $userEmail, ?string $lang = null, ?string $configKey = null): PayMethodsResponse
-    {
+    public function retrievePayMethodsForUser(
+        string $userId,
+        string $userEmail,
+        ?string $lang = null,
+        ?string $configKey = null
+    ): Response\PayMethodsResponse {
         Authorize::withTrusted($this->getConfig($configKey), $userId, $userEmail);
 
         return $this->getPayMethodsRequest()->retrieve($lang);
@@ -167,28 +174,37 @@ class Api
         return $this->configurations[$configKey ?? $this->defaultConfigKey];
     }
 
-    private function getOrderRequest(): Order
+    private function getShopRequest(): Request\Shop
+    {
+        if (!isset($this->shopRequestService)) {
+            $this->shopRequestService = new Request\Shop();
+        }
+
+        return $this->shopRequestService;
+    }
+
+    private function getOrderRequest(): Request\Order
     {
         if (!isset($this->orderRequestService)) {
-            $this->orderRequestService = new Order($this->logger);
+            $this->orderRequestService = new Request\Order($this->logger);
         }
 
         return $this->orderRequestService;
     }
 
-    private function getPayMethodsRequest(): PayMethods
+    private function getPayMethodsRequest(): Request\PayMethods
     {
         if (!isset($this->payMethodsRequestService)) {
-            $this->payMethodsRequestService = new PayMethods();
+            $this->payMethodsRequestService = new Request\PayMethods();
         }
 
         return $this->payMethodsRequestService;
     }
 
-    private function getRefundRequest(): Refund
+    private function getRefundRequest(): Request\Refund
     {
         if (!isset($this->refundRequestService)) {
-            $this->refundRequestService = new Refund($this->logger);
+            $this->refundRequestService = new Request\Refund($this->logger);
         }
 
         return $this->refundRequestService;

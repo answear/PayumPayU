@@ -37,6 +37,7 @@ class PayUGatewayFactoryTest extends TestCase
             array_map(
                 fn(array $config) => new Configuration(
                     Environment::from($config['environment']),
+                    $config['public_shop_id'],
                     $config['pos_id'],
                     $config['signature_key'],
                     $config['oauth_client_id'],
@@ -105,7 +106,7 @@ class PayUGatewayFactoryTest extends TestCase
                     ],
                 ],
             ],
-            new LogicException('The oauth_client_id, oauth_secret fields are required for config one_pos.'),
+            new LogicException('The public_shop_id, oauth_client_id, oauth_secret fields are required for config one_pos.'),
         ];
 
         yield 'invalid env' => [
@@ -113,6 +114,7 @@ class PayUGatewayFactoryTest extends TestCase
                 'configs' => [
                     'one_pos' => [
                         'environment' => 'invalid-env',
+                        'public_shop_id' => 'public_shop_id',
                         'pos_id' => '123',
                         'signature_key' => 's-key',
                         'oauth_client_id' => 'cl-id',
@@ -128,6 +130,7 @@ class PayUGatewayFactoryTest extends TestCase
                 'configs' => [
                     'one_pos' => [
                         'environment' => 'secure',
+                        'public_shop_id' => 'public_shop_id',
                         'pos_id' => '123',
                         'signature_key' => 's-key',
                         'oauth_client_id' => 'cl-id',
@@ -136,6 +139,7 @@ class PayUGatewayFactoryTest extends TestCase
 
                     'two_pos' => [
                         'environment' => 'sandbox',
+                        'public_shop_id' => 'public_shop_id',
                         'signature_key' => 's-key',
                         'oauth_client_id' => 'cl-id',
                         'oauth_secret' => 'sec',
@@ -150,6 +154,7 @@ class PayUGatewayFactoryTest extends TestCase
                 'configs' => [
                     [
                         'environment' => 'secure',
+                        'public_shop_id' => 'public_shop_id',
                         'pos_id' => '123',
                         'signature_key' => 's-key',
                         'oauth_client_id' => 'cl-id',
@@ -168,6 +173,7 @@ class PayUGatewayFactoryTest extends TestCase
                 'configs' => [
                     'one_pos' => [
                         'environment' => 'secure',
+                        'public_shop_id' => 'public_shop_id',
                         'pos_id' => '123',
                         'signature_key' => 's-key',
                         'oauth_client_id' => 'cl-id',
@@ -182,6 +188,7 @@ class PayUGatewayFactoryTest extends TestCase
                 'configs' => [
                     'first_pos' => [
                         'environment' => 'secure',
+                        'public_shop_id' => 'public_shop_id',
                         'pos_id' => '123',
                         'signature_key' => 's-key',
                         'oauth_client_id' => 'cl-id',
@@ -189,6 +196,7 @@ class PayUGatewayFactoryTest extends TestCase
                     ],
                     'second_pos' => [
                         'environment' => 'sandbox',
+                        'public_shop_id' => 'public_shop_id',
                         'pos_id' => '1232',
                         'signature_key' => 's-key2',
                         'oauth_client_id' => 'cl-id3',
