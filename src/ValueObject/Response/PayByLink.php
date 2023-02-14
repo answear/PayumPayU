@@ -32,4 +32,16 @@ class PayByLink
             (!isset($response['maxAmount']) || self::AMOUNT_MAX === $response['maxAmount']) ? null : $response['maxAmount'],
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'value' => $this->value,
+            'name' => $this->name,
+            'brandImageUrl' => $this->brandImageUrl,
+            'status' => $this->status->value,
+            'minAmount' => $this->minAmount,
+            'maxAmount' => $this->maxAmount,
+        ];
+    }
 }

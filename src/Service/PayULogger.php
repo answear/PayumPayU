@@ -10,8 +10,9 @@ use Psr\Log\NullLogger;
 
 class PayULogger extends AbstractLogger
 {
-    public function __construct(private ?LoggerInterface $logger = new NullLogger())
+    public function __construct(private ?LoggerInterface $logger)
     {
+        $this->logger = $this->logger ?? new NullLogger();
     }
 
     public function log($level, $message, array $context = []): void

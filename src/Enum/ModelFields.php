@@ -37,8 +37,10 @@ enum ModelFields
     public const CLIENT_EMAIL = 'clientEmail';
     public const CREDIT_CARD_MASKED_NUMBER = 'creditCardMaskedNumber';
     public const PAYU_RESPONSE = 'payuResponse';
+    public const REDIRECT_URI = 'redirectUri';
     public const CONFIG_KEY = 'configKey';
     public const REFUND = 'refund';
     public const REFUND_ID = 'refundId';
+    public const EXT_REFUND_ID = 'extRefundId';
     public const PROPERTIES = 'properties';
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Action;
 
+use Answear\Payum\Model\Payment;
+use Answear\Payum\PayU\Api;
 use Answear\Payum\PayU\ApiAwareTrait;
 use Answear\Payum\PayU\Enum\ModelFields;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
@@ -13,9 +15,10 @@ use Answear\Payum\PayU\Util\PaymentHelper;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Model\Payment;
+use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\GetHumanStatus;
@@ -29,36 +32,40 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
     use ApiAwareTrait;
     use GatewayAwareTrait;
 
-    private LoggerInterface $logger;
+    protected const SIGNATURE_HEADER = 'openpayu-signature';
+    protected const ORDER_KEY = 'order';
+    protected const REFUND_KEY = 'refund';
+    protected const PAYMENT_ID_PROPERTY = 'PAYMENT_ID';
 
-    private const SIGNATURE_HEADER = 'openpayu-signature';
-    private const ORDER_KEY = 'order';
-    private const REFUND_KEY = 'refund';
-    private const PAYMENT_ID_PROPERTY = 'PAYMENT_ID';
+    protected LoggerInterface $logger;
+    protected array $notifyContent;
 
     public function setApi($api): void
     {
+        if (!$api instanceof Api) {
+            throw new UnsupportedApiException(sprintf('Not supported api given. It must be an instance of %s', Api::class));
+        }
+
         $this->api = $api;
         $this->logger = $this->api->getLogger();
     }
 
     /**
      * @param Notify $request
+     *
+     * @throws HttpResponse
      */
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = Model::ensureArrayObject($request->getModel());
-        $firstModel = PaymentHelper::getPaymentOrNull($request->getFirstModel());
+        $payment = PaymentHelper::getPaymentOrNull($request->getFirstModel());
         $token = $request->getToken();
-        Assert::notNull($firstModel, 'Payment must be set on notify action.');
+        Assert::notNull($payment, 'Payment must be set on notify action.');
         Assert::notNull($token, 'Token must be set on notify action.');
 
-        $this->gateway->execute($httpRequest = new GetHttpRequest());
-        $this->assertRequestValid($httpRequest, $model, $firstModel);
-
-        $content = json_decode($httpRequest->content, true, 512, JSON_THROW_ON_ERROR);
+        $content = $this->getNotifyContent($model, $payment);
         $this->logger->info(
             'Notify action',
             [
@@ -67,13 +74,14 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
                 'content' => $content,
             ]
         );
-        if (isset($content[self::REFUND_KEY])) {
-            $this->refundNotify($request, $model, $firstModel, $content[self::REFUND_KEY]);
+        if ($this->isRefundNotify($content)) {
+            $this->refundNotify($model, $payment, $content[self::REFUND_KEY]);
         } else {
-            $this->orderNotify($model, $content[self::ORDER_KEY] ?? [], $firstModel);
+            $this->orderNotify($model, $content[self::ORDER_KEY] ?? [], $payment);
         }
 
-        $this->updateRequestStatus($model, $firstModel, $token);
+        $this->updateRequestStatus($model, $payment, $token);
+        $this->updatePayment($request, $model, $payment);
 
         $this->logger->info(
             'Notify action successful',
@@ -93,16 +101,25 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
             $request->getModel() instanceof \ArrayAccess;
     }
 
-    private function refundNotify(Notify $request, Model $model, Payment $firstModel, array $refundData): void
+    protected function updatePayment(Notify $request, Model $model, PaymentInterface $payment): void
+    {
+        $payment->setDetails($model);
+        $request->setModel($model);
+    }
+
+    protected function isRefundNotify(array $content): bool
+    {
+        return isset($content[self::REFUND_KEY][ModelFields::REFUND_ID]);
+    }
+
+    private function refundNotify(Model $model, PaymentInterface $firstModel, array $refundData): void
     {
         $orderId = PaymentHelper::getOrderId($model, $firstModel);
         $this->updatePaymentStatus($model, $orderId, $firstModel);
         $model->updateRefundData($refundData);
-
-        $request->setModel($model);
     }
 
-    private function orderNotify(Model $model, array $orderData, ?Payment $firstModel): void
+    private function orderNotify(Model $model, array $orderData, ?PaymentInterface $firstModel): void
     {
         /** @see https://developers.payu.com/pl/restapi.html#update_notification_for_order_status */
         $orderId = $orderData[ModelFields::ORDER_ID] ?? null;
@@ -110,11 +127,14 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
             throw new \LogicException('No orderId on notify.');
         }
         $model->setOrderId($orderId);
+        if ($firstModel instanceof Payment) {
+            $firstModel->setOrderId($orderId);
+        }
 
         $this->updatePaymentStatus($model, $orderId, $firstModel);
     }
 
-    private function updatePaymentStatus(Model $model, string $orderId, ?Payment $firstModel): void
+    private function updatePaymentStatus(Model $model, string $orderId, ?PaymentInterface $firstModel): void
     {
         $response = $this->api->retrieveOrder($orderId, PaymentHelper::getConfigKey($model, $firstModel));
         if (ResponseStatusCode::Success === $response->status->statusCode) {
@@ -127,7 +147,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         }
     }
 
-    private function updateRequestStatus(Model $model, Payment $firstModel, TokenInterface $token): void
+    private function updateRequestStatus(Model $model, PaymentInterface $firstModel, TokenInterface $token): void
     {
         $status = new GetHumanStatus($token);
         $status->setModel($firstModel);
@@ -135,7 +155,17 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         $this->gateway->execute($status);
     }
 
-    private function assertRequestValid(GetHttpRequest $httpRequest, Model $model, ?Payment $firstModel): void
+    private function getNotifyContent(Model $model, ?PaymentInterface $firstModel): array
+    {
+        $this->gateway->execute($httpRequest = new GetHttpRequest());
+        $this->assertRequestValid($httpRequest, $model, $firstModel);
+
+        $this->notifyContent = json_decode($httpRequest->content, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->notifyContent;
+    }
+
+    private function assertRequestValid(GetHttpRequest $httpRequest, Model $model, ?PaymentInterface $firstModel): void
     {
         if (!property_exists($httpRequest, 'headers')) {
             $exception = new PayUException('Request is not valid');

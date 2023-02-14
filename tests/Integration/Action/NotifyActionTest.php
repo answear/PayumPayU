@@ -39,12 +39,17 @@ class NotifyActionTest extends TestCase
         self::assertSame('3MRW8ST2Z6221214GUEST000P01', $currentModel['orderId']);
         self::assertSame('PENDING', $currentModel['status']);
         self::assertSame([], $currentModel['properties'] ?? []);
+
+        $httpResponse = false;
         try {
             $notifyAction->execute($notify);
         } catch (HttpResponse $response) {
+            $httpResponse = true;
             self::assertSame(200, $response->getStatusCode());
             self::assertSame('OK', $response->getContent());
         }
+
+        self::assertTrue($httpResponse);
 
         $model = $notify->getModel()->getArrayCopy();
         self::assertSame('LDLW5N7MF4140324GUEST000P01', $model['orderId']);

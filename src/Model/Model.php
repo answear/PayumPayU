@@ -24,7 +24,7 @@ class Model extends ArrayObject
         }
 
         if ($input instanceof ArrayObject) {
-            return new self($input->input);
+            return new self($input->getArrayCopy());
         }
 
         return new self($input);
@@ -63,6 +63,11 @@ class Model extends ArrayObject
     public function extOrderId(): ?string
     {
         return $this[ModelFields::EXT_ORDER_ID] ?? null;
+    }
+
+    public function setExtOrderId(string $extOrderId): void
+    {
+        $this[ModelFields::EXT_ORDER_ID] = $extOrderId;
     }
 
     public function buyer(): ?Buyer
@@ -167,6 +172,11 @@ class Model extends ArrayObject
         $this[ModelFields::PAYU_RESPONSE] = $orderCreatedResponse->toArray();
     }
 
+    public function redirectUri(): ?string
+    {
+        return $this[ModelFields::PAYU_RESPONSE][ModelFields::REDIRECT_URI] ?? null;
+    }
+
     public function configKey(): ?string
     {
         return $this[ModelFields::CONFIG_KEY] ?? null;
@@ -179,7 +189,9 @@ class Model extends ArrayObject
 
     public function status(): OrderStatus
     {
-        return OrderStatus::tryFrom($this[ModelFields::STATUS] ?? '') ?? OrderStatus::New;
+        $status = $this[ModelFields::STATUS] ?? OrderStatus::New->value;
+
+        return OrderStatus::from($status);
     }
 
     public function setStatus(OrderStatus|string $status): void

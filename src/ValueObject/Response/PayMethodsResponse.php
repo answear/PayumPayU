@@ -33,4 +33,17 @@ class PayMethodsResponse
             ResponseStatus::fromResponse($response['status'])
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'cardTokens' => $this->cardTokens,
+            'pexTokens' => $this->pexTokens,
+            'payByLinks' => array_map(
+                static fn(PayByLink $payByLink) => $payByLink->toArray(),
+                $this->payByLinks
+            ),
+            'status' => $this->status->toArray(),
+        ];
+    }
 }

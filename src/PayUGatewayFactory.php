@@ -60,11 +60,11 @@ class PayUGatewayFactory extends GatewayFactory
         $emptyFields = [];
         foreach ($configs as $configName => $posConfig) {
             if (!is_string($configName)) {
-                throw new LogicException('Configurations keys must be a string.');
+                throw new LogicException(sprintf('Configuration key must be a string. "%s" provided', $configName));
             }
             if (preg_match('/[^a-z_\-0-9]/i', $configName)) {
                 throw new LogicException(
-                    sprintf('Invalid key for config %s.', $configName)
+                    sprintf('Invalid configuration key for config %s.', $configName)
                 );
             }
             if (!is_array($posConfig)) {
