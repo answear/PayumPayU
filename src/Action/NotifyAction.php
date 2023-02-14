@@ -112,6 +112,20 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         return isset($content[self::REFUND_KEY][ModelFields::REFUND_ID]);
     }
 
+    protected function getNotifyContent(Model $model, ?PaymentInterface $firstModel): array
+    {
+        if (isset($this->notifyContent)) {
+            return $this->notifyContent;
+        }
+
+        $this->gateway->execute($httpRequest = new GetHttpRequest());
+        $this->assertRequestValid($httpRequest, $model, $firstModel);
+
+        $this->notifyContent = json_decode($httpRequest->content, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->notifyContent;
+    }
+
     private function refundNotify(Model $model, PaymentInterface $firstModel, array $refundData): void
     {
         $orderId = PaymentHelper::getOrderId($model, $firstModel);
@@ -153,16 +167,6 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         $status->setModel($firstModel);
         $status->setModel($model);
         $this->gateway->execute($status);
-    }
-
-    private function getNotifyContent(Model $model, ?PaymentInterface $firstModel): array
-    {
-        $this->gateway->execute($httpRequest = new GetHttpRequest());
-        $this->assertRequestValid($httpRequest, $model, $firstModel);
-
-        $this->notifyContent = json_decode($httpRequest->content, true, 512, JSON_THROW_ON_ERROR);
-
-        return $this->notifyContent;
     }
 
     private function assertRequestValid(GetHttpRequest $httpRequest, Model $model, ?PaymentInterface $firstModel): void
