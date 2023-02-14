@@ -1,0 +1,10 @@
+{
+    "shopId": "QFw0KGSX",
+    "name": "Shop Checkout",
+    "currencyCode": "PLN",
+    "balance": {
+        "currencyCode": "PLN",
+        "total": "220839",
+        "available": "22039"
+    }
+}

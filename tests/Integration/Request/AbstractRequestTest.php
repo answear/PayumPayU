@@ -11,7 +11,7 @@ use Answear\Payum\PayU\ValueObject\Configuration;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-class AbstractRequestTest extends TestCase
+abstract class AbstractRequestTest extends TestCase
 {
     protected function getApiService(): Api
     {
@@ -19,6 +19,7 @@ class AbstractRequestTest extends TestCase
             [
                 'one_pos' => new Configuration(
                     Environment::Sandbox,
+                    'public_shop_id',
                     '123',
                     's-key',
                     'cl-id',

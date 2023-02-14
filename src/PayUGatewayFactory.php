@@ -19,7 +19,7 @@ use Payum\Core\GatewayFactory;
 class PayUGatewayFactory extends GatewayFactory
 {
     private const FACTORY_NAME = 'payu';
-    private const REQUIRED_OPTIONS = ['environment', 'pos_id', 'signature_key', 'oauth_client_id', 'oauth_secret'];
+    private const REQUIRED_OPTIONS = ['environment', 'pos_id', 'public_shop_id', 'signature_key', 'oauth_client_id', 'oauth_secret'];
 
     protected function populateConfig(ArrayObject $config): void
     {
@@ -103,6 +103,7 @@ class PayUGatewayFactory extends GatewayFactory
             array_map(
                 static fn(array $config) => new Configuration(
                     Environment::from($config['environment']),
+                    $config['public_shop_id'],
                     $config['pos_id'],
                     $config['signature_key'],
                     $config['oauth_client_id'],
