@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Request;
 
+use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Exception\MalformedResponseException;
 use Answear\Payum\PayU\Exception\PayUException;
+use Answear\Payum\PayU\Exception\PayURequestException;
 use Answear\Payum\PayU\Service\PayURefundService;
 use Answear\Payum\PayU\Util\ExceptionHelper;
 use Answear\Payum\PayU\Util\JsonHelper;
@@ -60,10 +62,18 @@ class Refund
                 ]
             );
 
-            return RefundCreatedResponse::fromResponse($response);
+            $refundCreatedResponse = RefundCreatedResponse::fromResponse($response);
         } catch (\Throwable $e) {
             throw new MalformedResponseException($response ?? [], $e);
         }
+
+        if (ResponseStatusCode::Success !== $refundCreatedResponse->status->statusCode) {
+            $payURequestException = new PayURequestException('Refund failed.');
+            $payURequestException->response = $response;
+            throw $payURequestException;
+        }
+
+        return $refundCreatedResponse;
     }
 
     /**

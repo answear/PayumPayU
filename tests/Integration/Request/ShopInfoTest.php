@@ -6,7 +6,7 @@ namespace Answear\Payum\PayU\Tests\Integration\Request;
 
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 
-class ShopInfoTest extends AbstractRequestTest
+class ShopInfoTest extends AbstractRequestTestCase
 {
     /**
      * @test

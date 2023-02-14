@@ -1,0 +1,6 @@
+{
+    "status": {
+        "statusCode": "ERROR_VALUE_INVALID",
+        "statusDesc": "Wrong lang parameter value. Use ISO 639-1 codes."
+    }
+}

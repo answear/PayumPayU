@@ -9,7 +9,7 @@ use Answear\Payum\PayU\ValueObject\PayMethod;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByCreditCard;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByPBL;
 
-class OrderRetrieveTransactionsTest extends AbstractRequestTest
+class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
 {
     /**
      * @test

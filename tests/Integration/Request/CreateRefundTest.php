@@ -13,7 +13,7 @@ use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\Refund as ResponseRefund;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 
-class CreateRefundTest extends AbstractRequestTest
+class CreateRefundTest extends AbstractRequestTestCase
 {
     /**
      * @test

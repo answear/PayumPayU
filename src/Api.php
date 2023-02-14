@@ -171,6 +171,10 @@ class Api
             throw new \InvalidArgumentException('Config key must be provided.');
         }
 
+        if (!isset($this->configurations[$configKey ?? $this->defaultConfigKey])) {
+            throw new \RuntimeException(sprintf('Invalid config key %s provided.', $configKey ?? $this->defaultConfigKey));
+        }
+
         return $this->configurations[$configKey ?? $this->defaultConfigKey];
     }
 
@@ -195,7 +199,7 @@ class Api
     private function getPayMethodsRequest(): Request\PayMethods
     {
         if (!isset($this->payMethodsRequestService)) {
-            $this->payMethodsRequestService = new Request\PayMethods();
+            $this->payMethodsRequestService = new Request\PayMethods($this->logger);
         }
 
         return $this->payMethodsRequestService;

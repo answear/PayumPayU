@@ -16,5 +16,5 @@ abstract class Payment extends \Payum\Core\Model\Payment
 
     abstract public function getPaidFor(): PaidForInterface;
 
-    abstract public function getLanguage(): string;
+    abstract public function getLanguage(): ?string;
 }

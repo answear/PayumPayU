@@ -39,7 +39,7 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = Model::ensureArrayObject($request->getModel());
-        $firstModel = PaymentHelper::getPaymentOrNull($request->getFirstModel());
+        $firstModel = PaymentHelper::ensurePayment($request->getFirstModel());
         $token = $request->getToken();
 
         if (!empty($model->orderId())) {
