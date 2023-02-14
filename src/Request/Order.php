@@ -102,6 +102,13 @@ class Order
 
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());
+            $this->logger->info(
+                '[Request] retrieveTransactions',
+                [
+                    'orderId' => $orderId,
+                    'response' => $response,
+                ]
+            );
 
             $transactions = [];
             foreach ($response['transactions'] as $responseTransaction) {
