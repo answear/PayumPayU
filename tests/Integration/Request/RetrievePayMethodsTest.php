@@ -6,11 +6,12 @@ namespace Answear\Payum\PayU\Tests\Integration\Request;
 
 use Answear\Payum\PayU\Enum\PayByLinkStatus;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
+use Answear\Payum\PayU\Exception\PayURequestException;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\PayByLink;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 
-class RetrievePayMethodsTest extends AbstractRequestTest
+class RetrievePayMethodsTest extends AbstractRequestTestCase
 {
     /**
      * @test
@@ -60,5 +61,32 @@ class RetrievePayMethodsTest extends AbstractRequestTest
             ],
             $response->payByLinks
         );
+    }
+
+    /**
+     * @test
+     */
+    public function exceptionIfNoSuccess(): void
+    {
+        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/payMethodsError.json'));
+
+        $withException = false;
+        try {
+            $this->getApiService()->retrievePayMethods('');
+        } catch (PayURequestException $exception) {
+            self::assertSame('Getting pay methods failed.', $exception->getMessage());
+            self::assertSame(
+                [
+                    'status' => [
+                        'statusCode' => 'ERROR_VALUE_INVALID',
+                        'statusDesc' => 'Wrong lang parameter value. Use ISO 639-1 codes.',
+                    ],
+                ],
+                $exception->response
+            );
+            $withException = true;
+        }
+
+        self::assertTrue($withException);
     }
 }

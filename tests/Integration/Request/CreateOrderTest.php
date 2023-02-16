@@ -14,7 +14,7 @@ use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\OrderCreatedStatus;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\StatusCode;
 
-class CreateOrderTest extends AbstractRequestTest
+class CreateOrderTest extends AbstractRequestTestCase
 {
     /**
      * @test

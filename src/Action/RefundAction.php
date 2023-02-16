@@ -28,7 +28,7 @@ class RefundAction implements ActionInterface, ApiAwareInterface
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = Model::ensureArrayObject($request->getModel());
-        $firstModel = PaymentHelper::getPaymentOrNull($request->getFirstModel());
+        $firstModel = PaymentHelper::ensurePayment($request->getFirstModel());
         Assert::notNull($firstModel, 'Payment must be set on refund action.');
         $orderId = PaymentHelper::getOrderId($model, $firstModel);
         Assert::notEmpty($orderId, 'OrderId must be set on refund action.');

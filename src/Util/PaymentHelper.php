@@ -10,9 +10,14 @@ use Payum\Core\Model\PaymentInterface;
 
 class PaymentHelper
 {
-    public static function getPaymentOrNull($payment): ?PaymentInterface
+    public static function ensurePaymentOrNull($payment): ?PaymentInterface
     {
         return $payment instanceof PaymentInterface ? $payment : null;
+    }
+
+    public static function ensurePayment($payment): PaymentInterface
+    {
+        return $payment;
     }
 
     public static function getOrderId(Model $model, ?PaymentInterface $firstModel): ?string

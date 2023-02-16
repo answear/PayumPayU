@@ -10,7 +10,7 @@ use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\Refund;
 use Answear\Payum\PayU\ValueObject\Response\RefundStatusError;
 
-class RetrieveRefundsTest extends AbstractRequestTest
+class RetrieveRefundsTest extends AbstractRequestTestCase
 {
     /**
      * @test

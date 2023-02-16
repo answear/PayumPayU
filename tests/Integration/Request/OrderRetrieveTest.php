@@ -16,7 +16,7 @@ use Answear\Payum\PayU\ValueObject\Response\Order;
 use Answear\Payum\PayU\ValueObject\Response\Property;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 
-class OrderRetrieveTest extends AbstractRequestTest
+class OrderRetrieveTest extends AbstractRequestTestCase
 {
     /**
      * @test

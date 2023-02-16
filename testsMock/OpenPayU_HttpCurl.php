@@ -12,6 +12,11 @@ class OpenPayU_HttpCurl
         array_push(self::$history, ['responseCode' => $responseCode, 'responseContent' => $responseContent]);
     }
 
+    public static function clearHistory(): void
+    {
+        self::$history = [];
+    }
+
     /**
      * @param AuthType $auth
      *
