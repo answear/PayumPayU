@@ -12,12 +12,16 @@ use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\OrderCreatedStatus;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\StatusCode;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
+use Payum\Core\Gateway;
 use Payum\Core\Model\Payment;
+use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Model\Token;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
+use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\GenericTokenFactory;
 use Payum\Core\Security\TokenInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CaptureActionTest extends TestCase
@@ -137,7 +141,7 @@ class CaptureActionTest extends TestCase
      */
     public function captureWithOrderIdFailsTest(): void
     {
-        $captureAction = $this->getCaptureAction();
+        $captureAction = $this->getCaptureAction(null, FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/detailsWithOrderId.json'));
 
         $captureToken = new Token();
         $capture = new Capture($captureToken);
@@ -149,7 +153,7 @@ class CaptureActionTest extends TestCase
         $captureAction->execute($capture);
     }
 
-    private function getCaptureAction(?OrderCreatedResponse $response = null): CaptureAction
+    private function getCaptureAction(?OrderCreatedResponse $response = null, ?array $details = null): CaptureAction
     {
         $captureAction = new CaptureAction();
 
@@ -177,6 +181,31 @@ class CaptureActionTest extends TestCase
         $tokenFactory->method('createNotifyToken')
             ->willReturn($notifyToken);
         $captureAction->setGenericTokenFactory($tokenFactory);
+
+        $gateway = $this->createMock(Gateway::class);
+        $gateway->method('execute')
+            ->with(
+                $this->callback(
+                    static function ($request) use ($details) {
+                        if ($request instanceof GetHumanStatus) {
+                            // unknown to skip convert action
+                            $request->markUnknown();
+
+                            $payment = $request->getFirstModel();
+                            if ($payment instanceof MockObject) {
+                                $payment->method('getDetails')
+                                    ->willReturn($details ?? FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
+                            }
+                            if ($payment instanceof PaymentInterface) {
+                                $payment->setDetails($details ?? FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
+                            }
+                        }
+
+                        return true;
+                    }
+                )
+            );
+        $captureAction->setGateway($gateway);
 
         return $captureAction;
     }

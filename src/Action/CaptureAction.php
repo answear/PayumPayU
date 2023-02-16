@@ -19,16 +19,21 @@ use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\GatewayAwareInterface;
+use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
+use Payum\Core\Request\Convert;
+use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
 use Payum\Core\Security\TokenInterface;
 
-class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenFactoryAwareInterface
+class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenFactoryAwareInterface, GatewayAwareInterface
 {
     use ApiAwareTrait;
+    use GatewayAwareTrait;
     use GenericTokenFactoryAwareTrait;
 
     /**
@@ -38,10 +43,11 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        $model = Model::ensureArrayObject($request->getModel());
         $firstModel = PaymentHelper::ensurePayment($request->getFirstModel());
         $token = $request->getToken();
 
+        $this->convertAction($firstModel, $token);
+        $model = Model::ensureArrayObject($firstModel->getDetails());
         if (!empty($model->orderId())) {
             throw new \LogicException('Capture payment with order id present is forbidden.');
         }
@@ -54,14 +60,14 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
         $orderCreatedResponse = $this->api->createOrder($orderRequest, PaymentHelper::getConfigKey($model, $firstModel));
         $model->setPayUResponse($orderCreatedResponse);
         if (StatusCode::Success === $orderCreatedResponse->status->statusCode) {
-            $this->updateModel($model, $orderCreatedResponse, $firstModel);
+            $this->updatePayment($model, $orderCreatedResponse, $firstModel, $token);
             $request->setModel($model);
 
             throw new HttpRedirect($orderCreatedResponse->redirectUri ?? $token->getTargetUrl());
         }
 
         if (StatusCode::WarningContinue3ds === $orderCreatedResponse->status->statusCode) {
-            $this->updateModel($model, $orderCreatedResponse, $firstModel);
+            $this->updatePayment($model, $orderCreatedResponse, $firstModel, $token);
             $request->setModel($model);
 
             throw new HttpRedirect($orderCreatedResponse->redirectUri);
@@ -81,6 +87,36 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
             $request instanceof Capture
             && $request->getModel() instanceof \ArrayAccess
             && $request->getFirstModel() instanceof PaymentInterface;
+    }
+
+    private function updatePayment(
+        Model $model,
+        OrderCreatedResponse $orderCreatedResponse,
+        PaymentInterface $payment,
+        TokenInterface $token
+    ): void {
+        $model->setOrderId($orderCreatedResponse->orderId);
+        if ($payment instanceof Payment) {
+            $payment->setOrderId($orderCreatedResponse->orderId);
+        }
+
+        /**
+         * Documentation says nothing about this kind of responses with payMethod on order creating
+         * Keep it but with more knowledge need to refactor
+         */
+        if (isset($orderCreatedResponse->payMethods['payMethod'])) {
+            $model->setCreditCardMaskedNumber($orderCreatedResponse->payMethods['payMethod']['card']['number'] ?? null);
+            if ($payment->getCreditCard()) {
+                $payment->getCreditCard()->setMaskedNumber($orderCreatedResponse->payMethods['payMethod']['card']['number'] ?? null);
+            }
+        }
+
+        $payment->setDetails($model);
+
+        $status = new GetHumanStatus($token);
+        $status->setModel($payment);
+        $this->gateway->execute($status);
+        /** Payment will be auto-updated on @see \Payum\Core\Extension\StorageExtension::onPostExecute */
     }
 
     private function prepareOrderRequest(TokenInterface $token, Model $model): OrderRequest
@@ -143,22 +179,15 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
         return reset($tokens);
     }
 
-    private function updateModel(Model $model, OrderCreatedResponse $orderCreatedResponse, ?PaymentInterface $firstModel): void
+    private function convertAction(PaymentInterface $payment, TokenInterface $token): void
     {
-        $model->setOrderId($orderCreatedResponse->orderId);
-        if ($firstModel instanceof Payment) {
-            $firstModel->setOrderId($orderCreatedResponse->orderId);
-        }
+        $status = new GetHumanStatus($payment);
+        $status->setModel($payment->getDetails());
+        $this->gateway->execute($status);
+        if ($status->isNew()) {
+            $this->gateway->execute($convert = new Convert($payment, 'array', $token));
 
-        /**
-         * Documentation says nothing about this kind of responses with payMethod on order creating
-         * Keep it but with more knowledge need to refactor
-         */
-        if (isset($orderCreatedResponse->payMethods['payMethod'])) {
-            $model->setCreditCardMaskedNumber($orderCreatedResponse->payMethods['payMethod']['card']['number'] ?? null);
-            if (null !== $firstModel && $firstModel->getCreditCard()) {
-                $firstModel->getCreditCard()->setMaskedNumber($orderCreatedResponse->payMethods['payMethod']['card']['number'] ?? null);
-            }
+            $payment->setDetails($convert->getResult());
         }
     }
 }

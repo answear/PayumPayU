@@ -30,6 +30,17 @@ payum:
 
 ---
 
+### Capture action
+
+```php
+$captureRequest = new Capture($captureToken);
+$captureRequest->setModel($payment);
+$captureRequest->setModel($payment->getDetails());
+$gateway->execute($captureRequest);
+```
+
+---
+
 ### Missing features
 
 `OrderRequest` params `cardOnFile`, `recurring`, `mcpData`, `threeDsAuthentication`, `credit`
