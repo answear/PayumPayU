@@ -65,15 +65,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         Assert::notNull($token, 'Token must be set on notify action.');
 
         $this->onExecute($payment, $model);
-        $this->updatePayment($request, $payment, $model, $token);
-
-        $this->logger->info(
-            'Notify action successfully processed',
-            [
-                'orderId' => $model->orderId(),
-                'model' => $model->getArrayCopy(),
-            ]
-        );
+        $this->onPostExecute($request, $payment, $model, $token);
 
         throw new HttpResponse('OK', 200);
     }
@@ -102,6 +94,19 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         } else {
             $this->orderNotify($model, $content[self::ORDER_KEY] ?? [], $payment);
         }
+    }
+
+    protected function onPostExecute(Notify $request, PaymentInterface $payment, Model $model, TokenInterface $token): void
+    {
+        $this->updatePayment($request, $payment, $model, $token);
+
+        $this->logger->info(
+            'Notify action successfully processed',
+            [
+                'orderId' => $model->orderId(),
+                'model' => $model->getArrayCopy(),
+            ]
+        );
     }
 
     protected function updatePayment(Notify $request, PaymentInterface $payment, Model $model, TokenInterface $token): void
