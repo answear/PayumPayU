@@ -31,7 +31,7 @@ class CreateRefundTest extends AbstractRequestTestCase
             )
         );
 
-        $refundCreated = $this->getApiService()->createRefund($orderId, $refundRequest);
+        $refundCreated = $this->getApiService()->createRefund($orderId, $refundRequest, null);
         self::assertEquals(new ResponseStatus(ResponseStatusCode::Success, 'Refund queued for processing'), $refundCreated->status);
         self::assertSame($orderId, $refundCreated->orderId);
         $refund = $refundCreated->refund;
@@ -67,7 +67,7 @@ class CreateRefundTest extends AbstractRequestTestCase
         );
 
         try {
-            $this->getApiService()->createRefund($orderId, $refundRequest);
+            $this->getApiService()->createRefund($orderId, $refundRequest, null);
         } catch (\Throwable $exception) {
             self::assertInstanceOf(PayURequestException::class, $exception);
             self::assertSame('ERROR_VALUE_MISSING - Missing required field', $exception->getMessage());

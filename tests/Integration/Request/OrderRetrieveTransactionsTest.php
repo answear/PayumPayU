@@ -19,7 +19,7 @@ class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
         \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/orderRetrieveTransactionsByCard.json'));
 
         $orderId = 'WZHF5FFDRJ140731GUEST000P01';
-        $response = $this->getApiService()->retrieveTransactions($orderId);
+        $response = $this->getApiService()->retrieveTransactions($orderId, null);
         self::assertCount(1, $response);
         /** @var ByCreditCard $transaction */
         $transaction = $response[0];
@@ -59,7 +59,7 @@ class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
         \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/orderRetrieveTransactionsByPBL.json'));
 
         $orderId = 'WZHF5FFDRJ140731GUEST000P01';
-        $response = $this->getApiService()->retrieveTransactions($orderId);
+        $response = $this->getApiService()->retrieveTransactions($orderId, null);
         self::assertCount(1, $response);
         /** @var ByPBL $transaction */
         $transaction = $response[0];

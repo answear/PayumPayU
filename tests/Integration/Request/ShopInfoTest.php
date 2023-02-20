@@ -15,7 +15,7 @@ class ShopInfoTest extends AbstractRequestTestCase
     {
         \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/shopInfoResponse.json'));
 
-        $response = $this->getApiService()->shopInfo();
+        $response = $this->getApiService()->shopInfo(null);
         self::assertSame(
             [
                 'Shop Checkout',

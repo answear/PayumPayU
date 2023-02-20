@@ -41,7 +41,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function shopInfo(?string $configKey = null): Response\ShopInfo
+    public function shopInfo(?string $configKey): Response\ShopInfo
     {
         $config = $this->getConfig($configKey);
         Authorize::withClientSecret($config);
@@ -53,7 +53,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function createOrder(OrderRequest $orderRequest, ?string $configKey = null): Response\OrderCreatedResponse
+    public function createOrder(OrderRequest $orderRequest, ?string $configKey): Response\OrderCreatedResponse
     {
         $config = $this->getConfig($configKey);
         Authorize::base($config);
@@ -65,7 +65,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function createRefund(string $orderId, RefundRequest $refundRequest, ?string $configKey = null): Response\RefundCreatedResponse
+    public function createRefund(string $orderId, RefundRequest $refundRequest, ?string $configKey): Response\RefundCreatedResponse
     {
         Authorize::base($this->getConfig($configKey));
 
@@ -76,7 +76,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrieveOrder(string $orderId, ?string $configKey = null): Response\OrderRetrieveResponse
+    public function retrieveOrder(string $orderId, ?string $configKey): Response\OrderRetrieveResponse
     {
         Authorize::base($this->getConfig($configKey));
 
@@ -89,7 +89,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrieveTransactions(string $orderId, ?string $configKey = null): array
+    public function retrieveTransactions(string $orderId, ?string $configKey): array
     {
         Authorize::base($this->getConfig($configKey));
 
@@ -102,7 +102,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrieveRefundList(string $orderId, ?string $configKey = null): array
+    public function retrieveRefundList(string $orderId, ?string $configKey): array
     {
         Authorize::base($this->getConfig($configKey));
 
@@ -113,7 +113,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrieveSingleRefund(string $orderId, string $refundId, ?string $configKey = null): Response\Refund
+    public function retrieveSingleRefund(string $orderId, string $refundId, ?string $configKey): Response\Refund
     {
         Authorize::base($this->getConfig($configKey));
 
@@ -124,7 +124,7 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function retrievePayMethods(?string $lang = null, ?string $configKey = null): Response\PayMethodsResponse
+    public function retrievePayMethods(?string $configKey, ?string $lang = null): Response\PayMethodsResponse
     {
         Authorize::withClientSecret($this->getConfig($configKey));
 
@@ -138,15 +138,15 @@ class Api
     public function retrievePayMethodsForUser(
         string $userId,
         string $userEmail,
+        ?string $configKey,
         ?string $lang = null,
-        ?string $configKey = null
     ): Response\PayMethodsResponse {
         Authorize::withTrusted($this->getConfig($configKey), $userId, $userEmail);
 
         return $this->getPayMethodsRequest()->retrieve($lang);
     }
 
-    public function signatureIsValid(string $signatureHeader, string $data, ?string $configKey = null): bool
+    public function signatureIsValid(string $signatureHeader, string $data, ?string $configKey): bool
     {
         $config = $this->getConfig($configKey);
 
@@ -165,7 +165,7 @@ class Api
         return $this->logger;
     }
 
-    private function getConfig(?string $configKey = null): Configuration
+    private function getConfig(?string $configKey): Configuration
     {
         if (null === $this->defaultConfigKey && null === $configKey) {
             throw new \InvalidArgumentException('Config key must be provided.');

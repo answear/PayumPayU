@@ -50,7 +50,7 @@ class CreateOrderTest extends AbstractRequestTestCase
             'Additional Description'
         );
 
-        $orderCreated = $this->getApiService()->createOrder($orderRequest);
+        $orderCreated = $this->getApiService()->createOrder($orderRequest, null);
         self::assertEquals($orderCreated->status, new OrderCreatedStatus(StatusCode::Success));
         self::assertSame('http://continue.url.com', $orderCreated->redirectUri);
         self::assertSame('WZHF5FFDRJ140731GUEST000P01', $orderCreated->orderId);
@@ -68,6 +68,6 @@ class CreateOrderTest extends AbstractRequestTestCase
 
         $this->expectException(PayUAuthorizationException::class);
         $this->expectExceptionMessage('UNAUTHORIZED - Incorrect authentication');
-        $this->getApiService()->createOrder($orderRequest);
+        $this->getApiService()->createOrder($orderRequest, null);
     }
 }

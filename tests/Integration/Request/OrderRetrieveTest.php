@@ -26,7 +26,7 @@ class OrderRetrieveTest extends AbstractRequestTestCase
         \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/retrieveOrderResponse.json'));
 
         $orderId = 'WZHF5FFDRJ140731GUEST000P01';
-        $response = $this->getApiService()->retrieveOrder($orderId);
+        $response = $this->getApiService()->retrieveOrder($orderId, null);
         self::assertEquals(
             new ResponseStatus(
                 ResponseStatusCode::Success,
@@ -86,7 +86,7 @@ class OrderRetrieveTest extends AbstractRequestTestCase
         \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/retrieveOrderWithPayMethodResponse.json'));
 
         $orderId = 'WZHF5FFDRJ140731GUEST000P01';
-        $response = $this->getApiService()->retrieveOrder($orderId);
+        $response = $this->getApiService()->retrieveOrder($orderId, null);
         self::assertEquals(
             new ResponseStatus(
                 ResponseStatusCode::Success,
@@ -145,6 +145,6 @@ class OrderRetrieveTest extends AbstractRequestTestCase
 
         $this->expectException(PayUNetworkException::class);
         $this->expectExceptionMessage('DATA_NOT_FOUND - Could not find data for given criteria.');
-        $this->getApiService()->retrieveOrder('WZHF5FFDRJ140731GUEST000P01');
+        $this->getApiService()->retrieveOrder('WZHF5FFDRJ140731GUEST000P01', null);
     }
 }

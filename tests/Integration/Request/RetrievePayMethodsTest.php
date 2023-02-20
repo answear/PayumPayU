@@ -21,7 +21,7 @@ class RetrievePayMethodsTest extends AbstractRequestTestCase
         \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/authorisationResponse.json'));
         \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/payMethodsResponse.json'));
 
-        $response = $this->getApiService()->retrievePayMethods('pl');
+        $response = $this->getApiService()->retrievePayMethods(null, 'pl');
         self::assertCount(0, $response->cardTokens);
         self::assertCount(0, $response->pexTokens);
         self::assertCount(4, $response->payByLinks);
@@ -72,7 +72,7 @@ class RetrievePayMethodsTest extends AbstractRequestTestCase
 
         $withException = false;
         try {
-            $this->getApiService()->retrievePayMethods('');
+            $this->getApiService()->retrievePayMethods(null, '');
         } catch (PayURequestException $exception) {
             self::assertSame('Getting pay methods failed.', $exception->getMessage());
             self::assertSame(

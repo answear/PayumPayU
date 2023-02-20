@@ -21,7 +21,7 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
 
         $orderId = 'ZXWZ53KQQM200702GUEST000P01';
 
-        $refundList = $this->getApiService()->retrieveRefundList($orderId);
+        $refundList = $this->getApiService()->retrieveRefundList($orderId, null);
         self::assertIsArray($refundList);
         self::assertCount(2, $refundList);
         self::assertEquals(
@@ -61,7 +61,7 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
         $orderId = 'ZXWZ53KQQM200702GUEST000P01';
         $refundId = '5000000142';
 
-        $refundList = $this->getApiService()->retrieveSingleRefund($orderId, $refundId);
+        $refundList = $this->getApiService()->retrieveSingleRefund($orderId, $refundId, null);
         self::assertEquals(
             new Refund(
                 '5000000108',
