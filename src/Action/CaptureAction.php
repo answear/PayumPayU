@@ -147,7 +147,7 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
 
     private function setRecurringStandardPayment(OrderRequest $orderRequest, Model $model): void
     {
-        $payMethods = $this->api->retrievePayMethodsForUser($model->clientId(), $model->clientEmail());
+        $payMethods = $this->api->retrievePayMethodsForUser($model->clientId(), $model->clientEmail(), null);
         if (empty($payMethods->cardTokens)) {
             throw new \InvalidArgumentException('Cannot make this recurring payment. Token for user does not exist.');
         }

@@ -110,6 +110,10 @@ class Order
                 ]
             );
 
+            if (false === $response['transactions']) {
+                return [];
+            }
+
             $transactions = [];
             foreach ($response['transactions'] as $responseTransaction) {
                 if (self::CREDIT_CARD_VALUE === $responseTransaction['payMethod']['value']) {

@@ -35,7 +35,6 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
     protected const SIGNATURE_HEADER = 'openpayu-signature';
     protected const ORDER_KEY = 'order';
     protected const REFUND_KEY = 'refund';
-    protected const PAYMENT_ID_PROPERTY = 'PAYMENT_ID';
 
     protected LoggerInterface $logger;
     protected array $notifyContent;
@@ -167,9 +166,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         if (ResponseStatusCode::Success === $response->status->statusCode) {
             $model->setStatus($response->orders[0]->status);
             foreach ($response->properties as $property) {
-                if (self::PAYMENT_ID_PROPERTY === $property->name) {
-                    $model->setProperty($property);
-                }
+                $model->setProperty($property);
             }
         }
     }
