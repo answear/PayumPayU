@@ -18,6 +18,7 @@ enum ModelFields
     public const BUYER = 'buyer';
     public const BUYER_FIRSTNAME = 'firstName';
     public const BUYER_LASTNAME = 'lastName';
+    public const BUYER_PHONE = 'phone';
     public const VALIDITY_TIME = 'validityTime';
     public const CUSTOMER_IP = 'customerIp';
     public const PAY_METHODS = 'payMethods';

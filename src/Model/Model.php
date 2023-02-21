@@ -85,6 +85,14 @@ class Model extends ArrayObject
         $this[ModelFields::BUYER] = $buyer->toArray();
     }
 
+    public function setBuyerPhone(?string $phone): void
+    {
+        $this[ModelFields::BUYER] = array_merge(
+            $this[ModelFields::BUYER] ?? [],
+            [ModelFields::BUYER_PHONE => $phone]
+        );
+    }
+
     public function payMethod(): ?PayMethod
     {
         if (!isset($this[ModelFields::PAY_METHODS])) {
