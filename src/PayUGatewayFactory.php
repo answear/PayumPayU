@@ -9,6 +9,7 @@ use Answear\Payum\PayU\Action\ConvertPaymentAction;
 use Answear\Payum\PayU\Action\NotifyAction;
 use Answear\Payum\PayU\Action\RefundAction;
 use Answear\Payum\PayU\Action\StatusAction;
+use Answear\Payum\PayU\Action\SyncPaymentAction;
 use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Service\PayULogger;
 use Answear\Payum\PayU\ValueObject\Configuration;
@@ -33,6 +34,7 @@ class PayUGatewayFactory extends GatewayFactory
                 'payum.action.notify' => new NotifyAction(),
                 'payum.action.status' => new StatusAction(),
                 'payum.action.convert_payment' => new ConvertPaymentAction(),
+                'payum.action.sync_payment' => new SyncPaymentAction(),
             ]
         );
 
