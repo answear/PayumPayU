@@ -18,6 +18,7 @@ use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Model\Token;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
+use Payum\Core\Request\Convert;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\GenericTokenFactory;
 use Payum\Core\Security\TokenInterface;
@@ -199,6 +200,10 @@ class CaptureActionTest extends TestCase
                             if ($payment instanceof PaymentInterface) {
                                 $payment->setDetails($details ?? FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
                             }
+                        }
+
+                        if ($request instanceof Convert) {
+                            $request->setResult($details ?? FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
                         }
 
                         return true;

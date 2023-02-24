@@ -181,10 +181,11 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
 
     private function convertAction(PaymentInterface $payment, TokenInterface $token): void
     {
+        $details = $payment->getDetails();
         $status = new GetHumanStatus($payment);
-        $status->setModel($payment->getDetails());
+        $status->setModel($details);
         $this->gateway->execute($status);
-        if ($status->isNew()) {
+        if (empty($details) || $status->isNew()) {
             $this->gateway->execute($convert = new Convert($payment, 'array', $token));
 
             $payment->setDetails($convert->getResult());

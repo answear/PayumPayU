@@ -195,11 +195,13 @@ class Model extends ArrayObject
         $this[ModelFields::CONFIG_KEY] = $configKey;
     }
 
-    public function status(): OrderStatus
+    public function status(): ?OrderStatus
     {
-        $status = $this[ModelFields::STATUS] ?? OrderStatus::New->value;
+        if (empty($this[ModelFields::STATUS])) {
+            return null;
+        }
 
-        return OrderStatus::from($status);
+        return OrderStatus::from($this[ModelFields::STATUS]);
     }
 
     public function setStatus(OrderStatus|string $status): void
