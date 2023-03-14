@@ -93,6 +93,10 @@ class Refund
         try {
             $response = JsonHelper::getArrayFromObject($result->getResponse());
 
+            if (!\is_array($response['refunds'])) {
+                $response['refunds'] = [];
+            }
+
             return array_map(
                 static fn(array $refund) => RefundResponse::fromResponse($refund),
                 $response['refunds']
