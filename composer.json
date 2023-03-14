@@ -20,11 +20,11 @@
         "friendsofphp/php-cs-fixer": "^v3.13",
         "php-http/guzzle6-adapter": "^1.1.1",
         "phpro/grumphp": "^1.15",
-        "phpstan/phpstan": "^1.9.14",
-        "phpstan/phpstan-webmozart-assert": "^1.2.2",
-        "phpunit/phpunit": "^9.5.28",
+        "phpstan/phpstan": "^1.10.6",
+        "phpstan/phpstan-webmozart-assert": "^1.2.4",
+        "phpunit/phpunit": "^9.6.5",
         "roave/security-advisories": "dev-latest",
-        "symfony/phpunit-bridge": "^6.2.5"
+        "symfony/phpunit-bridge": "^6.2.7"
     },
     "autoload": {
         "psr-4": {
