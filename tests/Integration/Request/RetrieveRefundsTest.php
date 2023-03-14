@@ -81,4 +81,18 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
             $refundList
         );
     }
+
+    /**
+     * @test
+     */
+    public function retrieveEmptyRefundListTest(): void
+    {
+        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/retrieveEmptyRefundListResponse.json'));
+
+        $orderId = 'ZXWZ53KQQM200702GUEST000P01';
+
+        $refundList = $this->getApiService()->retrieveRefundList($orderId, null);
+        self::assertIsArray($refundList);
+        self::assertCount(0, $refundList);
+    }
 }
