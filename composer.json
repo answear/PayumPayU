@@ -1,6 +1,6 @@
 {
     "name": "answear/payum-pay-u",
-    "type": "project",
+    "type": "symfony-bundle",
     "description": "PayU gateway for payum",
     "keywords": [
         "payment",
@@ -14,10 +14,12 @@
         "guzzlehttp/guzzle": "^6.5.8 || ^7.0",
         "openpayu/openpayu": "^2.3.5",
         "payum/core": "^1.7.3",
+        "symfony/http-kernel": "^5.4|^6.0",
         "webmozart/assert": "^1.11"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^v3.13",
+        "matthiasnoback/symfony-config-test": "^4.3",
         "php-http/guzzle6-adapter": "^1.1.1",
         "phpro/grumphp": "^1.15",
         "phpstan/phpstan": "^1.10.6",

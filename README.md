@@ -1,12 +1,14 @@
 # PayU payment gateway for [payum](http://payum.org/)
 
-(or for standalone usage)
+(Symfony bundle)
 
 PayU documentation: https://developers.payu.com/pl/restapi.html
 
 ---
 
 Provide configuration for `payum`
+
+TODO configuration for bundle.
 
 ```yaml
 payum:
