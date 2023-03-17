@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Answear\Payum\PayU\:
+        resource: '../../../src/{Request,Service}'
