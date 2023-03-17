@@ -15,6 +15,7 @@ class ConfigProvider
     private const API_PART = 'api/';
     private const API_VERSION_PART = 'v2.1/';
 
+    private readonly Environment $environment;
     /** @var Configuration[] */
     private readonly array $configurations;
     private readonly ?string $defaultConfigKey;
@@ -22,12 +23,12 @@ class ConfigProvider
     /**
      * @param array<string, array> $configsArray
      */
-    public function __construct(array $configsArray)
+    public function __construct(string $environment, array $configsArray)
     {
+        $this->environment = Environment::from($environment);
         $configurationArray = [];
         foreach ($configsArray as $configKey => $configArray) {
             $configurationArray[$configKey] = new Configuration(
-                Environment::from($configArray['environment']),
                 $configArray['public_shop_id'],
                 $configArray['pos_id'],
                 $configArray['signature_key'],
@@ -54,17 +55,17 @@ class ConfigProvider
         return $this->configurations[$configKey ?? $this->defaultConfigKey];
     }
 
-    public function getServiceUrl(Environment $environment): string
+    public function getServiceUrl(): string
     {
-        return match ($environment) {
+        return match ($this->environment) {
             Environment::Secure => 'https://secure.' . self::DOMAIN_PART . self::API_PART . self::API_VERSION_PART,
             Environment::Sandbox => 'https://secure.snd.' . self::DOMAIN_PART . self::API_PART . self::API_VERSION_PART,
         };
     }
 
-    public function getOAuthEndpoint(Environment $environment): string
+    public function getOAuthEndpoint(): string
     {
-        return match ($environment) {
+        return match ($this->environment) {
             Environment::Secure => 'https://secure.' . self::DOMAIN_PART . self::OAUTH_CONTEXT,
             Environment::Sandbox => 'https://secure.snd.' . self::DOMAIN_PART . self::OAUTH_CONTEXT,
         };

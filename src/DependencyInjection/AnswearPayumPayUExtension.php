@@ -25,7 +25,7 @@ class AnswearPayumPayUExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $definition = $container->getDefinition(ConfigProvider::class);
-        $definition->setArguments([$config['configs']]);
+        $definition->setArguments([$config['environment'], $config['configs']]);
 
         $this->setLogger($container, $config['logger'] ?? null);
     }

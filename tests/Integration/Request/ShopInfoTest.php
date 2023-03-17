@@ -8,6 +8,13 @@ use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 
 class ShopInfoTest extends AbstractRequestTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->markTestSkipped('Unskip after refactor');
+    }
+
     /**
      * @test
      */

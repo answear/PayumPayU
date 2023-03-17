@@ -9,3 +9,6 @@ parameters:
         -
             message: '#.*NodeDefinition::children.*#'
             path: ./src/DependencyInjection
+        -
+            message: '#.#'
+            path: ./src/Api

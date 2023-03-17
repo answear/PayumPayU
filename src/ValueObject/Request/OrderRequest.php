@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Request;
 
+use Answear\Payum\PayU\Enum\AuthType;
 use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Answear\Payum\PayU\ValueObject\Product;
@@ -12,6 +13,9 @@ use Webmozart\Assert\Assert;
 
 class OrderRequest
 {
+    public const METHOD = 'POST';
+    public const AUTH_TYPE = AuthType::Base;
+
     /**
      * @param ?int $validityTime - 86400 by default
      * @param array<Product> $products

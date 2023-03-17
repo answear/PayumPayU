@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Tests\Integration\Action;
 
 use Answear\Payum\PayU\Action\CaptureAction;
-use Answear\Payum\PayU\Api;
 use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Model\Model;
+use Answear\Payum\PayU\Request\OrderRequestService;
+use Answear\Payum\PayU\Request\PayMethodsRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\OrderCreatedStatus;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\StatusCode;
@@ -156,23 +157,24 @@ class CaptureActionTest extends TestCase
 
     private function getCaptureAction(?OrderCreatedResponse $response = null, ?array $details = null): CaptureAction
     {
-        $captureAction = new CaptureAction();
+        $response = $response ?? new OrderCreatedResponse(
+            new OrderCreatedStatus(
+                StatusCode::Success,
+                'Żądanie zostało wykonane poprawnie.'
+            ),
+            'http://redirect-after-create-payment.url',
+            'WZHF5FFDRJ140731GUEST000P01',
+            'vjis3d90tsozmuj0rjgs3i'
+        );
 
-        $api = $this->createMock(Api::class);
-        $api->method('createOrder')
-            ->willReturn(
-                $response ?? new OrderCreatedResponse(
-                    new OrderCreatedStatus(
-                        StatusCode::Success,
-                        'Żądanie zostało wykonane poprawnie.'
-                    ),
-                    'http://redirect-after-create-payment.url',
-                    'WZHF5FFDRJ140731GUEST000P01',
-                    'vjis3d90tsozmuj0rjgs3i'
-                )
-            );
+        $orderRequestService = $this->createMock(OrderRequestService::class);
+        $orderRequestService->method('create')
+            ->willReturn($response);
 
-        $captureAction->setApi($api);
+        $captureAction = new CaptureAction(
+            $orderRequestService,
+            $this->createMock(PayMethodsRequestService::class)
+        );
 
         $notifyToken = $this->createMock(TokenInterface::class);
         $notifyToken->method('getTargetUrl')
