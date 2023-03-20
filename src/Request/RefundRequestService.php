@@ -4,56 +4,61 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Request;
 
+use Answear\Payum\PayU\Client\Client;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Exception\MalformedResponseException;
 use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Exception\PayURequestException;
-use Answear\Payum\PayU\Service\PayURefundService;
 use Answear\Payum\PayU\Util\ExceptionHelper;
-use Answear\Payum\PayU\Util\JsonHelper;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\Refund as RefundResponse;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
 use Psr\Log\LoggerInterface;
+use Webmozart\Assert\Assert;
 
-/**
- * @interal
- * Use \Answear\Payum\PayU\Api::class instead
- */
-class Refund
+class RefundRequestService
 {
-    public function __construct(private LoggerInterface $logger)
-    {
+    private const ENDPOINT = 'orders/';
+
+    public function __construct(
+        private Client $client,
+        private LoggerInterface $logger
+    ) {
     }
 
     /**
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public function create(string $orderId, RefundRequest $refundRequest): RefundCreatedResponse
+    public function create(string $orderId, RefundRequest $refundRequest, ?string $configKey): RefundCreatedResponse
     {
+        Assert::notEmpty($orderId);
+
         try {
+            $refundRequestData = $refundRequest->toArray();
             $this->logger->info(
                 '[Request] Create refund',
                 [
                     'orderId' => $orderId,
-                    'request' => $refundRequest->toArray(),
+                    'request' => $refundRequestData,
                 ]
             );
 
-            $result = \OpenPayU_Refund::create(
-                $orderId,
-                $refundRequest->refund->description,
-                $refundRequest->refund->amount,
-                $refundRequest->refund->extCustomerId,
-                $refundRequest->refund->extRefundId
+            $result = $this->client->payuRequest(
+                RefundRequest::METHOD,
+                self::ENDPOINT . $orderId . '/refund',
+                $this->client->getAuthorizeHeaders(
+                    RefundRequest::AUTH_TYPE,
+                    $configKey
+                ),
+                array_merge(['orderId' => $orderId], $refundRequestData)
             );
         } catch (\Throwable $exception) {
             throw ExceptionHelper::getPayUException($exception);
         }
 
         try {
-            $response = JsonHelper::getArrayFromObject($result->getResponse());
+            $response = json_decode($result->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $this->logger->info(
                 '[Response] Create refund',
                 [
@@ -82,17 +87,25 @@ class Refund
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public function retrieveRefundList(string $orderId): array
+    public function retrieveRefundList(string $orderId, ?string $configKey): array
     {
+        Assert::notEmpty($orderId);
+
         try {
-            $result = PayURefundService::retrieveRefundList($orderId);
+            $result = $this->client->payuRequest(
+                'GET',
+                self::ENDPOINT . $orderId . '/refunds',
+                $this->client->getAuthorizeHeaders(
+                    RefundRequest::AUTH_TYPE,
+                    $configKey
+                )
+            );
         } catch (\Throwable $exception) {
             throw ExceptionHelper::getPayUException($exception);
         }
 
         try {
-            $response = JsonHelper::getArrayFromObject($result->getResponse());
-
+            $response = json_decode($result->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             if (!\is_array($response['refunds'])) {
                 $response['refunds'] = [];
             }
@@ -110,16 +123,26 @@ class Refund
      * @throws MalformedResponseException
      * @throws PayUException
      */
-    public function retrieveSingleRefund(string $orderId, string $refundId): RefundResponse
+    public function retrieveSingleRefund(string $orderId, string $refundId, ?string $configKey): RefundResponse
     {
+        Assert::notEmpty($orderId);
+        Assert::notEmpty($refundId);
+
         try {
-            $result = PayURefundService::retrieveSingleRefund($orderId, $refundId);
+            $result = $this->client->payuRequest(
+                'GET',
+                self::ENDPOINT . $orderId . '/refunds/' . $refundId,
+                $this->client->getAuthorizeHeaders(
+                    RefundRequest::AUTH_TYPE,
+                    $configKey
+                )
+            );
         } catch (\Throwable $exception) {
             throw ExceptionHelper::getPayUException($exception);
         }
 
         try {
-            $response = JsonHelper::getArrayFromObject($result->getResponse());
+            $response = json_decode($result->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             return RefundResponse::fromResponse($response);
         } catch (\Throwable $e) {

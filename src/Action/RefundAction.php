@@ -5,20 +5,21 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Action;
 
 use Answear\Payum\Action\Request\Refund;
-use Answear\Payum\PayU\ApiAwareTrait;
 use Answear\Payum\PayU\Model\Model;
+use Answear\Payum\PayU\Request\RefundRequestService;
 use Answear\Payum\PayU\Util\PaymentHelper;
 use Answear\Payum\PayU\ValueObject\Request;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Model\PaymentInterface;
 use Webmozart\Assert\Assert;
 
-class RefundAction implements ActionInterface, ApiAwareInterface
+class RefundAction implements ActionInterface
 {
-    use ApiAwareTrait;
+    public function __construct(private RefundRequestService $refundRequestService)
+    {
+    }
 
     /**
      * @param Refund $request
@@ -33,7 +34,7 @@ class RefundAction implements ActionInterface, ApiAwareInterface
         $orderId = PaymentHelper::getOrderId($model, $firstModel);
         Assert::notEmpty($orderId, 'OrderId must be set on refund action.');
 
-        $refundCreatedResponse = $this->api->createRefund(
+        $refundCreatedResponse = $this->refundRequestService->create(
             $orderId,
             $this->prepareRefundRequest($request),
             PaymentHelper::getConfigKey($model, $firstModel)

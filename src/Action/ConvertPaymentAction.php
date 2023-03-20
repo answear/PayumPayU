@@ -10,7 +10,7 @@ use Answear\Payum\PayU\Enum\OrderStatus;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\Model\Model;
-use Answear\Payum\PayU\Util\UserIpHelper;
+use Answear\Payum\PayU\Service\UserIpService;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
@@ -23,6 +23,10 @@ class ConvertPaymentAction implements ActionInterface
      * 259200s - 72h - 3 days
      */
     private const DEFAULT_VALIDITY_TIME = 259200;
+
+    public function __construct(private UserIpService $userIpService)
+    {
+    }
 
     /**
      * @param Convert $request
@@ -42,7 +46,7 @@ class ConvertPaymentAction implements ActionInterface
                 ModelFields::DESCRIPTION => $payment->getDescription(),
                 ModelFields::CLIENT_EMAIL => $payment->getClientEmail(),
                 ModelFields::CLIENT_ID => $payment->getClientId(),
-                ModelFields::CUSTOMER_IP => UserIpHelper::getIp(),
+                ModelFields::CUSTOMER_IP => $this->userIpService->getIp(),
                 ModelFields::CREDIT_CARD_MASKED_NUMBER => $payment->getCreditCard() ? $payment->getCreditCard()->getMaskedNumber() : null,
                 ModelFields::VALIDITY_TIME => $details->validityTime() ?? self::DEFAULT_VALIDITY_TIME,
             ]

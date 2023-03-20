@@ -7,28 +7,28 @@ namespace Answear\Payum\PayU\Tests\Integration\Request;
 use Answear\Payum\PayU\Enum\PayByLinkStatus;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Exception\PayURequestException;
+use Answear\Payum\PayU\Request\PayMethodsRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\PayByLink;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
+use GuzzleHttp\Psr7\Response;
+use Psr\Log\NullLogger;
 
 class RetrievePayMethodsTest extends AbstractRequestTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->markTestSkipped('Unskip after refactor');
-    }
-
     /**
      * @test
      */
     public function retrieveTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/authorisationResponse.json'));
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/payMethodsResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/authorisationResponse.json'))
+        );
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/payMethodsResponse.json'))
+        );
 
-        $response = $this->getApiService()->retrievePayMethods(null, 'pl');
+        $response = $this->getPayMethodsRequestService()->retrieve(null, 'pl');
         self::assertCount(0, $response->cardTokens);
         self::assertCount(0, $response->pexTokens);
         self::assertCount(4, $response->payByLinks);
@@ -75,11 +75,16 @@ class RetrievePayMethodsTest extends AbstractRequestTestCase
      */
     public function exceptionIfNoSuccess(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/payMethodsError.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/authorisationResponse.json'))
+        );
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/payMethodsError.json'))
+        );
 
         $withException = false;
         try {
-            $this->getApiService()->retrievePayMethods(null, '');
+            $this->getPayMethodsRequestService()->retrieve(null, '');
         } catch (PayURequestException $exception) {
             self::assertSame('Getting pay methods failed.', $exception->getMessage());
             self::assertSame(
@@ -95,5 +100,13 @@ class RetrievePayMethodsTest extends AbstractRequestTestCase
         }
 
         self::assertTrue($withException);
+    }
+
+    private function getPayMethodsRequestService(): PayMethodsRequestService
+    {
+        return new PayMethodsRequestService(
+            $this->getClient(),
+            new NullLogger()
+        );
     }
 }

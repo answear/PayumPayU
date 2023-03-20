@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Tests\Integration\Action;
 
 use Answear\Payum\PayU\Action\NotifyAction;
-use Answear\Payum\PayU\Api;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
+use Answear\Payum\PayU\Request\OrderRequestService;
+use Answear\Payum\PayU\Service\PayULogger;
+use Answear\Payum\PayU\Service\SignatureValidator;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\Order;
 use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
@@ -104,13 +106,8 @@ class NotifyActionTest extends TestCase
 
     private function getNotifyAction(?string $content = null): NotifyAction
     {
-        $notifyAction = new NotifyAction();
-
-        $api = $this->createMock(Api::class);
-        $api->method('signatureIsValid')
-            ->willReturn(true);
-
-        $api->method('retrieveOrder')
+        $orderRequestService = $this->createMock(OrderRequestService::class);
+        $orderRequestService->method('retrieve')
             ->willReturn(
                 new OrderRetrieveResponse(
                     [
@@ -123,7 +120,15 @@ class NotifyActionTest extends TestCase
                 )
             );
 
-        $notifyAction->setApi($api);
+        $signatureValidator = $this->createMock(SignatureValidator::class);
+        $signatureValidator->method('isValid')
+            ->willReturn(true);
+
+        $notifyAction = new NotifyAction(
+            $orderRequestService,
+            $signatureValidator,
+            new PayULogger(null)
+        );
 
         $gateway = $this->createMock(Gateway::class);
         $gateway->method('execute')

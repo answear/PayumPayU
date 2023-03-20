@@ -16,13 +16,13 @@ class ShopInfo
     ) {
     }
 
-    public static function fromPayUShop(\PayuShop $payuShop): self
+    public static function fromResponse(array $response): self
     {
         return new self(
-            $payuShop->getShopId(),
-            $payuShop->getName(),
-            $payuShop->getCurrencyCode(),
-            ShopBalance::fromPayUShopBalance($payuShop->getBalance()),
+            $response['shopId'],
+            $response['name'],
+            $response['currencyCode'],
+            ShopBalance::fromResponse($response['balance']),
         );
     }
 }

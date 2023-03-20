@@ -6,18 +6,19 @@ namespace Answear\Payum\PayU\Action;
 
 use Answear\Payum\Action\Request\SyncPayment;
 use Answear\Payum\Model\Payment;
-use Answear\Payum\PayU\ApiAwareTrait;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Model\Model;
+use Answear\Payum\PayU\Request\OrderRequestService;
 use Answear\Payum\PayU\Util\PaymentHelper;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Model\PaymentInterface;
 
-class SyncPaymentAction implements ActionInterface, ApiAwareInterface
+class SyncPaymentAction implements ActionInterface
 {
-    use ApiAwareTrait;
+    public function __construct(private OrderRequestService $orderRequestService)
+    {
+    }
 
     /**
      * @param SyncPayment $request
@@ -53,7 +54,7 @@ class SyncPaymentAction implements ActionInterface, ApiAwareInterface
 
     protected function updatePaymentStatus(Model $model, PaymentInterface $payment): void
     {
-        $response = $this->api->retrieveOrder($model->orderId(), PaymentHelper::getConfigKey($model, $payment));
+        $response = $this->orderRequestService->retrieve($model->orderId(), PaymentHelper::getConfigKey($model, $payment));
         if (ResponseStatusCode::Success === $response->status->statusCode) {
             $model->setStatus($response->orders[0]->status);
             foreach ($response->properties as $property) {

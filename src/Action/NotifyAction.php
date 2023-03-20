@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Action;
 
 use Answear\Payum\Model\Payment;
-use Answear\Payum\PayU\Api;
-use Answear\Payum\PayU\ApiAwareTrait;
 use Answear\Payum\PayU\Enum\ModelFields;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Model\Model;
+use Answear\Payum\PayU\Request\OrderRequestService;
+use Answear\Payum\PayU\Service\PayULogger;
+use Answear\Payum\PayU\Service\SignatureValidator;
 use Answear\Payum\PayU\Util\PaymentHelper;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Model\PaymentInterface;
@@ -24,29 +23,23 @@ use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Security\TokenInterface;
-use Psr\Log\LoggerInterface;
 use Webmozart\Assert\Assert;
 
-class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
+class NotifyAction implements ActionInterface, GatewayAwareInterface
 {
-    use ApiAwareTrait;
     use GatewayAwareTrait;
 
     protected const SIGNATURE_HEADER = 'openpayu-signature';
     protected const ORDER_KEY = 'order';
     protected const REFUND_KEY = 'refund';
 
-    protected LoggerInterface $logger;
     protected array $notifyContent;
 
-    public function setApi($api): void
-    {
-        if (!$api instanceof Api) {
-            throw new UnsupportedApiException(sprintf('Not supported api given. It must be an instance of %s', Api::class));
-        }
-
-        $this->api = $api;
-        $this->logger = $this->api->getLogger();
+    public function __construct(
+        private OrderRequestService $orderRequestService,
+        private SignatureValidator $signatureValidator,
+        private PayULogger $logger
+    ) {
     }
 
     /**
@@ -162,7 +155,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
 
     private function updatePaymentStatus(Model $model, string $orderId, ?PaymentInterface $firstModel): void
     {
-        $response = $this->api->retrieveOrder($orderId, PaymentHelper::getConfigKey($model, $firstModel));
+        $response = $this->orderRequestService->retrieve($orderId, PaymentHelper::getConfigKey($model, $firstModel));
         if (ResponseStatusCode::Success === $response->status->statusCode) {
             $model->setStatus($response->orders[0]->status);
             foreach ($response->properties as $property) {
@@ -189,7 +182,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
             $signatureHeader = reset($signatureHeader);
         }
 
-        if (!$this->api->signatureIsValid($signatureHeader, $httpRequest->content, PaymentHelper::getConfigKey($model, $firstModel))) {
+        if (!$this->signatureValidator->isValid($signatureHeader, $httpRequest->content, PaymentHelper::getConfigKey($model, $firstModel))) {
             throw new \InvalidArgumentException('Signature is not valid', 400);
         }
     }
