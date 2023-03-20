@@ -6,3 +6,5 @@ services:
 
     Answear\Payum\PayU\:
         resource: '../../../src/{Action,Request,Service}'
+
+    Answear\Payum\PayU\Client\Client: ~

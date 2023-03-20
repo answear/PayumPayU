@@ -25,22 +25,6 @@ abstract class AbstractRequestTestCase extends TestCase
         $this->client = $this->setupGuzzleClient();
     }
 
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        \OpenPayU_Configuration::setEnvironment();
-        \OpenPayU_Configuration::setMerchantPosId('');
-        \OpenPayU_Configuration::setSignatureKey('');
-        \OpenPayU_Configuration::setOauthClientId('');
-        \OpenPayU_Configuration::setOauthClientSecret('');
-        \OpenPayU_Configuration::setOauthGrantType(\OauthGrantType::CLIENT_CREDENTIAL);
-        \OpenPayU_Configuration::setOauthEmail('');
-        \OpenPayU_Configuration::setOauthExtCustomerId('');
-
-        \OpenPayU_HttpCurl::clearHistory();
-    }
-
     protected function getConfigProvider(): ConfigProvider
     {
         return new ConfigProvider(
