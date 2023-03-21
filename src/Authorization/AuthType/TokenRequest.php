@@ -9,8 +9,8 @@ class TokenRequest implements AuthType
     public function getHeaders(): array
     {
         return [
-            'Content-Type: application/x-www-form-urlencoded',
-            'Accept: */*',
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Accept' => '*/*',
         ];
     }
 }

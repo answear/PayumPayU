@@ -14,7 +14,7 @@ use Webmozart\Assert\Assert;
 class OrderRequest
 {
     public const METHOD = 'POST';
-    public const AUTH_TYPE = AuthType::Base;
+    public const AUTH_TYPE = AuthType::Basic;
 
     /**
      * @param ?int $validityTime - 86400 by default

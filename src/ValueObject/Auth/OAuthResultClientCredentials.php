@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Auth;
 
-use Answear\Payum\PayU\Enum\OauthGrantType;
+use Answear\Payum\PayU\Enum\OAuthGrantType;
 use Psr\Http\Message\ResponseInterface;
 use Webmozart\Assert\Assert;
 
-class OauthResultClientCredentials
+class OAuthResultClientCredentials
 {
     public function __construct(
         public readonly string $accessToken,
         public readonly string $tokenType,
         public readonly int $expiresIn,
-        public readonly OauthGrantType $grantType,
+        public readonly OAuthGrantType $grantType,
         public readonly \DateTimeImmutable $expireDate
     ) {
     }
@@ -33,7 +33,7 @@ class OauthResultClientCredentials
             $content['access_token'],
             $content['token_type'],
             $expiresIn,
-            OauthGrantType::from($content['grant_type']),
+            OAuthGrantType::from($content['grant_type']),
             self::calculateExpireDate(new \DateTimeImmutable(), $expiresIn)
         );
     }
@@ -43,7 +43,7 @@ class OauthResultClientCredentials
         return $date->add(new \DateInterval('PT' . ($expiresIn - 60) . 'S'));
     }
 
-    public function hasExpire(): bool
+    public function isExpired(): bool
     {
         return $this->expireDate <= new \DateTimeImmutable();
     }

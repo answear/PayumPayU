@@ -53,8 +53,8 @@ class RefundRequestService
                 ),
                 array_merge(['orderId' => $orderId], $refundRequestData)
             );
-        } catch (\Throwable $exception) {
-            throw ExceptionHelper::getPayUException($exception);
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
         }
 
         try {
@@ -68,8 +68,8 @@ class RefundRequestService
             );
 
             $refundCreatedResponse = RefundCreatedResponse::fromResponse($response);
-        } catch (\Throwable $e) {
-            throw new MalformedResponseException($response ?? [], $e);
+        } catch (\Throwable $throwable) {
+            throw new MalformedResponseException($response ?? [], $throwable);
         }
 
         if (ResponseStatusCode::Success !== $refundCreatedResponse->status->statusCode) {
@@ -100,8 +100,8 @@ class RefundRequestService
                     $configKey
                 )
             );
-        } catch (\Throwable $exception) {
-            throw ExceptionHelper::getPayUException($exception);
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
         }
 
         try {
@@ -114,8 +114,8 @@ class RefundRequestService
                 static fn(array $refund) => RefundResponse::fromResponse($refund),
                 $response['refunds']
             );
-        } catch (\Throwable $e) {
-            throw new MalformedResponseException($response ?? [], $e);
+        } catch (\Throwable $throwable) {
+            throw new MalformedResponseException($response ?? [], $throwable);
         }
     }
 
@@ -137,16 +137,16 @@ class RefundRequestService
                     $configKey
                 )
             );
-        } catch (\Throwable $exception) {
-            throw ExceptionHelper::getPayUException($exception);
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
         }
 
         try {
             $response = json_decode($result->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             return RefundResponse::fromResponse($response);
-        } catch (\Throwable $e) {
-            throw new MalformedResponseException($response ?? [], $e);
+        } catch (\Throwable $throwable) {
+            throw new MalformedResponseException($response ?? [], $throwable);
         }
     }
 }

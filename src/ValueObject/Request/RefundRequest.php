@@ -10,7 +10,7 @@ use Answear\Payum\PayU\ValueObject\Request\Refund\Refund;
 class RefundRequest
 {
     public const METHOD = 'POST';
-    public const AUTH_TYPE = AuthType::Base;
+    public const AUTH_TYPE = AuthType::Basic;
 
     public function __construct(
         public readonly Refund $refund

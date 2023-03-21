@@ -5,6 +5,11 @@ services:
         public: false
 
     Answear\Payum\PayU\:
-        resource: '../../../src/{Action,Request,Service}'
+        resource: '../../../src/{Request,Service}'
+
+    Answear\Payum\PayU\Action\:
+        resource: '../../../src/Action/*'
+        public: true
+        shared: false
 
     Answear\Payum\PayU\Client\Client: ~

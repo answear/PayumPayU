@@ -13,7 +13,7 @@ class ConfigProvider
     private const OAUTH_CONTEXT = 'pl/standard/user/oauth/authorize';
     private const DOMAIN_PART = 'payu.com/';
     private const API_PART = 'api/';
-    private const API_VERSION_PART = 'v2.1/';
+    private const API_VERSION_PART = 'v2_1/';
 
     private readonly Environment $environment;
     /** @var Configuration[] */
