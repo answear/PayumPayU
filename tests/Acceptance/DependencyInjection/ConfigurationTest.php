@@ -38,7 +38,8 @@ class ConfigurationTest extends TestCase
 
         $configProviderDefinition = $builder->getDefinition(ConfigProvider::class);
 
-        self::assertSame($configs[0]['configs'], $configProviderDefinition->getArgument(0));
+        self::assertSame($configs[0]['environment'], $configProviderDefinition->getArgument(0));
+        self::assertSame($configs[0]['configs'], $configProviderDefinition->getArgument(1));
     }
 
     /**
@@ -87,7 +88,7 @@ class ConfigurationTest extends TestCase
                     'apiKey' => 'apiKeyString',
                 ],
             ],
-            'Unrecognized option "apiKey" under "answear_payum_payu". Available options are "configs", "logger".',
+            'Unrecognized option "apiKey" under "answear_payum_payu". Available options are "configs", "environment", "logger".',
         ];
 
         yield [
@@ -102,6 +103,7 @@ class ConfigurationTest extends TestCase
         yield [
             [
                 [
+                    'environment' => 'sandbox',
                     'configs' => [],
                 ],
             ],
@@ -111,9 +113,9 @@ class ConfigurationTest extends TestCase
         yield [
             [
                 [
+                    'environment' => 'sandbox',
                     'configs' => [
                         [
-                            'environment' => 'sandbox',
                             'public_shop_id' => 'sas323',
                             'pos_id' => 12653,
                             'signature_key' => 'sign_key527',
@@ -129,9 +131,9 @@ class ConfigurationTest extends TestCase
         yield [
             [
                 [
+                    'environment' => 'sandbox',
                     'configs' => [
                         'pos_key' => [
-                            'environment' => 'sandbox',
                             'public_shop_id' => 'sas323',
                             'pos_id' => 12653,
                             'signature_key' => 'sign_key527',
@@ -146,9 +148,9 @@ class ConfigurationTest extends TestCase
         yield [
             [
                 [
+                    'environment' => 'sandbox',
                     'configs' => [
                         'pos_key' => [
-                            'environment' => 'sandbox',
                             'public_shop_id' => 'sas323',
                             'pos_id' => 12653,
                             'signature_key' => 'sign_key527',
@@ -156,7 +158,6 @@ class ConfigurationTest extends TestCase
                             'oauth_secret' => 'secret@#$VFSDF',
                         ],
                         'second_pos_key' => [
-                            'environment' => 'sandbox',
                             'public_shop_id' => 'sas323',
                             'pos_id' => 12653,
                             'oauth_client_id' => 98274,
@@ -174,9 +175,9 @@ class ConfigurationTest extends TestCase
         yield [
             [
                 [
+                    'environment' => 'sandbox',
                     'configs' => [
                         'pos_key' => [
-                            'environment' => 'sandbox',
                             'public_shop_id' => 'sas323',
                             'pos_id' => 12653,
                             'signature_key' => 'sign_key527',
@@ -196,9 +197,9 @@ class ConfigurationTest extends TestCase
         yield [
             [
                 [
+                    'environment' => Environment::Sandbox->value,
                     'configs' => [
                         'first_pos' => [
-                            'environment' => Environment::Sandbox->value,
                             'public_shop_id' => 'sas323',
                             'pos_id' => 12653,
                             'signature_key' => 'sign_key527',
@@ -213,9 +214,9 @@ class ConfigurationTest extends TestCase
         yield [
             [
                 [
+                    'environment' => Environment::Secure->value,
                     'configs' => [
                         'first_pos' => [
-                            'environment' => Environment::Secure->value,
                             'public_shop_id' => 'sas323',
                             'pos_id' => 12653,
                             'signature_key' => 'sign_key527',
@@ -223,7 +224,6 @@ class ConfigurationTest extends TestCase
                             'oauth_secret' => 'secret@#$VFSDF',
                         ],
                         'second_pos' => [
-                            'environment' => Environment::Secure->value,
                             'public_shop_id' => 'sass323',
                             'pos_id' => '12653',
                             'signature_key' => 'signd_key527',

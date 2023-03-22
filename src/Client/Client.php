@@ -9,7 +9,6 @@ use Answear\Payum\PayU\Authorization\AuthType\Basic;
 use Answear\Payum\PayU\Authorization\AuthType\Oauth;
 use Answear\Payum\PayU\Authorization\AuthType\TokenRequest;
 use Answear\Payum\PayU\Enum\AuthType;
-use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Enum\OauthGrantType;
 use Answear\Payum\PayU\Service\ConfigProvider;
 use Answear\Payum\PayU\ValueObject\Auth\OauthResultClientCredentials;
@@ -33,31 +32,29 @@ class Client
     }
 
     public function getAuthorizeHeaders(
-        Environment $environment,
         AuthType $authType,
         ?string $configKey,
         ?string $email = null,
         ?string $extCustomerId = null
-    ): array {
+    ): AuthorizationAuthType {
         $config = $this->configProvider->getConfig($configKey);
 
         if (AuthType::OAuthClientCredentials === $authType) {
-            $accessToken = $this->retrieveAccessToken($environment, OauthGrantType::ClientCredential, $config);
+            $accessToken = $this->retrieveAccessToken(OauthGrantType::ClientCredential, $config);
 
-            return (new Oauth($accessToken))->getHeaders();
+            return new Oauth($accessToken);
         }
 
         if (AuthType::OAuthClientTrustedMerchant === $authType) {
-            $accessToken = $this->retrieveAccessToken($environment, OauthGrantType::ClientCredential, $config, $email, $extCustomerId);
+            $accessToken = $this->retrieveAccessToken(OauthGrantType::ClientCredential, $config, $email, $extCustomerId);
 
-            return (new Oauth($accessToken))->getHeaders();
+            return new Oauth($accessToken);
         }
 
-        return (new Basic($config->posId, $config->signatureKey))->getHeaders();
+        return new Basic($config->posId, $config->signatureKey);
     }
 
     private function retrieveAccessToken(
-        Environment $environment,
         OauthGrantType $oauthGrantType,
         Configuration $configuration,
         ?string $email = null,
@@ -67,9 +64,7 @@ class Client
             return $this->clientCredentials->accessToken;
         }
 
-        $authType = new TokenRequest();
-
-        $oauthUrl = $this->configProvider->getOAuthEndpoint($environment);
+        $oauthUrl = $this->configProvider->getOAuthEndpoint();
         $data = [
             'grant_type' => $oauthGrantType->value,
             'client_id' => $configuration->oauthClientId,
@@ -82,18 +77,39 @@ class Client
         }
 
         $this->clientCredentials = OauthResultClientCredentials::fromResponse(
-            $this->request(self::METHOD_POST, $oauthUrl, $authType, $data)
+            $this->tokenRequest(self::METHOD_POST, $oauthUrl, $data)
         );
 
         return $this->clientCredentials->accessToken;
     }
 
-    private function request(string $method, string $pathUrl, AuthorizationAuthType $auth, ?array $data = null): ResponseInterface
+    public function payuRequest(string $method, string $endpoint, AuthorizationAuthType $authType, ?array $data = null): ResponseInterface
+    {
+        $pathUrl = $this->configProvider->getServiceUrl() . $endpoint;
+        $psrRequest = new HttpRequest(
+            $method,
+            new Uri($pathUrl),
+            $authType->getHeaders(),
+            'GET' === $method
+                ? null
+                : json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        );
+
+        $psrResponse = $this->client->send($psrRequest);
+
+        if ($psrResponse->getBody()->isSeekable()) {
+            $psrResponse->getBody()->rewind();
+        }
+
+        return $psrResponse;
+    }
+
+    private function tokenRequest(string $method, string $pathUrl, ?array $data = null): ResponseInterface
     {
         $psrRequest = new HttpRequest(
             $method,
             new Uri($pathUrl),
-            $auth->getHeaders(),
+            (new TokenRequest())->getHeaders(),
             'GET' === $method ? null : http_build_query($data, '', '&')
         );
 

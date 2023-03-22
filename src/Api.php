@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU;
 
-use Answear\Payum\PayU\Authorization\Authorize;
 use Answear\Payum\PayU\ValueObject\Configuration;
-use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response;
 use Payum\Core\Exception\InvalidArgumentException;
@@ -17,8 +15,8 @@ class Api
 {
     private readonly ?string $defaultConfigKey;
     private Request\Shop $shopRequestService;
-    private Request\Order $orderRequestService;
-    private Request\PayMethods $payMethodsRequestService;
+    private Request\OrderRequestService $orderRequestService;
+    private Request\PayMethodsRequestService $payMethodsRequestService;
     private Request\Refund $refundRequestService;
 
     /**
@@ -44,7 +42,7 @@ class Api
     public function shopInfo(?string $configKey): Response\ShopInfo
     {
         $config = $this->getConfig($configKey);
-        Authorize::withClientSecret($config);
+        // Authorize::withClientSecret($config);
 
         return $this->getShopRequest()->getShopInfo($config->publicShopId);
     }
@@ -53,21 +51,9 @@ class Api
      * @throws Exception\MalformedResponseException
      * @throws Exception\PayUException
      */
-    public function createOrder(OrderRequest $orderRequest, ?string $configKey): Response\OrderCreatedResponse
-    {
-        $config = $this->getConfig($configKey);
-        Authorize::base($config);
-
-        return $this->getOrderRequest()->create($orderRequest, $config->posId);
-    }
-
-    /**
-     * @throws Exception\MalformedResponseException
-     * @throws Exception\PayUException
-     */
     public function createRefund(string $orderId, RefundRequest $refundRequest, ?string $configKey): Response\RefundCreatedResponse
     {
-        Authorize::base($this->getConfig($configKey));
+        // Authorize::base($this->getConfig($configKey));
 
         return $this->getRefundRequest()->create($orderId, $refundRequest);
     }
@@ -78,7 +64,7 @@ class Api
      */
     public function retrieveOrder(string $orderId, ?string $configKey): Response\OrderRetrieveResponse
     {
-        Authorize::base($this->getConfig($configKey));
+        // Authorize::base($this->getConfig($configKey));
 
         return $this->getOrderRequest()->retrieve($orderId);
     }
@@ -91,7 +77,7 @@ class Api
      */
     public function retrieveTransactions(string $orderId, ?string $configKey): array
     {
-        Authorize::base($this->getConfig($configKey));
+        // Authorize::base($this->getConfig($configKey));
 
         return $this->getOrderRequest()->retrieveTransactions($orderId);
     }
@@ -104,7 +90,7 @@ class Api
      */
     public function retrieveRefundList(string $orderId, ?string $configKey): array
     {
-        Authorize::base($this->getConfig($configKey));
+        // Authorize::base($this->getConfig($configKey));
 
         return $this->getRefundRequest()->retrieveRefundList($orderId);
     }
@@ -115,35 +101,9 @@ class Api
      */
     public function retrieveSingleRefund(string $orderId, string $refundId, ?string $configKey): Response\Refund
     {
-        Authorize::base($this->getConfig($configKey));
+        // Authorize::base($this->getConfig($configKey));
 
         return $this->getRefundRequest()->retrieveSingleRefund($orderId, $refundId);
-    }
-
-    /**
-     * @throws Exception\MalformedResponseException
-     * @throws Exception\PayUException
-     */
-    public function retrievePayMethods(?string $configKey, ?string $lang = null): Response\PayMethodsResponse
-    {
-        Authorize::withClientSecret($this->getConfig($configKey));
-
-        return $this->getPayMethodsRequest()->retrieve($lang);
-    }
-
-    /**
-     * @throws Exception\MalformedResponseException
-     * @throws Exception\PayUException
-     */
-    public function retrievePayMethodsForUser(
-        string $userId,
-        string $userEmail,
-        ?string $configKey,
-        ?string $lang = null,
-    ): Response\PayMethodsResponse {
-        Authorize::withTrusted($this->getConfig($configKey), $userId, $userEmail);
-
-        return $this->getPayMethodsRequest()->retrieve($lang);
     }
 
     public function signatureIsValid(string $signatureHeader, string $data, ?string $configKey): bool
@@ -187,22 +147,13 @@ class Api
         return $this->shopRequestService;
     }
 
-    private function getOrderRequest(): Request\Order
+    private function getOrderRequest(): Request\OrderRequestService
     {
         if (!isset($this->orderRequestService)) {
-            $this->orderRequestService = new Request\Order($this->logger);
+            $this->orderRequestService = new Request\OrderRequestService($this->logger);
         }
 
         return $this->orderRequestService;
-    }
-
-    private function getPayMethodsRequest(): Request\PayMethods
-    {
-        if (!isset($this->payMethodsRequestService)) {
-            $this->payMethodsRequestService = new Request\PayMethods($this->logger);
-        }
-
-        return $this->payMethodsRequestService;
     }
 
     private function getRefundRequest(): Request\Refund
