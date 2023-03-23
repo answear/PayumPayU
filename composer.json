@@ -12,7 +12,6 @@
         "php": "^8.1",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^6.5.8 || ^7.0",
-        "openpayu/openpayu": "^2.3.5",
         "payum/core": "^1.7.3",
         "symfony/http-kernel": "^5.4|^6.0",
         "webmozart/assert": "^1.11"
