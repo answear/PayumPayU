@@ -6,6 +6,7 @@ namespace Answear\Payum\PayU\Tests\Integration\Action;
 
 use Answear\Payum\Model\PaidForInterface;
 use Answear\Payum\PayU\Action\ConvertPaymentAction;
+use Answear\Payum\PayU\Service\UserIpService;
 use Answear\Payum\PayU\Tests\Payment;
 use Payum\Core\Model\CreditCard;
 use Payum\Core\Request\Convert;
@@ -18,7 +19,7 @@ class ConvertActionTest extends TestCase
      */
     public function convertWithLowInfoTest(): void
     {
-        $convertAction = new ConvertPaymentAction();
+        $convertAction = new ConvertPaymentAction(new UserIpService());
 
         $paidFor = $this->createMock(PaidForInterface::class);
         $paidFor->method('getEmail')
@@ -72,7 +73,7 @@ class ConvertActionTest extends TestCase
      */
     public function convertWithFullDataTest(): void
     {
-        $convertAction = new ConvertPaymentAction();
+        $convertAction = new ConvertPaymentAction(new UserIpService());
 
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 

@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests\Integration\Request;
 
+use Answear\Payum\PayU\Request\ShopRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
+use GuzzleHttp\Psr7\Response;
 
 class ShopInfoTest extends AbstractRequestTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->markTestSkipped('Unskip after refactor');
-    }
-
     /**
      * @test
      */
     public function shopInfoTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/shopInfoResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/authorisationResponse.json'))
+        );
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/shopInfoResponse.json'))
+        );
 
-        $response = $this->getApiService()->shopInfo(null);
+        $response = $this->getShopRequestService()->getShopInfo(null);
         self::assertSame(
             [
                 'Shop Checkout',
@@ -44,6 +44,14 @@ class ShopInfoTest extends AbstractRequestTestCase
                     $response->balance->total,
                 ],
             ]
+        );
+    }
+
+    private function getShopRequestService(): ShopRequestService
+    {
+        return new ShopRequestService(
+            $this->getConfigProvider(),
+            $this->getClient()
         );
     }
 }

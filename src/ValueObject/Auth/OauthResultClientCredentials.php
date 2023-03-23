@@ -6,6 +6,7 @@ namespace Answear\Payum\PayU\ValueObject\Auth;
 
 use Answear\Payum\PayU\Enum\OauthGrantType;
 use Psr\Http\Message\ResponseInterface;
+use Webmozart\Assert\Assert;
 
 class OauthResultClientCredentials
 {
@@ -20,14 +21,19 @@ class OauthResultClientCredentials
 
     public static function fromResponse(ResponseInterface $response): self
     {
-        $body = $response->getBody();
-        $expiresIn = (int) $body['expires_in'];
+        $content = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+
+        foreach (['expires_in', 'access_token', 'token_type', 'grant_type'] as $requireKey) {
+            Assert::keyExists($content, $requireKey, sprintf('Key %s is required for oauth credentials', $requireKey));
+        }
+
+        $expiresIn = (int) $content['expires_in'];
 
         return new self(
-            $body['access_token'],
-            $body['token_type'],
+            $content['access_token'],
+            $content['token_type'],
             $expiresIn,
-            OauthGrantType::from($body['grant_type']),
+            OauthGrantType::from($content['grant_type']),
             self::calculateExpireDate(new \DateTimeImmutable(), $expiresIn)
         );
     }
