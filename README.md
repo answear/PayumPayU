@@ -1,6 +1,6 @@
 # PayU payment gateway for [payum](http://payum.org/)
 
-(Symfony bundle)
+This is Symfony bundle, but can be used as php library as well.
 
 PayU documentation: https://developers.payu.com/pl/restapi.html
 
@@ -8,27 +8,43 @@ PayU documentation: https://developers.payu.com/pl/restapi.html
 
 Provide configuration for `payum`
 
-TODO configuration for bundle.
+```yaml
+answear_payum_pay_u:
+    environment: 'sandbox'
+    configs:
+        pos_1234:
+            pos_id: '1234'
+            signature_key: 'signature_key'
+            oauth_client_id: 'oauth_client_id'
+            oauth_secret: 'oauth_secret'
+        pos_5678:
+            pos_id: '5678'
+            signature_key: 'signature_key'
+            oauth_client_id: 'oauth_client_id'
+            oauth_secret: 'oauth_secret'
+    logger: 'Psr\Log\LoggerInterface'
+```
+
+`logger` path is not required. Used if you want log some requests and responses. Provide service name to get definition.
+
+
+
+---
 
 ```yaml
 payum:
     gateways:
         payu:
             factory: payu
-            configs:
-                first:
-                    environment: 'sandbox'
-                    pos_id: 'pos_id'
-                    signature_key: 'signature_key'
-                    oauth_client_id: 'oauth_client_id'
-                    oauth_secret: 'oauth_secret'
-                second:
-                    environment: 'secure'
-                    pos_id: 'secure_pos_id'
-                    signature_key: 'secure_signature_key'
-                    oauth_client_id: 'secure_oauth_client_id'
-                    oauth_secret: 'secure_oauth_secret'
+            payum.action.capture: '@Answear\Payum\PayU\Action\CaptureAction'
+            payum.action.refund: '@Answear\Payum\PayU\Action\RefundAction'
+            payum.action.notify: '@Answear\Payum\PayU\Action\NotifyAction'
+            payum.action.status: '@Answear\Payum\PayU\Action\StatusAction'
+            payum.action.convert_payment: '@Answear\Payum\PayU\Action\ConvertPaymentAction'
+            payum.action.sync_payment: '@Answear\Payum\PayU\Action\SyncPaymentAction'
 ```
+
+Need to provide all `payum.action` as a service.
 
 ---
 
@@ -45,4 +61,5 @@ $gateway->execute($captureRequest);
 
 ### Missing features
 
-`OrderRequest` params `cardOnFile`, `recurring`, `mcpData`, `threeDsAuthentication`, `credit`
+* `OrderRequest` params `cardOnFile`, `recurring`, `mcpData`, `threeDsAuthentication`, `credit`
+* ...
