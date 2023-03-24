@@ -24,9 +24,9 @@ class Basic implements AuthType
     public function getHeaders(): array
     {
         return [
-            'Content-Type: application/json',
-            'Accept: application/json',
-            'Authorization: Basic ' . $this->authBasicToken,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => 'Basic ' . $this->authBasicToken,
         ];
     }
 }

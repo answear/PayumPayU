@@ -59,8 +59,8 @@ class OrderRequestService
                 ),
                 $orderRequestData
             );
-        } catch (\Throwable $exception) {
-            throw ExceptionHelper::getPayUException($exception);
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
         }
 
         try {
@@ -74,8 +74,8 @@ class OrderRequestService
             );
 
             return OrderCreatedResponse::fromResponse($response);
-        } catch (\Throwable $e) {
-            throw new MalformedResponseException($response ?? [], $e);
+        } catch (\Throwable $throwable) {
+            throw new MalformedResponseException($response ?? [], $throwable);
         }
     }
 
@@ -90,20 +90,20 @@ class OrderRequestService
                 'GET',
                 self::ENDPOINT . $orderId,
                 $this->client->getAuthorizeHeaders(
-                    AuthType::Base,
+                    AuthType::Basic,
                     $configKey
                 )
             );
-        } catch (\Throwable $exception) {
-            throw ExceptionHelper::getPayUException($exception);
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
         }
 
         try {
             $response = json_decode($result->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             return OrderRetrieveResponse::fromResponse($response);
-        } catch (\Throwable $e) {
-            throw new MalformedResponseException($response ?? [], $e);
+        } catch (\Throwable $throwable) {
+            throw new MalformedResponseException($response ?? [], $throwable);
         }
     }
 
@@ -120,12 +120,12 @@ class OrderRequestService
                 'GET',
                 self::ENDPOINT . $orderId . '/' . self::ORDER_TRANSACTION_SERVICE,
                 $this->client->getAuthorizeHeaders(
-                    AuthType::Base,
+                    AuthType::Basic,
                     $configKey
                 )
             );
-        } catch (\Throwable $exception) {
-            throw ExceptionHelper::getPayUException($exception);
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
         }
 
         try {
@@ -152,8 +152,8 @@ class OrderRequestService
             }
 
             return $transactions;
-        } catch (\Throwable $e) {
-            throw new MalformedResponseException($response ?? [], $e);
+        } catch (\Throwable $throwable) {
+            throw new MalformedResponseException($response ?? [], $throwable);
         }
     }
 }

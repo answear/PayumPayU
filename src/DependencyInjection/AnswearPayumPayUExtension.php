@@ -8,11 +8,23 @@ use Answear\Payum\PayU\Service\ConfigProvider;
 use Answear\Payum\PayU\Service\PayULogger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-class AnswearPayumPayUExtension extends Extension
+class AnswearPayumPayUExtension extends Extension implements PrependExtensionInterface
 {
+    private ?Definition $loggerDefinition = null;
+
+    public function prepend(ContainerBuilder $container): void
+    {
+        $configs = $container->getExtensionConfig($this->getAlias());
+        if (isset($configs[0]['logger'])) {
+            $this->loggerDefinition = $container->getDefinition($configs[0]['logger']);
+        }
+    }
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader(
@@ -24,20 +36,26 @@ class AnswearPayumPayUExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
 
-        $definition = $container->getDefinition(ConfigProvider::class);
-        $definition->setArguments([$config['environment'], $config['configs']]);
-
-        $this->setLogger($container, $config['logger'] ?? null);
+        $this->setConfigProvider(
+            $container,
+            $config['environment'],
+            $config['configs']
+        );
+        if (isset($config['logger']) && null === $this->loggerDefinition) {
+            $this->loggerDefinition = $container->getDefinition($config['logger']);
+        }
+        $this->setLogger($container, $this->loggerDefinition ?? null);
     }
 
-    private function setLogger(ContainerBuilder $container, ?string $loggerId): void
+    private function setConfigProvider(ContainerBuilder $container, string $environment, array $configs): void
     {
-        $logger = null;
-        if (null !== $loggerId) {
-            $logger = $container->getDefinition($loggerId);
-        }
+        $definition = $container->getDefinition(ConfigProvider::class);
+        $definition->setArguments([$environment, $configs]);
+    }
 
+    private function setLogger(ContainerBuilder $container, ?Definition $loggerDefinition): void
+    {
         $definition = $container->getDefinition(PayULogger::class);
-        $definition->setArguments([$logger]);
+        $definition->setArguments([$loggerDefinition]);
     }
 }

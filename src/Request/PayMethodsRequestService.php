@@ -38,8 +38,8 @@ class PayMethodsRequestService
                     $configKey
                 )
             );
-        } catch (\Throwable $exception) {
-            throw ExceptionHelper::getPayUException($exception);
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
         }
 
         return $this->prepareResponse($result);
@@ -62,8 +62,8 @@ class PayMethodsRequestService
                     $extCustomerId
                 )
             );
-        } catch (\Throwable $exception) {
-            throw ExceptionHelper::getPayUException($exception);
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
         }
 
         return $this->prepareResponse($result);
@@ -81,8 +81,8 @@ class PayMethodsRequestService
             );
 
             $payMethodsResponse = PayMethodsResponse::fromResponse($response);
-        } catch (\Throwable $e) {
-            throw new MalformedResponseException($response ?? [], $e);
+        } catch (\Throwable $throwable) {
+            throw new MalformedResponseException($response ?? [], $throwable);
         }
 
         if (ResponseStatusCode::Success !== $payMethodsResponse->status->statusCode) {

@@ -6,23 +6,24 @@ namespace Answear\Payum\PayU\Client;
 
 use Answear\Payum\PayU\Authorization\AuthType\AuthType as AuthorizationAuthType;
 use Answear\Payum\PayU\Authorization\AuthType\Basic;
-use Answear\Payum\PayU\Authorization\AuthType\Oauth;
+use Answear\Payum\PayU\Authorization\AuthType\OAuth;
 use Answear\Payum\PayU\Authorization\AuthType\TokenRequest;
 use Answear\Payum\PayU\Enum\AuthType;
-use Answear\Payum\PayU\Enum\OauthGrantType;
+use Answear\Payum\PayU\Enum\OAuthGrantType;
 use Answear\Payum\PayU\Service\ConfigProvider;
-use Answear\Payum\PayU\ValueObject\Auth\OauthResultClientCredentials;
+use Answear\Payum\PayU\ValueObject\Auth\OAuthResultClientCredentials;
 use Answear\Payum\PayU\ValueObject\Configuration;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request as HttpRequest;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
     private const METHOD_POST = 'POST';
 
-    private ?OauthResultClientCredentials $clientCredentials = null;
+    private ?OAuthResultClientCredentials $clientCredentials = null;
 
     public function __construct(
         private ConfigProvider $configProvider,
@@ -40,22 +41,22 @@ class Client
         $config = $this->configProvider->getConfig($configKey);
 
         if (AuthType::OAuthClientCredentials === $authType) {
-            $accessToken = $this->retrieveAccessToken(OauthGrantType::ClientCredential, $config);
+            $accessToken = $this->retrieveAccessToken(OAuthGrantType::ClientCredential, $config);
 
-            return new Oauth($accessToken);
+            return new OAuth($accessToken);
         }
 
         if (AuthType::OAuthClientTrustedMerchant === $authType) {
-            $accessToken = $this->retrieveAccessToken(OauthGrantType::ClientCredential, $config, $email, $extCustomerId);
+            $accessToken = $this->retrieveAccessToken(OAuthGrantType::TrustedMerchant, $config, $email, $extCustomerId);
 
-            return new Oauth($accessToken);
+            return new OAuth($accessToken);
         }
 
         return new Basic($config->posId, $config->signatureKey);
     }
 
     private function retrieveAccessToken(
-        OauthGrantType $oauthGrantType,
+        OAuthGrantType $oauthGrantType,
         Configuration $configuration,
         ?string $email = null,
         ?string $extCustomerId = null
@@ -71,13 +72,13 @@ class Client
             'client_secret' => $configuration->oauthClientSecret,
         ];
 
-        if (OauthGrantType::TrustedMerchant === $oauthGrantType) {
+        if (OAuthGrantType::TrustedMerchant === $oauthGrantType) {
             $data['email'] = $email;
             $data['ext_customer_id'] = $extCustomerId;
         }
 
-        $this->clientCredentials = OauthResultClientCredentials::fromResponse(
-            $this->tokenRequest(self::METHOD_POST, $oauthUrl, $data)
+        $this->clientCredentials = OAuthResultClientCredentials::fromResponse(
+            $this->tokenRequest($oauthUrl, $data)
         );
 
         return $this->clientCredentials->accessToken;
@@ -95,7 +96,7 @@ class Client
                 : json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
         );
 
-        $psrResponse = $this->client->send($psrRequest);
+        $psrResponse = $this->client->send($psrRequest, [RequestOptions::ALLOW_REDIRECTS => false]);
 
         if ($psrResponse->getBody()->isSeekable()) {
             $psrResponse->getBody()->rewind();
@@ -104,13 +105,13 @@ class Client
         return $psrResponse;
     }
 
-    private function tokenRequest(string $method, string $pathUrl, ?array $data = null): ResponseInterface
+    private function tokenRequest(string $pathUrl, ?array $data = null): ResponseInterface
     {
         $psrRequest = new HttpRequest(
-            $method,
+            self::METHOD_POST,
             new Uri($pathUrl),
             (new TokenRequest())->getHeaders(),
-            'GET' === $method ? null : http_build_query($data, '', '&')
+            http_build_query($data, '', '&')
         );
 
         $psrResponse = $this->client->send($psrRequest);
@@ -122,13 +123,13 @@ class Client
         return $psrResponse;
     }
 
-    private function hasValidAccessToken(OauthGrantType $oauthGrantType): bool
+    private function hasValidAccessToken(OAuthGrantType $oauthGrantType): bool
     {
-        if (!isset($this->clientCredentials) || $this->clientCredentials->hasExpire()) {
+        if (!isset($this->clientCredentials) || $this->clientCredentials->isExpired()) {
             return false;
         }
 
-        if (OauthGrantType::TrustedMerchant === $oauthGrantType || OauthGrantType::TrustedMerchant === $this->clientCredentials->grantType) {
+        if (OAuthGrantType::TrustedMerchant === $oauthGrantType || OAuthGrantType::TrustedMerchant === $this->clientCredentials->grantType) {
             return false;
         }
 

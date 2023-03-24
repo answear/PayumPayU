@@ -40,8 +40,8 @@ class ShopRequestService
             $response = json_decode($result->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             return Response\ShopInfo::fromResponse($response);
-        } catch (\Throwable $exception) {
-            throw ExceptionHelper::getPayUException($exception);
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
         }
     }
 }
