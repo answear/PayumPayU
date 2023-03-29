@@ -1,0 +1,38 @@
+{
+    "order": {
+        "orderId": "LDLW5N7MF4140324GUEST000P01",
+        "extOrderId": "extOrderId9836y",
+        "orderCreateDate": "2012-12-31T12:00:00",
+        "notifyUrl": "http://tempuri.org/notify",
+        "customerIp": "127.0.0.1",
+        "merchantPosId": "merchantPosId",
+        "description": "Twój opis zamówienia",
+        "currencyCode": "PLN",
+        "totalAmount": "200",
+        "buyer": {
+            "email": "john.doe@example.org",
+            "phone": "111111111",
+            "firstName": "John",
+            "lastName": "Doe",
+            "language": "pl"
+        },
+        "payMethod": {
+            "type": "PBL"
+        },
+        "products": [
+            {
+                "name": "Product 1",
+                "unitPrice": "200",
+                "quantity": "1"
+            }
+        ],
+        "status": "COMPLETED"
+    },
+    "localReceiptDateTime": "2016-03-02T12:58:14.828+01:00",
+    "properties": [
+        {
+            "name": "PAYMENT_ID",
+            "value": "151471228"
+        }
+    ]
+}

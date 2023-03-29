@@ -6,9 +6,12 @@ namespace Answear\Payum\PayU\Tests\Integration\Request;
 
 use Answear\Payum\PayU\Enum\RefundStatus;
 use Answear\Payum\PayU\Enum\RefundStatusErrorCode;
+use Answear\Payum\PayU\Request\RefundRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\Refund;
 use Answear\Payum\PayU\ValueObject\Response\RefundStatusError;
+use GuzzleHttp\Psr7\Response;
+use Psr\Log\NullLogger;
 
 class RetrieveRefundsTest extends AbstractRequestTestCase
 {
@@ -17,11 +20,13 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
      */
     public function retrieveRefundListTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/retrieveRefundListResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/retrieveRefundListResponse.json'))
+        );
 
         $orderId = 'ZXWZ53KQQM200702GUEST000P01';
 
-        $refundList = $this->getApiService()->retrieveRefundList($orderId, null);
+        $refundList = $this->getRefundRequestService()->retrieveRefundList($orderId, null);
         self::assertIsArray($refundList);
         self::assertCount(2, $refundList);
         self::assertEquals(
@@ -56,12 +61,14 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
      */
     public function retrieveSingleRefundTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/retrieveSingleRefundResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/retrieveSingleRefundResponse.json'))
+        );
 
         $orderId = 'ZXWZ53KQQM200702GUEST000P01';
         $refundId = '5000000142';
 
-        $refundList = $this->getApiService()->retrieveSingleRefund($orderId, $refundId, null);
+        $refundList = $this->getRefundRequestService()->retrieveSingleRefund($orderId, $refundId, null);
         self::assertEquals(
             new Refund(
                 '5000000108',
@@ -87,12 +94,22 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
      */
     public function retrieveEmptyRefundListTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/retrieveEmptyRefundListResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/retrieveEmptyRefundListResponse.json'))
+        );
 
         $orderId = 'ZXWZ53KQQM200702GUEST000P01';
 
-        $refundList = $this->getApiService()->retrieveRefundList($orderId, null);
+        $refundList = $this->getRefundRequestService()->retrieveRefundList($orderId, null);
         self::assertIsArray($refundList);
         self::assertCount(0, $refundList);
+    }
+
+    private function getRefundRequestService(): RefundRequestService
+    {
+        return new RefundRequestService(
+            $this->getClient(),
+            new NullLogger()
+        );
     }
 }

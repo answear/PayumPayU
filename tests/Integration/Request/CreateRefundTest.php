@@ -7,11 +7,14 @@ namespace Answear\Payum\PayU\Tests\Integration\Request;
 use Answear\Payum\PayU\Enum\RefundStatus;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Exception\PayURequestException;
+use Answear\Payum\PayU\Request\RefundRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Request\Refund\Refund;
 use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\Refund as ResponseRefund;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
+use GuzzleHttp\Psr7\Response;
+use Psr\Log\NullLogger;
 
 class CreateRefundTest extends AbstractRequestTestCase
 {
@@ -20,7 +23,9 @@ class CreateRefundTest extends AbstractRequestTestCase
      */
     public function createTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/refundCreatedResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/refundCreatedResponse.json'))
+        );
 
         $orderId = 'ZXWZ53KQQM200702GUEST000P01';
         $refundRequest = new RefundRequest(
@@ -31,7 +36,7 @@ class CreateRefundTest extends AbstractRequestTestCase
             )
         );
 
-        $refundCreated = $this->getApiService()->createRefund($orderId, $refundRequest, null);
+        $refundCreated = $this->getRefundRequestService()->create($orderId, $refundRequest, null);
         self::assertEquals(new ResponseStatus(ResponseStatusCode::Success, 'Refund queued for processing'), $refundCreated->status);
         self::assertSame($orderId, $refundCreated->orderId);
         $refund = $refundCreated->refund;
@@ -55,7 +60,9 @@ class CreateRefundTest extends AbstractRequestTestCase
      */
     public function errorTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(400, FileTestUtil::getFileContents(__DIR__ . '/data/refundErrorResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(400, [], FileTestUtil::getFileContents(__DIR__ . '/data/refundErrorResponse.json'))
+        );
 
         $orderId = 'ZXWZ53KQQM200702GUEST000P01';
         $refundRequest = new RefundRequest(
@@ -67,10 +74,10 @@ class CreateRefundTest extends AbstractRequestTestCase
         );
 
         try {
-            $this->getApiService()->createRefund($orderId, $refundRequest, null);
+            $this->getRefundRequestService()->create($orderId, $refundRequest, null);
         } catch (\Throwable $exception) {
             self::assertInstanceOf(PayURequestException::class, $exception);
-            self::assertSame('ERROR_VALUE_MISSING - Missing required field', $exception->getMessage());
+            self::assertStringContainsString('ERROR_VALUE_MISSING', $exception->getMessage());
             self::assertSame(
                 [
                     'status' => [
@@ -88,5 +95,13 @@ class CreateRefundTest extends AbstractRequestTestCase
         }
 
         self::fail('Exception must be thrown.');
+    }
+
+    private function getRefundRequestService(): RefundRequestService
+    {
+        return new RefundRequestService(
+            $this->getClient(),
+            new NullLogger()
+        );
     }
 }

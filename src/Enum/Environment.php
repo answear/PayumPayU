@@ -6,7 +6,6 @@ namespace Answear\Payum\PayU\Enum;
 
 enum Environment: string
 {
-    case Custom = 'custom';
     case Sandbox = 'sandbox';
     case Secure = 'secure';
 

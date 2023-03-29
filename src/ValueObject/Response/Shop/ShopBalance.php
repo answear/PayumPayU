@@ -13,12 +13,12 @@ class ShopBalance
     ) {
     }
 
-    public static function fromPayUShopBalance(\PayuShopBalance $payuShopBalance): self
+    public static function fromResponse(array $shopBalanceResponse): self
     {
         return new self(
-            $payuShopBalance->getCurrencyCode(),
-            (int) $payuShopBalance->getTotal(),
-            (int) $payuShopBalance->getAvailable()
+            $shopBalanceResponse['currencyCode'],
+            (int) $shopBalanceResponse['total'],
+            (int) $shopBalanceResponse['available']
         );
     }
 }

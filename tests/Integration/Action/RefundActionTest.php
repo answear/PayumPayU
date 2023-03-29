@@ -6,8 +6,8 @@ namespace Answear\Payum\PayU\Tests\Integration\Action;
 
 use Answear\Payum\Action\Request\Refund;
 use Answear\Payum\PayU\Action\RefundAction;
-use Answear\Payum\PayU\Api;
 use Answear\Payum\PayU\Enum\ModelFields;
+use Answear\Payum\PayU\Request\RefundRequestService;
 use Answear\Payum\PayU\Tests\Payment;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
@@ -58,7 +58,9 @@ class RefundActionTest extends TestCase
      */
     public function errorTest(): void
     {
-        $refundCreatedResponse = RefundCreatedResponse::fromResponse(FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/refundCreatedFailsResponse.json'));
+        $refundCreatedResponse = RefundCreatedResponse::fromResponse(
+            FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/refundCreatedFailsResponse.json')
+        );
 
         $refundAction = $this->getRefundAction($refundCreatedResponse);
 
@@ -93,14 +95,10 @@ class RefundActionTest extends TestCase
 
     private function getRefundAction(RefundCreatedResponse $refundCreatedResponse): RefundAction
     {
-        $refundAction = new RefundAction();
-
-        $api = $this->createMock(Api::class);
-        $api->method('createRefund')
+        $refundRequestService = $this->createMock(RefundRequestService::class);
+        $refundRequestService->method('create')
             ->willReturn($refundCreatedResponse);
 
-        $refundAction->setApi($api);
-
-        return $refundAction;
+        return new RefundAction($refundRequestService);
     }
 }

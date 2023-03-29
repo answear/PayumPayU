@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests\Integration\Request;
 
+use Answear\Payum\PayU\Request\OrderRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\PayMethod;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByCreditCard;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByPBL;
+use GuzzleHttp\Psr7\Response;
+use Psr\Log\NullLogger;
 
 class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
 {
@@ -16,10 +19,12 @@ class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
      */
     public function retrieveByCardTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/orderRetrieveTransactionsByCard.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/orderRetrieveTransactionsByCard.json'))
+        );
 
         $orderId = 'WZHF5FFDRJ140731GUEST000P01';
-        $response = $this->getApiService()->retrieveTransactions($orderId, null);
+        $response = $this->getOrderRequestService()->retrieveTransactions($orderId, null);
         self::assertCount(1, $response);
         /** @var ByCreditCard $transaction */
         $transaction = $response[0];
@@ -56,10 +61,12 @@ class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
      */
     public function retrieveByPBLTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/orderRetrieveTransactionsByPBL.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/orderRetrieveTransactionsByPBL.json'))
+        );
 
         $orderId = 'WZHF5FFDRJ140731GUEST000P01';
-        $response = $this->getApiService()->retrieveTransactions($orderId, null);
+        $response = $this->getOrderRequestService()->retrieveTransactions($orderId, null);
         self::assertCount(1, $response);
         /** @var ByPBL $transaction */
         $transaction = $response[0];
@@ -77,6 +84,15 @@ class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
                 'address' => 'Warszawa Nowowiejskiego 8',
             ],
             $transaction->bankAccount
+        );
+    }
+
+    private function getOrderRequestService(): OrderRequestService
+    {
+        return new OrderRequestService(
+            $this->getConfigProvider(),
+            $this->getClient(),
+            new NullLogger()
         );
     }
 }

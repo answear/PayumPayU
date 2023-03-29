@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Action;
 
 use Answear\Payum\Model\Payment;
-use Answear\Payum\PayU\ApiAwareTrait;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Model\Model;
+use Answear\Payum\PayU\Request\OrderRequestService;
+use Answear\Payum\PayU\Request\PayMethodsRequestService;
 use Answear\Payum\PayU\Util\PaymentHelper;
 use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
@@ -17,7 +18,6 @@ use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\StatusCode;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
@@ -30,11 +30,16 @@ use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
 use Payum\Core\Security\TokenInterface;
 
-class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenFactoryAwareInterface, GatewayAwareInterface
+class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterface, GatewayAwareInterface
 {
-    use ApiAwareTrait;
     use GatewayAwareTrait;
     use GenericTokenFactoryAwareTrait;
+
+    public function __construct(
+        private OrderRequestService $orderRequestService,
+        private PayMethodsRequestService $payMethodsRequestService
+    ) {
+    }
 
     /**
      * @param Capture $request
@@ -52,12 +57,13 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
             throw new \LogicException('Capture payment with order id present is forbidden.');
         }
 
+        $configKey = PaymentHelper::getConfigKey($model, $firstModel);
         $orderRequest = $this->prepareOrderRequest($token, $model);
         if (RecurringEnum::Standard === $model->recurring()) {
-            $this->setRecurringStandardPayment($orderRequest, $model);
+            $this->setRecurringStandardPayment($orderRequest, $model, $configKey);
         }
 
-        $orderCreatedResponse = $this->api->createOrder($orderRequest, PaymentHelper::getConfigKey($model, $firstModel));
+        $orderCreatedResponse = $this->orderRequestService->create($orderRequest, $configKey);
         $model->setPayUResponse($orderCreatedResponse);
         if (StatusCode::Success === $orderCreatedResponse->status->statusCode) {
             $this->updatePayment($model, $orderCreatedResponse, $firstModel, $token);
@@ -145,9 +151,9 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GenericTokenF
         );
     }
 
-    private function setRecurringStandardPayment(OrderRequest $orderRequest, Model $model): void
+    private function setRecurringStandardPayment(OrderRequest $orderRequest, Model $model, ?string $configKey): void
     {
-        $payMethods = $this->api->retrievePayMethodsForUser($model->clientId(), $model->clientEmail(), null);
+        $payMethods = $this->payMethodsRequestService->retrieveForUser($model->clientEmail(), $model->clientId(), $configKey);
         if (empty($payMethods->cardTokens)) {
             throw new \InvalidArgumentException('Cannot make this recurring payment. Token for user does not exist.');
         }

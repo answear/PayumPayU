@@ -4,45 +4,48 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Tests\Integration\Request;
 
-use Answear\Payum\PayU\Api;
+use Answear\Payum\PayU\Client\Client;
 use Answear\Payum\PayU\Enum\Environment;
-use Answear\Payum\PayU\Service\PayULogger;
-use Answear\Payum\PayU\ValueObject\Configuration;
+use Answear\Payum\PayU\Service\ConfigProvider;
+use Answear\Payum\PayU\Tests\MockGuzzleTrait;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 
 abstract class AbstractRequestTestCase extends TestCase
 {
-    protected function tearDown(): void
+    use MockGuzzleTrait;
+
+    protected const CONFIG_KEY = 'pos_123';
+
+    protected \GuzzleHttp\Client $client;
+
+    protected function setUp(): void
     {
-        parent::tearDown();
+        parent::setUp();
 
-        \OpenPayU_Configuration::setEnvironment();
-        \OpenPayU_Configuration::setMerchantPosId('');
-        \OpenPayU_Configuration::setSignatureKey('');
-        \OpenPayU_Configuration::setOauthClientId('');
-        \OpenPayU_Configuration::setOauthClientSecret('');
-        \OpenPayU_Configuration::setOauthGrantType(\OauthGrantType::CLIENT_CREDENTIAL);
-        \OpenPayU_Configuration::setOauthEmail('');
-        \OpenPayU_Configuration::setOauthExtCustomerId('');
-
-        \OpenPayU_HttpCurl::clearHistory();
+        $this->client = $this->setupGuzzleClient();
     }
 
-    protected function getApiService(): Api
+    protected function getConfigProvider(): ConfigProvider
     {
-        return new Api(
+        return new ConfigProvider(
+            Environment::Secure->value,
             [
-                'one_pos' => new Configuration(
-                    Environment::Sandbox,
-                    'public_shop_id',
-                    '123',
-                    's-key',
-                    'cl-id',
-                    'sec',
-                ),
-            ],
-            new PayULogger(new NullLogger())
+                self::CONFIG_KEY => [
+                    'public_shop_id' => 'sas323',
+                    'pos_id' => '12653',
+                    'signature_key' => 'sign_key527',
+                    'oauth_client_id' => '98274',
+                    'oauth_secret' => 'secret@#$VFSDF',
+                ],
+            ]
+        );
+    }
+
+    protected function getClient(): Client
+    {
+        return new Client(
+            $this->getConfigProvider(),
+            $this->client
         );
     }
 }

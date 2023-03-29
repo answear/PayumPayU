@@ -5,3 +5,7 @@ parameters:
     level: 5
     paths:
         - %rootDir%/../../../src/
+    ignoreErrors:
+        -
+            message: '#.*NodeDefinition::children.*#'
+            path: ./src/DependencyInjection

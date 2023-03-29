@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Exception;
 
-use Answear\Payum\PayU\Util\JsonHelper;
+use GuzzleHttp\Exception\ClientException;
+use Psr\Http\Message\ResponseInterface;
 
 class PayURequestException extends PayUException
 {
     public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null)
     {
-        if ($previous instanceof \OpenPayU_Exception_Request && $previous->getOriginalResponse()) {
-            $this->response = JsonHelper::getArrayFromObject($this->getOriginalResponse($previous->getOriginalResponse()));
-        }
+        $this->setOriginalResponse($previous);
 
         parent::__construct($message, $code, $previous);
     }
 
-    private function getOriginalResponse($originalResponse): object
+    private function setOriginalResponse(?\Throwable $previous): void
     {
-        if ($originalResponse instanceof \OpenPayU_Result) {
-            return $originalResponse->getResponse();
+        if ($previous instanceof ClientException && $previous->getResponse() instanceof ResponseInterface) {
+            $originalResponse = $previous->getResponse()->getBody()->getContents();
+            $this->response = json_decode($originalResponse, true, 512, JSON_THROW_ON_ERROR);
         }
-
-        return $originalResponse;
     }
 }

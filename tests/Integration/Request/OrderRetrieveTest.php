@@ -8,6 +8,7 @@ use Answear\Payum\PayU\Enum\OrderStatus;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Enum\ResponseStatusCode;
 use Answear\Payum\PayU\Exception\PayUNetworkException;
+use Answear\Payum\PayU\Request\OrderRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Answear\Payum\PayU\ValueObject\PayMethod;
@@ -15,6 +16,8 @@ use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Response\Order;
 use Answear\Payum\PayU\ValueObject\Response\Property;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
+use GuzzleHttp\Psr7\Response;
+use Psr\Log\NullLogger;
 
 class OrderRetrieveTest extends AbstractRequestTestCase
 {
@@ -23,10 +26,12 @@ class OrderRetrieveTest extends AbstractRequestTestCase
      */
     public function retrieveTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/retrieveOrderResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/retrieveOrderResponse.json'))
+        );
 
         $orderId = 'WZHF5FFDRJ140731GUEST000P01';
-        $response = $this->getApiService()->retrieveOrder($orderId, null);
+        $response = $this->getOrderRequestService()->retrieve($orderId, null);
         self::assertEquals(
             new ResponseStatus(
                 ResponseStatusCode::Success,
@@ -83,10 +88,12 @@ class OrderRetrieveTest extends AbstractRequestTestCase
      */
     public function retrieveWithPayMethodTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(200, FileTestUtil::getFileContents(__DIR__ . '/data/retrieveOrderWithPayMethodResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(200, [], FileTestUtil::getFileContents(__DIR__ . '/data/retrieveOrderWithPayMethodResponse.json'))
+        );
 
         $orderId = 'WZHF5FFDRJ140731GUEST000P01';
-        $response = $this->getApiService()->retrieveOrder($orderId, null);
+        $response = $this->getOrderRequestService()->retrieve($orderId, null);
         self::assertEquals(
             new ResponseStatus(
                 ResponseStatusCode::Success,
@@ -141,10 +148,23 @@ class OrderRetrieveTest extends AbstractRequestTestCase
      */
     public function notFoundTest(): void
     {
-        \OpenPayU_HttpCurl::addResponse(404, FileTestUtil::getFileContents(__DIR__ . '/data/retrieveNoOrderResponse.json'));
+        $this->mockGuzzleResponse(
+            new Response(404, [], FileTestUtil::getFileContents(__DIR__ . '/data/retrieveNoOrderResponse.json'))
+        );
 
         $this->expectException(PayUNetworkException::class);
-        $this->expectExceptionMessage('DATA_NOT_FOUND - Could not find data for given criteria.');
-        $this->getApiService()->retrieveOrder('WZHF5FFDRJ140731GUEST000P01', null);
+        $this->expectExceptionCode(404);
+        $this->expectExceptionMessageMatches('/DATA_NOT_FOUND/');
+
+        $this->getOrderRequestService()->retrieve('WZHF5FFDRJ140731GUEST000P01', null);
+    }
+
+    private function getOrderRequestService(): OrderRequestService
+    {
+        return new OrderRequestService(
+            $this->getConfigProvider(),
+            $this->getClient(),
+            new NullLogger()
+        );
     }
 }

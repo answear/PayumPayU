@@ -6,7 +6,7 @@ namespace Answear\Payum\PayU\Tests\Integration\Action;
 
 use Answear\Payum\Action\Request\SyncPayment;
 use Answear\Payum\PayU\Action\SyncPaymentAction;
-use Answear\Payum\PayU\Api;
+use Answear\Payum\PayU\Request\OrderRequestService;
 use Answear\Payum\PayU\Tests\Payment;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
@@ -51,15 +51,11 @@ class SyncPaymentActionTest extends TestCase
 
     private function getUpdatePaymentAction(OrderRetrieveResponse $orderRetrieveResponse): SyncPaymentAction
     {
-        $action = new SyncPaymentAction();
-
-        $api = $this->createMock(Api::class);
-        $api->method('retrieveOrder')
+        $orderRequestService = $this->createMock(OrderRequestService::class);
+        $orderRequestService->method('retrieve')
             ->willReturn($orderRetrieveResponse);
 
-        $action->setApi($api);
-
-        return $action;
+        return new SyncPaymentAction($orderRequestService);
     }
 
     private function getExpectedBaseDetails(): array
