@@ -6,6 +6,8 @@ namespace Answear\Payum\PayU\Tests\Integration\Request;
 
 use Answear\Payum\PayU\Enum\RefundStatus;
 use Answear\Payum\PayU\Enum\RefundStatusErrorCode;
+use Answear\Payum\PayU\Enum\ResponseStatusCode;
+use Answear\Payum\PayU\Exception\PayUNetworkException;
 use Answear\Payum\PayU\Request\RefundRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\Refund;
@@ -68,7 +70,7 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
         $orderId = 'ZXWZ53KQQM200702GUEST000P01';
         $refundId = '5000000142';
 
-        $refundList = $this->getRefundRequestService()->retrieveSingleRefund($orderId, $refundId, null);
+        $refund = $this->getRefundRequestService()->retrieveSingleRefund($orderId, $refundId, null);
         self::assertEquals(
             new Refund(
                 '5000000108',
@@ -85,8 +87,42 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
                     'Temporary problem on Provider Side'
                 )
             ),
-            $refundList
+            $refund
         );
+    }
+
+    /**
+     * @test
+     */
+    public function retrieveSingleRefundNotFoundTest(): void
+    {
+        $this->mockGuzzleResponse(
+            new Response(404, [], FileTestUtil::getFileContents(__DIR__ . '/data/retrieveSingleRefundWithNotFoundResponse.json'))
+        );
+
+        $orderId = 'ZXWZ53KQQM200702GUEST000P01';
+        $refundId = '5000400478-not-found';
+
+        $throwException = false;
+        try {
+            $this->getRefundRequestService()->retrieveSingleRefund($orderId, $refundId, null);
+        } catch (PayUNetworkException $exception) {
+            $throwException = true;
+
+            self::assertSame(404, $exception->getCode());
+            self::assertSame(
+                [
+                    'status' => [
+                        'statusCode' => ResponseStatusCode::DataNotFound->value,
+                        'severity' => 'INFO',
+                        'statusDesc' => 'Could not find refund [refundId=5000400478-not-found]',
+                    ],
+                ],
+                $exception->response
+            );
+        }
+
+        self::assertTrue($throwException, 'Expect exception.');
     }
 
     /**

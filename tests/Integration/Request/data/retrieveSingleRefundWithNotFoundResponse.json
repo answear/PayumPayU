@@ -1,0 +1,7 @@
+{
+    "status": {
+        "statusCode": "DATA_NOT_FOUND",
+        "severity": "INFO",
+        "statusDesc": "Could not find refund [refundId=5000400478-not-found]"
+    }
+}
