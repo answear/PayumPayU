@@ -20,7 +20,7 @@ class PayURequestException extends PayUException
     {
         if ($previous instanceof ClientException && $previous->getResponse() instanceof ResponseInterface) {
             $originalResponse = $previous->getResponse()->getBody()->getContents();
-            $this->response = json_decode($originalResponse, true, 512, JSON_THROW_ON_ERROR);
+            $this->response = json_decode($originalResponse, true);
         }
     }
 }
