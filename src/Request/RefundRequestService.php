@@ -110,6 +110,14 @@ class RefundRequestService
                 $response['refunds'] = [];
             }
 
+            $this->logger->info(
+                '[Response] Refunds list',
+                [
+                    'orderId' => $orderId,
+                    'response' => $response,
+                ]
+            );
+
             return array_map(
                 static fn(array $refund) => RefundResponse::fromResponse($refund),
                 $response['refunds']
