@@ -84,7 +84,7 @@ class RefundActionTest extends TestCase
                     'currencyCode' => 'PLN',
                     'description' => 'Uznanie 5000009987 Refund',
                     'creationDateTime' => '2020-07-02T09:19:03+02:00',
-                    'statusDateTime' => '2020-07-02T09:19:04+02:00',
+                    'statusDateTime' => null,
                     'status' => 'PENDING',
                     'statusError' => null,
                 ],

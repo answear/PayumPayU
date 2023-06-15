@@ -16,7 +16,7 @@ class Refund
         public readonly string $currencyCode,
         public readonly string $description,
         public readonly \DateTimeImmutable $creationDateTime,
-        public readonly \DateTimeImmutable $statusDateTime,
+        public readonly ?\DateTimeImmutable $statusDateTime,
         public readonly RefundStatus $status,
         public readonly ?RefundStatusError $statusError = null
     ) {
@@ -33,7 +33,7 @@ class Refund
             $response['currencyCode'],
             $response['description'],
             new \DateTimeImmutable($response['creationDateTime']),
-            new \DateTimeImmutable($response['statusDateTime']),
+            empty($response['statusDateTime']) ? null : new \DateTimeImmutable($response['statusDateTime']),
             RefundStatus::from($response['status']),
             isset($response['statusError']) ? RefundStatusError::fromResponse($response['statusError']) : null
         );
@@ -48,7 +48,7 @@ class Refund
             'currencyCode' => $this->currencyCode,
             'description' => $this->description,
             'creationDateTime' => $this->creationDateTime->format(\DateTimeInterface::ATOM),
-            'statusDateTime' => $this->statusDateTime->format(\DateTimeInterface::ATOM),
+            'statusDateTime' => $this->statusDateTime?->format(\DateTimeInterface::ATOM),
             'status' => $this->status->value,
             'statusError' => $this->statusError?->toArray(),
         ];

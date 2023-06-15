@@ -7,8 +7,7 @@
         "currencyCode": "PLN",
         "description": "Uznanie 5000009987 Refund",
         "creationDateTime": "2020-07-02T09:19:03.896+02:00",
-        "status": "PENDING",
-        "statusDateTime": "2020-07-02T09:19:04.013+02:00"
+        "status": "PENDING"
     },
     "status": {
         "statusCode": "OPENPAYU_BUSINESS_ERROR",
