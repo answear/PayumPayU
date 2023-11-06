@@ -1,0 +1,37 @@
+{
+    "extOrderId": "221214-0026UJ-CZ",
+    "notifyUrl": "http:\/\/notify.url",
+    "customerIp": "10.0.13.152",
+    "merchantPosId": "posId",
+    "validityTime": 259200,
+    "description": "Platnost za objedn\u00e1vku \u010d.: 221214-0026UJ-CZ",
+    "additionalDescription": null,
+    "visibleDescription": null,
+    "statementDescription": null,
+    "currencyCode": "CZK",
+    "totalAmount": 95500,
+    "continueUrl": null,
+    "buyer": {
+        "email": "test@email-fake.domain",
+        "firstName": "Testy",
+        "lastName": "Mjzykdwmh",
+        "phone": "+420733999019",
+        "customerId": null,
+        "extCustomerId": null,
+        "nin": null,
+        "language": "cs",
+        "delivery": null
+    },
+    "products": [
+        {
+            "name": "Platnost za objedn\u00e1vku \u010d.: 221214-0026UJ-CZ",
+            "unitPrice": 95500,
+            "quantity": 1,
+            "virtual": null,
+            "listingDate": null
+        }
+    ],
+    "payMethods": null,
+    "cardOnFile": null,
+    "recurring": null
+}

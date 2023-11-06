@@ -10,4 +10,5 @@ enum PayMethodType: string
     case CardToken = 'CARD_TOKEN';
     case Installments = 'INSTALLMENTS';
     case PaymentWall = 'PAYMENT_WALL';
+    case BlikAuthorizationCode = 'BLIK_AUTHORIZATION_CODE';
 }

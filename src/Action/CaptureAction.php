@@ -58,7 +58,7 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
         }
 
         $configKey = PaymentHelper::getConfigKey($model, $firstModel);
-        $orderRequest = $this->prepareOrderRequest($token, $model);
+        $orderRequest = $this->prepareOrderRequest($request, $token, $model);
         if (RecurringEnum::Standard === $model->recurring()) {
             $this->setRecurringStandardPayment($orderRequest, $model, $configKey);
         }
@@ -69,7 +69,7 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
             $this->updatePayment($model, $orderCreatedResponse, $firstModel, $token);
             $request->setModel($model);
 
-            throw new HttpRedirect($orderCreatedResponse->redirectUri ?? $token->getTargetUrl());
+            throw new HttpRedirect($orderCreatedResponse->redirectUri ?? $token->getAfterUrl());
         }
 
         if (StatusCode::WarningContinue3ds === $orderCreatedResponse->status->statusCode) {
@@ -125,8 +125,13 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
         /** Payment will be auto-updated on @see \Payum\Core\Extension\StorageExtension::onPostExecute */
     }
 
-    private function prepareOrderRequest(TokenInterface $token, Model $model): OrderRequest
+    private function prepareOrderRequest(Capture $request, TokenInterface $token, Model $model): OrderRequest
     {
+        $payMethod = $model->payMethod();
+        if ($request instanceof \Answear\Payum\Action\Request\Capture && null !== $request->payMethod) {
+            $payMethod = $request->payMethod;
+        }
+
         return new OrderRequest(
             $model->description(),
             $model->currencyCode(),
@@ -144,7 +149,7 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
             $model->extOrderId(),
             $token->getAfterUrl(),
             $model->buyer(),
-            $model->payMethod(),
+            $payMethod,
             $model->additionalDescription(),
             $model->visibleDescription(),
             $model->statementDescription()

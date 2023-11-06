@@ -36,5 +36,6 @@ return $config
                 ],
                 'sort_algorithm' => 'alpha',
             ],
+            'nullable_type_declaration_for_default_null_value' => true,
         ]
     );

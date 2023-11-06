@@ -40,8 +40,8 @@ class SyncPaymentAction implements ActionInterface
     public function supports($request): bool
     {
         return
-            $request instanceof SyncPayment &&
-            $request->getModel() instanceof PaymentInterface;
+            $request instanceof SyncPayment
+            && $request->getModel() instanceof PaymentInterface;
     }
 
     protected function updatePayment(PaymentInterface $payment, Model $model): void
