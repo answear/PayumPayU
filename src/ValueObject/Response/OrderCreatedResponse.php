@@ -10,7 +10,7 @@ class OrderCreatedResponse
 {
     public function __construct(
         public readonly OrderCreatedStatus $status,
-        public readonly string $redirectUri,
+        public readonly ?string $redirectUri,
         public readonly string $orderId,
         public readonly ?string $extOrderId = null,
         public readonly ?array $payMethods = null,
@@ -21,7 +21,7 @@ class OrderCreatedResponse
     {
         return new self(
             OrderCreatedStatus::fromResponse($response['status']),
-            $response['redirectUri'],
+            $response['redirectUri'] ?? null,
             $response['orderId'],
             $response['extOrderId'] ?? null,
             $response['payMethods'] ?? null

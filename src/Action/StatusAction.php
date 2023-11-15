@@ -46,7 +46,7 @@ class StatusAction implements ActionInterface
     public function supports($request): bool
     {
         return
-            $request instanceof GetStatusInterface &&
-            $request->getModel() instanceof \ArrayAccess;
+            $request instanceof GetStatusInterface
+            && $request->getModel() instanceof \ArrayAccess;
     }
 }

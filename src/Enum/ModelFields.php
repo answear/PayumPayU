@@ -25,6 +25,8 @@ enum ModelFields
     public const PAY_METHOD = 'payMethod';
     public const PAY_METHOD_TYPE = 'type';
     public const PAY_METHOD_VALUE = 'value';
+    public const PAY_METHOD_AUTHORIZATION_CODE = 'authorizationCode';
+    public const PAY_METHOD_SPECIFIC_DATA = 'specificData';
     public const PRODUCT_LISTING_DATE = 'listingDate';
     public const PRODUCT_VIRTUAL = 'virtual';
     public const PRODUCT_QUANTITY = 'quantity';

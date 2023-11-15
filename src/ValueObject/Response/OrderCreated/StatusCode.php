@@ -11,8 +11,10 @@ enum StatusCode: string
     case WarningContinue3ds = 'WARNING_CONTINUE_3DS';
     case WarningContinueCVV = 'WARNING_CONTINUE_CVV';
     case Error_syntax = 'ERROR_SYNTAX';
+    case ErrorAuthorizationCode = 'ERROR_AUTHORIZATION_CODE';
     case ErrorValueInvalid = 'ERROR_VALUE_INVALID';
     case ErrorValueMissing = 'ERROR_VALUE_MISSING';
+    case ErrorToken = 'ERROR_TOKEN';
     case ErrorOrderNotUnique = 'ERROR_ORDER_NOT_UNIQUE';
     case ErrorInternal = 'ERROR_INTERNAL';
     case BusinessError = 'BUSINESS_ERROR';
