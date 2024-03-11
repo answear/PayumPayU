@@ -1,0 +1,8 @@
+{
+    "status": {
+        "statusCode": "SUCCESS",
+        "statusDesc": "Request processing successful"
+    },
+    "orderId": "WZHF5FFDRJ140731GUEST000P01",
+    "extOrderId": "extOrderId123"
+}

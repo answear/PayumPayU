@@ -11,6 +11,7 @@ use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Service\ConfigProvider;
 use Answear\Payum\PayU\Util\ExceptionHelper;
 use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
+use Answear\Payum\PayU\ValueObject\Response\OrderCanceledResponse;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
 use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByCreditCard;
@@ -152,6 +153,34 @@ class OrderRequestService
             }
 
             return $transactions;
+        } catch (\Throwable $throwable) {
+            throw new MalformedResponseException($response ?? [], $throwable);
+        }
+    }
+
+    /**
+     * @throws MalformedResponseException
+     * @throws PayUException
+     */
+    public function cancel(string $orderId, ?string $configKey): OrderCanceledResponse
+    {
+        try {
+            $result = $this->client->payuRequest(
+                'DELETE',
+                self::ENDPOINT . $orderId,
+                $this->client->getAuthorizeHeaders(
+                    AuthType::Basic,
+                    $configKey
+                )
+            );
+        } catch (\Throwable $throwable) {
+            throw ExceptionHelper::getPayUException($throwable);
+        }
+
+        try {
+            $response = json_decode($result->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+
+            return OrderCanceledResponse::fromResponse($response);
         } catch (\Throwable $throwable) {
             throw new MalformedResponseException($response ?? [], $throwable);
         }
