@@ -1,0 +1,8 @@
+{
+    "status": {
+        "statusCode": "OPENPAYU_ERROR_INTERNAL",
+        "code": "9111",
+        "codeLiteral": "UNKNOWN_ERROR",
+        "statusDesc": "Unknown error."
+    }
+}

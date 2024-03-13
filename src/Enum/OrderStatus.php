@@ -11,4 +11,17 @@ enum OrderStatus: string
     case WaitingForConfirmation = 'WAITING_FOR_CONFIRMATION';
     case Completed = 'COMPLETED';
     case Canceled = 'CANCELED';
+
+    public static function finalStatuses(): array
+    {
+        return [
+            self::Completed,
+            self::Canceled,
+        ];
+    }
+
+    public static function isFinal(OrderStatus $status): bool
+    {
+        return in_array($status, self::finalStatuses(), true);
+    }
 }
