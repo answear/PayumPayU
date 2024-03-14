@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Action;
 
-use Answear\Payum\PayU\Enum\OrderStatus;
 use Answear\Payum\PayU\Exception\CannotCancelPaymentException;
 use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Model\Model;
@@ -60,6 +59,6 @@ class CancelAction implements ActionInterface
     {
         $response = $this->orderRequestService->retrieve($model->orderId(), PaymentHelper::getConfigKey($model, $payment));
 
-        return !OrderStatus::isFinal($response->orders[0]->status);
+        return !$response->orders[0]->status->isFinal();
     }
 }

@@ -20,8 +20,8 @@ enum OrderStatus: string
         ];
     }
 
-    public static function isFinal(OrderStatus $status): bool
+    public function isFinal(): bool
     {
-        return in_array($status, self::finalStatuses(), true);
+        return in_array($this, self::finalStatuses(), true);
     }
 }
