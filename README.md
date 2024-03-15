@@ -42,6 +42,7 @@ payum:
             payum.action.status: '@Answear\Payum\PayU\Action\StatusAction'
             payum.action.convert_payment: '@Answear\Payum\PayU\Action\ConvertPaymentAction'
             payum.action.sync_payment: '@Answear\Payum\PayU\Action\SyncPaymentAction'
+            payum.action.cancel: '@Answear\Payum\PayU\Action\CancelAction'
 ```
 
 Need to provide all `payum.action` as a service.
