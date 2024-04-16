@@ -35,6 +35,7 @@ class CancelActionTest extends TestCase
         );
 
         $payment = new Payment();
+        $payment->setConfigKey('pos2');
         $payment->setDetails(FileTestUtil::decodeJsonFromFile(__DIR__ . '/../../Integration/Action/data/detailsWithOrderId.json'));
 
         $request = new Cancel($payment);
@@ -61,7 +62,40 @@ class CancelActionTest extends TestCase
         );
 
         $payment = new Payment();
+        $payment->setConfigKey('pos2');
         $payment->setDetails(FileTestUtil::decodeJsonFromFile(__DIR__ . '/../../Integration/Action/data/detailsWithOrderId.json'));
+
+        $request = new Cancel($payment);
+        $request->setModel($payment->getDetails());
+
+        $action->execute($request);
+    }
+
+    /**
+     * @test
+     */
+    public function emptyOrderIdInDetails(): void
+    {
+        $action = $this->getCancelAction(
+            OrderCanceledResponse::fromResponse(
+                FileTestUtil::decodeJsonFromFile(
+                    __DIR__ . '/../../Integration/Request/data/orderCanceledResponse.json'
+                )
+            ),
+            OrderRetrieveResponse::fromResponse(
+                FileTestUtil::decodeJsonFromFile(
+                    __DIR__ . '/../../Integration/Request/data/retrieveOrderResponse.json'
+                )
+            )
+        );
+
+        $details = FileTestUtil::decodeJsonFromFile(__DIR__ . '/../../Integration/Action/data/detailsWithOrderId.json');
+        $details['orderId'] = null;
+
+        $payment = new Payment();
+        $payment->setConfigKey('pos2');
+        $payment->setDetails($details);
+        $payment->setOrderId('123');
 
         $request = new Cancel($payment);
         $request->setModel($payment->getDetails());
