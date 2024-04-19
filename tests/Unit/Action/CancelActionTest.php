@@ -103,14 +103,42 @@ class CancelActionTest extends TestCase
         $action->execute($request);
     }
 
+    /**
+     * @test
+     */
+    public function emptyOrderId(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('OrderId must be set on cancel action.');
+
+        $action = $this->getCancelAction(null, null);
+
+        $details = FileTestUtil::decodeJsonFromFile(__DIR__ . '/../../Integration/Action/data/detailsWithOrderId.json');
+        $details['orderId'] = null;
+
+        $payment = new Payment();
+        $payment->setConfigKey('pos2');
+        $payment->setDetails($details);
+
+        $request = new Cancel($payment);
+        $request->setModel($payment->getDetails());
+
+        $action->execute($request);
+    }
+
     private function getCancelAction(
         ?OrderCanceledResponse $orderCanceledResponse,
-        OrderRetrieveResponse $retrieveOrderResponse
+        ?OrderRetrieveResponse $retrieveOrderResponse
     ): CancelAction {
         $orderRequestService = $this->createMock(OrderRequestService::class);
-        $orderRequestService->expects(self::once())
-            ->method('retrieve')
-            ->willReturn($retrieveOrderResponse);
+        if (null === $retrieveOrderResponse) {
+            $orderRequestService->expects(self::never())
+                ->method('retrieve');
+        } else {
+            $orderRequestService->expects(self::once())
+                ->method('retrieve')
+                ->willReturn($retrieveOrderResponse);
+        }
 
         if (null === $orderCanceledResponse) {
             $orderRequestService->expects(self::never())
