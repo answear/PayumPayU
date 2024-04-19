@@ -36,12 +36,13 @@ class CancelAction implements ActionInterface
         $payment = PaymentHelper::ensurePayment($request->getFirstModel());
         $orderId = PaymentHelper::getOrderId($model, $payment);
         Assert::notEmpty($orderId, 'OrderId must be set on cancel action.');
+        $configKey = PaymentHelper::getConfigKey($model, $payment);
 
-        if (!$this->canCancelPayment($model, $payment)) {
+        if (!$this->canCancelPayment($orderId, $configKey)) {
             throw new CannotCancelPaymentException('Order status is final, cannot cancel payment.');
         }
 
-        $this->orderRequestService->cancel($model->orderId(), PaymentHelper::getConfigKey($model, $payment));
+        $this->orderRequestService->cancel($orderId, $configKey);
     }
 
     public function supports($request): bool
@@ -55,9 +56,9 @@ class CancelAction implements ActionInterface
     /**
      * @throws PayUException
      */
-    private function canCancelPayment(Model $model, PaymentInterface $payment): bool
+    private function canCancelPayment(string $orderId, ?string $configKey): bool
     {
-        $response = $this->orderRequestService->retrieve($model->orderId(), PaymentHelper::getConfigKey($model, $payment));
+        $response = $this->orderRequestService->retrieve($orderId, $configKey);
 
         return !$response->orders[0]->status->isFinal();
     }
