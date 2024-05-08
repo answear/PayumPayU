@@ -46,4 +46,5 @@ enum ModelFields
     public const REFUND_ID = 'refundId';
     public const EXT_REFUND_ID = 'extRefundId';
     public const PROPERTIES = 'properties';
+    public const CARD_ON_FILE = 'cardOnFile';
 }

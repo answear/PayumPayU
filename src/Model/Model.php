@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Model;
 
+use Answear\Payum\PayU\Enum\CardOnFileEnum;
 use Answear\Payum\PayU\Enum\ModelFields;
 use Answear\Payum\PayU\Enum\OrderStatus;
 use Answear\Payum\PayU\Enum\PayMethodType;
@@ -175,6 +176,16 @@ class Model extends ArrayObject
     public function setCreditCardMaskedNumber(?string $creditCardMaskedNumber): void
     {
         $this[ModelFields::CREDIT_CARD_MASKED_NUMBER] = $creditCardMaskedNumber;
+    }
+
+    public function cardOnFile(): ?CardOnFileEnum
+    {
+        return CardOnFileEnum::tryFrom($this[ModelFields::CARD_ON_FILE] ?? '');
+    }
+
+    public function setCardOnFile(?CardOnFileEnum $cardOnFileEnum): void
+    {
+        $this[ModelFields::CARD_ON_FILE] = $cardOnFileEnum?->value;
     }
 
     public function setPayUResponse(Response\OrderCreatedResponse $orderCreatedResponse): void
