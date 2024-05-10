@@ -62,5 +62,5 @@ $gateway->execute($captureRequest);
 
 ### Missing features
 
-* `OrderRequest` params `cardOnFile`, `recurring`, `mcpData`, `threeDsAuthentication`, `credit`
+* `OrderRequest` params `recurring`, `mcpData`, `threeDsAuthentication`, `credit`
 * ...
