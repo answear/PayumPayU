@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\ValueObject\Request;
 
 use Answear\Payum\PayU\Enum\AuthType;
+use Answear\Payum\PayU\Enum\CardOnFileEnum;
 use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Answear\Payum\PayU\ValueObject\Product;
@@ -35,7 +36,7 @@ class OrderRequest
         public readonly ?string $additionalDescription = null,
         public readonly ?string $visibleDescription = null,
         public readonly ?string $statementDescription = null,
-        public ?string $cardOnFile = null,
+        public ?CardOnFileEnum $cardOnFile = null,
         public ?string $recurring = null,
     ) {
         Assert::notEmpty($this->products);
@@ -63,7 +64,7 @@ class OrderRequest
             'buyer' => $this->buyer?->toArray(),
             'products' => array_map(static fn(Product $product) => $product->toArray(), $this->products),
             'payMethods' => null === $this->payMethod ? null : ['payMethod' => $this->payMethod->toArray()],
-            'cardOnFile' => $this->cardOnFile,
+            'cardOnFile' => $this->cardOnFile?->value,
             'recurring' => $this->recurring,
         ];
     }
