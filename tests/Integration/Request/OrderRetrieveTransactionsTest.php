@@ -9,6 +9,7 @@ use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\PayMethod;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByCreditCard;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByPBL;
+use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\CardData;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 
@@ -33,26 +34,30 @@ class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
             $transaction->getPayMethod()
         );
         self::assertSame('FIRST_ONE_CLICK_CARD', $transaction->paymentFlow);
+
+        $expectedCardData = CardData::fromResponse(
+            [
+                'cardNumberMasked' => '543402******4014',
+                'cardScheme' => 'MC',
+                'cardProfile' => 'CONSUMER',
+                'cardClassification' => 'DEBIT',
+                'cardResponseCode' => '000',
+                'cardResponseCodeDesc' => '000 - OK',
+                'cardEciCode' => '2',
+                'card3DsStatus' => 'Y',
+                'card3DsStatusDescription' => 'MessageVersion=2.1.0,browser flow,3DS method not available,dynamic authentication,no cancel indicator,no status reason',
+                'cardBinCountry' => 'PL',
+                'firstTransactionId' => 'MCC0111LL1121',
+            ]
+        );
+
+        self::assertEquals($expectedCardData, $transaction->cardData);
+
         self::assertSame(
             [
-                'cardData' => [
-                    'cardNumberMasked' => '543402******4014',
-                    'cardScheme' => 'MC',
-                    'cardProfile' => 'CONSUMER',
-                    'cardClassification' => 'DEBIT',
-                    'cardResponseCode' => '000',
-                    'cardResponseCodeDesc' => '000 - OK',
-                    'cardEciCode' => '2',
-                    'card3DsStatus' => 'Y',
-                    'card3DsStatusDescription' => 'MessageVersion=2.1.0,browser flow,3DS method not available,dynamic authentication,no cancel indicator,no status reason',
-                    'cardBinCountry' => 'PL',
-                    'firstTransactionId' => 'MCC0111LL1121',
-                ],
-                'cardInstallmentProposal' => [
-                    'proposalId' => '5aff3ba8-0c37-4da1-ba4a-4ff24bcc2eed',
-                ],
+                'proposalId' => '5aff3ba8-0c37-4da1-ba4a-4ff24bcc2eed',
             ],
-            $transaction->card
+            $transaction->cardInstallmentProposal
         );
     }
 

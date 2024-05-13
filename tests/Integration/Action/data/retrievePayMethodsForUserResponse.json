@@ -1,0 +1,15 @@
+{
+    "cardTokens": [
+        {
+            "status": "ACTIVE",
+            "cardNumberMasked": "111122*******444"
+        },
+        {
+            "status": "EXPIRED",
+            "cardNumberMasked": "666677*******999"
+        }
+    ],
+    "status": {
+        "statusCode": "SUCCESS"
+    }
+}

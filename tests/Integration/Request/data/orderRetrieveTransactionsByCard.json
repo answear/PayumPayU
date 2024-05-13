@@ -18,10 +18,10 @@
                     "card3DsStatusDescription": "MessageVersion=2.1.0,browser flow,3DS method not available,dynamic authentication,no cancel indicator,no status reason",
                     "cardBinCountry": "PL",
                     "firstTransactionId": "MCC0111LL1121"
-                },
-                "cardInstallmentProposal": {
-                    "proposalId": "5aff3ba8-0c37-4da1-ba4a-4ff24bcc2eed"
                 }
+            },
+            "cardInstallmentProposal": {
+                "proposalId": "5aff3ba8-0c37-4da1-ba4a-4ff24bcc2eed"
             }
         }
     ]

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Action;
 
 use Answear\Payum\Model\Payment;
+use Answear\Payum\PayU\Enum\CardOnFileEnum;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\Exception\PayUException;
@@ -17,6 +18,7 @@ use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
 use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\StatusCode;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
+use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByCreditCard;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
@@ -59,8 +61,13 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
 
         $configKey = PaymentHelper::getConfigKey($model, $firstModel);
         $orderRequest = $this->prepareOrderRequest($request, $token, $model);
+
         if (RecurringEnum::Standard === $model->recurring()) {
             $this->setRecurringStandardPayment($orderRequest, $model, $configKey);
+        }
+
+        if (CardOnFileEnum::StandardMerchant === $model->cardOnFile()) {
+            $this->setCardOnFileStandardMerchantPayment($orderRequest, $model, $configKey);
         }
 
         $orderCreatedResponse = $this->orderRequestService->create($orderRequest, $configKey);
@@ -154,6 +161,36 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
             $model->visibleDescription(),
             $model->statementDescription(),
             $model->cardOnFile()
+        );
+    }
+
+    private function setCardOnFileStandardMerchantPayment(OrderRequest $orderRequest, Model $model, ?string $configKey): void
+    {
+        $payMethods = $this->payMethodsRequestService->retrieveForUser($model->clientEmail(), $model->clientId(), $configKey);
+        if (empty($payMethods->cardTokens)) {
+            throw new \InvalidArgumentException('Cannot make this payment. Token for user does not exist.');
+        }
+
+        $transactions = $this->orderRequestService->retrieveTransactions($model->orderId(), $configKey);
+        $cardToken = null;
+        foreach ($transactions as $transaction) {
+            if (!$transaction instanceof ByCreditCard) {
+                continue;
+            }
+
+            $cardToken = $this->findPreferredToken($payMethods->cardTokens, $transaction->cardData->cardNumberMasked);
+            if (null !== $cardToken) {
+                break;
+            }
+        }
+
+        if (null === $cardToken) {
+            throw new \InvalidArgumentException('Cannot make this payment. Token for user does not exist.');
+        }
+
+        $orderRequest->setCardOnFile(
+            $model->cardOnFile() ?? CardOnFileEnum::StandardMerchant,
+            new PayMethod(PayMethodType::CardToken, $cardToken['value'])
         );
     }
 

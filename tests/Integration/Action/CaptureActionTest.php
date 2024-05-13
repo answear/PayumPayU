@@ -16,6 +16,7 @@ use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\OrderCreatedStatus;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\StatusCode;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreatedResponse;
+use Answear\Payum\PayU\ValueObject\Response\PayMethodsResponse;
 use Payum\Core\Gateway;
 use Payum\Core\Model\Payment;
 use Payum\Core\Model\PaymentInterface;
@@ -192,10 +193,53 @@ class CaptureActionTest extends TestCase
         $captureAction->execute($capture);
     }
 
+    /**
+     * @test
+     */
+    public function captureWithCardOnFile(): void
+    {
+        $payMethodRequestService = $this->createMock(PayMethodsRequestService::class);
+        $payMethodRequestService->method('retrieveForUser')
+            ->willReturn(
+                PayMethodsResponse::fromResponse(
+                    FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/retrievePayMethodsForUserResponse.json')
+                )
+            );
+
+        $captureAction = $this->getCaptureAction(
+            expectedCreateRequest: FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/expectedOrderRequestWithCardOnFile.json'),
+            details: FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/detailsWithCardOnFileStandardMerchant.json'),
+            payMethodsRequestService: $payMethodRequestService,
+        );
+
+        $payment = new \Answear\Payum\PayU\Tests\Payment();
+        $payment->setDetails(FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/detailsWithCardOnFileStandardMerchant.json'));
+
+        $payMethod = new PayMethod(
+            PayMethodType::Pbl,
+            'some value',
+            'some authorisation code'
+        );
+
+        $captureToken = new Token();
+        $capture = new \Answear\Payum\Action\Request\Capture($captureToken, $payment, $payMethod);
+
+        $redirected = false;
+        try {
+            $captureAction->execute($capture);
+        } catch (HttpRedirect $httpRedirect) {
+            $redirected = true;
+            self::assertSame('http://redirect-after-create-payment.url', $httpRedirect->getUrl());
+        }
+
+        self::assertTrue($redirected);
+    }
+
     private function getCaptureAction(
         ?OrderCreatedResponse $response = null,
         ?array $details = null,
-        ?array $expectedCreateRequest = null
+        ?array $expectedCreateRequest = null,
+        ?MockObject $payMethodsRequestService = null,
     ): CaptureAction {
         $response = $response ?? new OrderCreatedResponse(
             new OrderCreatedStatus(
@@ -226,7 +270,7 @@ class CaptureActionTest extends TestCase
 
         $captureAction = new CaptureAction(
             $orderRequestService,
-            $this->createMock(PayMethodsRequestService::class)
+            $payMethodsRequestService ?? $this->createMock(PayMethodsRequestService::class)
         );
 
         $notifyToken = $this->createMock(TokenInterface::class);

@@ -74,4 +74,10 @@ class OrderRequest
         $this->recurring = $recurring?->value;
         $this->payMethod = $payMethod;
     }
+
+    public function setCardOnFile(CardOnFileEnum $cardOnFile, PayMethod $payMethod): void
+    {
+        $this->cardOnFile = $cardOnFile;
+        $this->payMethod = $payMethod;
+    }
 }
