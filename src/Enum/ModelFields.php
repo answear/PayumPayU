@@ -47,4 +47,6 @@ enum ModelFields
     public const EXT_REFUND_ID = 'extRefundId';
     public const PROPERTIES = 'properties';
     public const CARD_ON_FILE = 'cardOnFile';
+    public const THREE_DS_AUTHENTICATION = 'threeDsAuthentication';
+    public const CHALLENGE_REQUESTED = 'challangeRequested';
 }

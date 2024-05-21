@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Tests\Integration\Action;
 
 use Answear\Payum\PayU\Action\CaptureAction;
+use Answear\Payum\PayU\Enum\ChallengeRequestedType;
+use Answear\Payum\PayU\Enum\ModelFields;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Exception\PayUException;
 use Answear\Payum\PayU\Model\Model;
@@ -44,6 +46,35 @@ class CaptureActionTest extends TestCase
         $capture = new Capture($captureToken);
         $capture->setModel(new \Answear\Payum\PayU\Tests\Payment());
         $capture->setModel(FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
+
+        $redirected = false;
+        try {
+            $captureAction->execute($capture);
+        } catch (HttpRedirect $httpRedirect) {
+            $redirected = true;
+            self::assertSame('http://redirect-after-create-payment.url', $httpRedirect->getUrl());
+        }
+
+        self::assertTrue($redirected);
+    }
+
+    /**
+     * @test
+     */
+    public function captureTestWithThreeDSAuthentication(): void
+    {
+        $details = FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json');
+        $details[ModelFields::THREE_DS_AUTHENTICATION][ModelFields::CHALLENGE_REQUESTED] = ChallengeRequestedType::Mandate->value;
+
+        $captureAction = $this->getCaptureAction(
+            expectedCreateRequest: FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/expectedOrderRequestWithThreeDSAuthentication.json'),
+            details: $details
+        );
+
+        $captureToken = new Token();
+        $capture = new Capture($captureToken);
+        $capture->setModel(new \Answear\Payum\PayU\Tests\Payment());
+        $capture->setModel($details);
 
         $redirected = false;
         try {

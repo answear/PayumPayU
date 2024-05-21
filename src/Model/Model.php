@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Model;
 
 use Answear\Payum\PayU\Enum\CardOnFileEnum;
+use Answear\Payum\PayU\Enum\ChallengeRequestedType;
 use Answear\Payum\PayU\Enum\ModelFields;
 use Answear\Payum\PayU\Enum\OrderStatus;
 use Answear\Payum\PayU\Enum\PayMethodType;
@@ -13,6 +14,7 @@ use Answear\Payum\PayU\Util\BooleanTransformer;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
+use Answear\Payum\PayU\ValueObject\Request\Order\ThreeDsAuthentication;
 use Answear\Payum\PayU\ValueObject\Response;
 use Payum\Core\Bridge\Spl\ArrayObject;
 
@@ -186,6 +188,17 @@ class Model extends ArrayObject
     public function setCardOnFile(?CardOnFileEnum $cardOnFileEnum): void
     {
         $this[ModelFields::CARD_ON_FILE] = $cardOnFileEnum?->value;
+    }
+
+    public function threeDsAuthentication(): ?ThreeDsAuthentication
+    {
+        if (!isset($this[ModelFields::THREE_DS_AUTHENTICATION])) {
+            return null;
+        }
+
+        return new ThreeDsAuthentication(
+            ChallengeRequestedType::from($this[ModelFields::THREE_DS_AUTHENTICATION][ModelFields::CHALLENGE_REQUESTED])
+        );
     }
 
     public function setPayUResponse(Response\OrderCreatedResponse $orderCreatedResponse): void
