@@ -153,7 +153,8 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
             $model->additionalDescription(),
             $model->visibleDescription(),
             $model->statementDescription(),
-            $model->cardOnFile()
+            $model->cardOnFile(),
+            threeDsAuthentication: $model->threeDsAuthentication(),
         );
     }
 

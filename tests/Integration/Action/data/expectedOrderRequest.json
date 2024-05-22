@@ -32,6 +32,7 @@
         }
     ],
     "payMethods": null,
+    "threeDsAuthentication": null,
     "cardOnFile": null,
     "recurring": null
 }

@@ -31,15 +31,10 @@
             "listingDate": null
         }
     ],
-    "payMethods": {
-        "payMethod": {
-            "type": "PBL",
-            "value": "some value",
-            "authorizationCode": "some authorisation code",
-            "specificData": null
-        }
+    "payMethods": null,
+    "threeDsAuthentication": {
+        "challangeRequested": "MANDATE"
     },
-    "threeDsAuthentication": null,
     "cardOnFile": null,
     "recurring": null
 }

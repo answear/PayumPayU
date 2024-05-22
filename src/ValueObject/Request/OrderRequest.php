@@ -10,6 +10,7 @@ use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\ValueObject\Buyer;
 use Answear\Payum\PayU\ValueObject\Product;
 use Answear\Payum\PayU\ValueObject\Request\Order\PayMethod;
+use Answear\Payum\PayU\ValueObject\Request\Order\ThreeDsAuthentication;
 use Webmozart\Assert\Assert;
 
 class OrderRequest
@@ -38,6 +39,7 @@ class OrderRequest
         public readonly ?string $statementDescription = null,
         public ?CardOnFileEnum $cardOnFile = null,
         public ?string $recurring = null,
+        public ?ThreeDsAuthentication $threeDsAuthentication = null,
     ) {
         Assert::notEmpty($this->products);
         Assert::allIsInstanceOf($this->products, Product::class);
@@ -64,6 +66,7 @@ class OrderRequest
             'buyer' => $this->buyer?->toArray(),
             'products' => array_map(static fn(Product $product) => $product->toArray(), $this->products),
             'payMethods' => null === $this->payMethod ? null : ['payMethod' => $this->payMethod->toArray()],
+            'threeDsAuthentication' => $this->threeDsAuthentication?->toArray(),
             'cardOnFile' => $this->cardOnFile?->value,
             'recurring' => $this->recurring,
         ];
