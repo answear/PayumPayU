@@ -38,19 +38,9 @@ class ConvertPaymentAction implements ActionInterface
         /** @var PaymentInterface $payment */
         $payment = $request->getSource();
         $details = Model::ensureArrayObject($payment->getDetails());
-        $details->replace(
-            [
-                ModelFields::TOTAL_AMOUNT => $payment->getTotalAmount(),
-                ModelFields::CURRENCY => $payment->getCurrencyCode(),
-                ModelFields::EXT_ORDER_ID => $details->extOrderId() ?? $payment->getNumber(),
-                ModelFields::DESCRIPTION => $payment->getDescription(),
-                ModelFields::CLIENT_EMAIL => $payment->getClientEmail(),
-                ModelFields::CLIENT_ID => $payment->getClientId(),
-                ModelFields::CUSTOMER_IP => $this->userIpService->getIp(),
-                ModelFields::CREDIT_CARD_MASKED_NUMBER => $payment->getCreditCard() ? $payment->getCreditCard()->getMaskedNumber() : null,
-                ModelFields::VALIDITY_TIME => $details->validityTime() ?? self::DEFAULT_VALIDITY_TIME,
-            ]
-        );
+
+        $this->replaceModelFields($details, $payment);
+
         if ($payment instanceof Payment) {
             $details->setConfigKey($payment->getConfigKey());
 
@@ -104,5 +94,29 @@ class ConvertPaymentAction implements ActionInterface
             $request instanceof Convert
             && $request->getSource() instanceof PaymentInterface
             && 'array' === $request->getTo();
+    }
+
+    private function replaceModelFields(Model $details, PaymentInterface $payment): void
+    {
+        if (null === $details->customerIp()) {
+            $details->replace(
+                [
+                    ModelFields::CUSTOMER_IP => $this->userIpService->getIp(),
+                ]
+            );
+        }
+
+        $details->replace(
+            [
+                ModelFields::TOTAL_AMOUNT => $payment->getTotalAmount(),
+                ModelFields::CURRENCY => $payment->getCurrencyCode(),
+                ModelFields::EXT_ORDER_ID => $details->extOrderId() ?? $payment->getNumber(),
+                ModelFields::DESCRIPTION => $payment->getDescription(),
+                ModelFields::CLIENT_EMAIL => $payment->getClientEmail(),
+                ModelFields::CLIENT_ID => $payment->getClientId(),
+                ModelFields::CREDIT_CARD_MASKED_NUMBER => $payment->getCreditCard() ? $payment->getCreditCard()->getMaskedNumber() : null,
+                ModelFields::VALIDITY_TIME => $details->validityTime() ?? self::DEFAULT_VALIDITY_TIME,
+            ]
+        );
     }
 }
