@@ -21,6 +21,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
+    private const CONNECTION_TIMEOUT = 10;
+    private const TIMEOUT = 30;
     private const METHOD_POST = 'POST';
 
     private ?OAuthResultClientCredentials $clientCredentials = null;
@@ -29,7 +31,7 @@ class Client
         private ConfigProvider $configProvider,
         private ?ClientInterface $client = null
     ) {
-        $this->client = $client ?? new \GuzzleHttp\Client();
+        $this->client = $client ?? new \GuzzleHttp\Client(['timeout' => self::TIMEOUT, 'connect_timeout' => self::CONNECTION_TIMEOUT]);
     }
 
     public function getAuthorizeHeaders(
