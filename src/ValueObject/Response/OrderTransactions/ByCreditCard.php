@@ -11,7 +11,8 @@ class ByCreditCard implements OrderRetrieveTransactionsResponseInterface
     public function __construct(
         public readonly PayMethod $payMethod,
         public readonly string $paymentFlow,
-        public readonly ?array $card,
+        public readonly CardData $cardData,
+        public readonly array $cardInstallmentProposal,
     ) {
     }
 
@@ -25,7 +26,8 @@ class ByCreditCard implements OrderRetrieveTransactionsResponseInterface
         return new self(
             PayMethod::fromResponse($response['payMethod']),
             $response['paymentFlow'],
-            $response['card'] ?? null,
+            CardData::fromResponse($response['card']['cardData']),
+            $response['cardInstallmentProposal'],
         );
     }
 }
