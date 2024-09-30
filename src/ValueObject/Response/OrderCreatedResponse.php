@@ -6,14 +6,14 @@ namespace Answear\Payum\PayU\ValueObject\Response;
 
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\OrderCreatedStatus;
 
-class OrderCreatedResponse
+readonly class OrderCreatedResponse
 {
     public function __construct(
-        public readonly OrderCreatedStatus $status,
-        public readonly ?string $redirectUri,
-        public readonly string $orderId,
-        public readonly ?string $extOrderId = null,
-        public readonly ?array $payMethods = null,
+        public OrderCreatedStatus $status,
+        public ?string $redirectUri,
+        public string $orderId,
+        public ?string $extOrderId = null,
+        public ?array $payMethods = null,
     ) {
     }
 

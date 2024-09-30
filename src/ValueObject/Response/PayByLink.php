@@ -6,18 +6,18 @@ namespace Answear\Payum\PayU\ValueObject\Response;
 
 use Answear\Payum\PayU\Enum\PayByLinkStatus;
 
-class PayByLink
+readonly class PayByLink
 {
     private const AMOUNT_MIN = 0;
     private const AMOUNT_MAX = 99999999;
 
     public function __construct(
-        public readonly string $value,
-        public readonly string $name,
-        public readonly string $brandImageUrl,
-        public readonly PayByLinkStatus $status,
-        public readonly ?int $minAmount = null,
-        public readonly ?int $maxAmount = null,
+        public string $value,
+        public string $name,
+        public string $brandImageUrl,
+        public PayByLinkStatus $status,
+        public ?int $minAmount = null,
+        public ?int $maxAmount = null,
     ) {
     }
 

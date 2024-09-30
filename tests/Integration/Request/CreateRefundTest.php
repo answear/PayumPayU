@@ -14,13 +14,12 @@ use Answear\Payum\PayU\ValueObject\Request\RefundRequest;
 use Answear\Payum\PayU\ValueObject\Response\Refund as ResponseRefund;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Log\NullLogger;
 
 class CreateRefundTest extends AbstractRequestTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function createTest(): void
     {
         $this->mockGuzzleResponse(
@@ -55,9 +54,7 @@ class CreateRefundTest extends AbstractRequestTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function errorTest(): void
     {
         $this->mockGuzzleResponse(

@@ -12,13 +12,12 @@ use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\OrderCanceledResponse;
 use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
 use Payum\Core\Request\Cancel;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class CancelActionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function successTest(): void
     {
         $action = $this->getCancelAction(
@@ -44,9 +43,7 @@ class CancelActionTest extends TestCase
         $action->execute($request);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function orderHasFinalStatusTest(): void
     {
         $this->expectException(CannotCancelPaymentException::class);
@@ -71,9 +68,7 @@ class CancelActionTest extends TestCase
         $action->execute($request);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function emptyOrderIdInDetails(): void
     {
         $action = $this->getCancelAction(
@@ -103,9 +98,7 @@ class CancelActionTest extends TestCase
         $action->execute($request);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function emptyOrderId(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -128,7 +121,7 @@ class CancelActionTest extends TestCase
 
     private function getCancelAction(
         ?OrderCanceledResponse $orderCanceledResponse,
-        ?OrderRetrieveResponse $retrieveOrderResponse
+        ?OrderRetrieveResponse $retrieveOrderResponse,
     ): CancelAction {
         $orderRequestService = $this->createMock(OrderRequestService::class);
         if (null === $retrieveOrderResponse) {

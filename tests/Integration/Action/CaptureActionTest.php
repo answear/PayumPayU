@@ -28,14 +28,13 @@ use Payum\Core\Request\Convert;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\GenericTokenFactory;
 use Payum\Core\Security\TokenInterface;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CaptureActionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function captureTest(): void
     {
         $captureAction = $this->getCaptureAction(
@@ -58,17 +57,15 @@ class CaptureActionTest extends TestCase
         self::assertTrue($redirected);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function captureTestWithThreeDSAuthentication(): void
     {
         $details = FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json');
         $details[ModelFields::THREE_DS_AUTHENTICATION][ModelFields::CHALLENGE_REQUESTED] = ChallengeRequestedType::Mandate->value;
 
         $captureAction = $this->getCaptureAction(
-            expectedCreateRequest: FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/expectedOrderRequestWithThreeDSAuthentication.json'),
-            details: $details
+            details: $details,
+            expectedCreateRequest: FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/expectedOrderRequestWithThreeDSAuthentication.json')
         );
 
         $captureToken = new Token();
@@ -87,9 +84,7 @@ class CaptureActionTest extends TestCase
         self::assertTrue($redirected);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function captureWithPayMethodTest(): void
     {
         $captureAction = $this->getCaptureAction(
@@ -119,9 +114,7 @@ class CaptureActionTest extends TestCase
         self::assertTrue($redirected);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function captureWithFailResponseTest(): void
     {
         $captureAction = $this->getCaptureAction(
@@ -206,9 +199,7 @@ class CaptureActionTest extends TestCase
         self::assertTrue($withException);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function captureWithOrderIdFailsTest(): void
     {
         $captureAction = $this->getCaptureAction(null, FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/detailsWithOrderId.json'));
@@ -226,7 +217,7 @@ class CaptureActionTest extends TestCase
     private function getCaptureAction(
         ?OrderCreatedResponse $response = null,
         ?array $details = null,
-        ?array $expectedCreateRequest = null
+        ?array $expectedCreateRequest = null,
     ): CaptureAction {
         $response = $response ?? new OrderCreatedResponse(
             new OrderCreatedStatus(
@@ -243,7 +234,6 @@ class CaptureActionTest extends TestCase
             ->with(
                 $this->callback(
                     static function (OrderRequest $createRequest) use ($expectedCreateRequest) {
-
                         if ($expectedCreateRequest) {
                             $jsonE = json_encode($createRequest->toArray('posId'));
                             self::assertSame($createRequest->toArray('posId'), $expectedCreateRequest);

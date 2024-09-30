@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Response;
 
-class Property
+readonly class Property
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $value,
+        public string $name,
+        public string $value,
     ) {
     }
 }

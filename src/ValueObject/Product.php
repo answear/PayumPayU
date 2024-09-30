@@ -7,14 +7,14 @@ namespace Answear\Payum\PayU\ValueObject;
 use Answear\Payum\PayU\Util\BooleanTransformer;
 use Webmozart\Assert\Assert;
 
-class Product
+readonly class Product
 {
     public function __construct(
-        public readonly string $name,
-        public readonly int $unitPrice,
-        public readonly int $quantity,
-        public readonly ?bool $virtual = null,
-        public readonly ?\DateTimeImmutable $listingDate = null,
+        public string $name,
+        public int $unitPrice,
+        public int $quantity,
+        public ?bool $virtual = null,
+        public ?\DateTimeImmutable $listingDate = null,
     ) {
     }
 

@@ -27,7 +27,7 @@ trait MockGuzzleTrait
         return new Client(['handler' => $handlerStack]);
     }
 
-    public function mockGuzzleResponse(Response $response)
+    public function mockGuzzleResponse(Response $response): void
     {
         $this->guzzleHandler->append($response);
     }

@@ -10,26 +10,26 @@ use Answear\Payum\PayU\ValueObject\PayMethod;
 use Answear\Payum\PayU\ValueObject\Product;
 use Webmozart\Assert\Assert;
 
-class Order
+readonly class Order
 {
     public const DEFAULT_VALIDITY_TIME = 86400;
 
     public function __construct(
-        public readonly string $orderId,
-        public readonly ?string $extOrderId,
-        public readonly \DateTimeImmutable $orderCreateDate,
-        public readonly string $notifyUrl,
-        public readonly string $customerIp,
-        public readonly string $merchantPosId,
-        public readonly string $description,
-        public readonly ?string $additionalDescription,
-        public readonly string $currencyCode,
-        public readonly int $totalAmount,
-        public readonly array $products,
-        public readonly OrderStatus $status,
-        public readonly ?Buyer $buyer = null,
-        public readonly ?PayMethod $payMethod = null,
-        public readonly ?int $validityTime = self::DEFAULT_VALIDITY_TIME,
+        public string $orderId,
+        public ?string $extOrderId,
+        public \DateTimeImmutable $orderCreateDate,
+        public string $notifyUrl,
+        public string $customerIp,
+        public string $merchantPosId,
+        public string $description,
+        public ?string $additionalDescription,
+        public string $currencyCode,
+        public int $totalAmount,
+        public array $products,
+        public OrderStatus $status,
+        public ?Buyer $buyer = null,
+        public ?PayMethod $payMethod = null,
+        public ?int $validityTime = self::DEFAULT_VALIDITY_TIME,
     ) {
     }
 

@@ -6,13 +6,13 @@ namespace Answear\Payum\PayU\ValueObject\Response;
 
 use Answear\Payum\PayU\ValueObject\Response\Shop\ShopBalance;
 
-class ShopInfo
+readonly class ShopInfo
 {
     public function __construct(
-        public readonly string $shopId,
-        public readonly string $name,
-        public readonly string $currencyCode,
-        public readonly ShopBalance $balance
+        public string $shopId,
+        public string $name,
+        public string $currencyCode,
+        public ShopBalance $balance,
     ) {
     }
 

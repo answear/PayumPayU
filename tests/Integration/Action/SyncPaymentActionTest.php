@@ -10,13 +10,12 @@ use Answear\Payum\PayU\Request\OrderRequestService;
 use Answear\Payum\PayU\Tests\Payment;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\OrderRetrieveResponse;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class SyncPaymentActionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function successTest(): void
     {
         $action = $this->getUpdatePaymentAction(

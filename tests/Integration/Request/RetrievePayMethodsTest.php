@@ -12,13 +12,12 @@ use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\PayByLink;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Log\NullLogger;
 
 class RetrievePayMethodsTest extends AbstractRequestTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function retrieveTest(): void
     {
         $this->mockGuzzleResponse(
@@ -70,9 +69,7 @@ class RetrievePayMethodsTest extends AbstractRequestTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function exceptionIfNoSuccess(): void
     {
         $this->mockGuzzleResponse(

@@ -13,13 +13,12 @@ use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\Refund;
 use Answear\Payum\PayU\ValueObject\Response\RefundStatusError;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Log\NullLogger;
 
 class RetrieveRefundsTest extends AbstractRequestTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function retrieveRefundListTest(): void
     {
         $this->mockGuzzleResponse(
@@ -58,9 +57,7 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function retrieveSingleRefundTest(): void
     {
         $this->mockGuzzleResponse(
@@ -91,9 +88,7 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function retrieveSingleRefundNotFoundTest(): void
     {
         $this->mockGuzzleResponse(
@@ -125,9 +120,7 @@ class RetrieveRefundsTest extends AbstractRequestTestCase
         self::assertTrue($throwException, 'Expect exception.');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function retrieveEmptyRefundListTest(): void
     {
         $this->mockGuzzleResponse(

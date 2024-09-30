@@ -6,12 +6,12 @@ namespace Answear\Payum\PayU\ValueObject\Response;
 
 use Answear\Payum\PayU\Enum\RefundStatusErrorCode;
 
-class RefundStatusError
+readonly class RefundStatusError
 {
     public function __construct(
-        public readonly RefundStatusErrorCode $code,
-        public readonly string $rawCode,
-        public readonly string $description,
+        public RefundStatusErrorCode $code,
+        public string $rawCode,
+        public string $description,
     ) {
     }
 

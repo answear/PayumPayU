@@ -7,12 +7,11 @@ namespace Answear\Payum\PayU\Tests\Integration\Request;
 use Answear\Payum\PayU\Request\ShopRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 
 class ShopInfoTest extends AbstractRequestTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shopInfoTest(): void
     {
         $this->mockGuzzleResponse(

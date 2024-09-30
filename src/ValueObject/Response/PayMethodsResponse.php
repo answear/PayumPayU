@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Response;
 
-class PayMethodsResponse
+readonly class PayMethodsResponse
 {
     /**
      * @param array<PayByLink> $payByLinks
      */
     public function __construct(
-        public readonly array $cardTokens,
-        public readonly array $pexTokens,
-        public readonly array $payByLinks,
-        public readonly ResponseStatus $status,
+        public array $cardTokens,
+        public array $pexTokens,
+        public array $payByLinks,
+        public ResponseStatus $status,
     ) {
     }
 

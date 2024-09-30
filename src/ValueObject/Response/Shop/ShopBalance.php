@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Response\Shop;
 
-class ShopBalance
+readonly class ShopBalance
 {
     public function __construct(
-        public readonly string $currencyCode,
-        public readonly int $total,
-        public readonly int $available
+        public string $currencyCode,
+        public int $total,
+        public int $available,
     ) {
     }
 

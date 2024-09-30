@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Response\OrderCreated;
 
-class OrderCreatedStatus
+readonly class OrderCreatedStatus
 {
     public function __construct(
-        public readonly StatusCode $statusCode,
-        public readonly ?string $statusDesc = null,
-        public readonly ?string $codeLiteral = null,
+        public StatusCode $statusCode,
+        public ?string $statusDesc = null,
+        public ?string $codeLiteral = null,
     ) {
     }
 

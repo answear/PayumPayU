@@ -8,14 +8,13 @@ use Answear\Payum\PayU\Exception\PayUNetworkException;
 use Answear\Payum\PayU\Exception\PayURequestException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 
 class PayUExceptionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function emptyJsonNetworkException(): void
     {
         $exception = new PayUNetworkException('Exception', 0, $this->getPreviousException());
@@ -23,9 +22,7 @@ class PayUExceptionTest extends TestCase
         self::assertNull($exception->response);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function emptyJsonRequestException(): void
     {
         $exception = new PayURequestException('Exception', 0, $this->getPreviousException(''));
@@ -33,9 +30,7 @@ class PayUExceptionTest extends TestCase
         self::assertNull($exception->response);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function jsonDecodedNetworkException(): void
     {
         $exception = new PayURequestException('Exception', 0, $this->getPreviousException('{"status":false}'));
@@ -43,9 +38,7 @@ class PayUExceptionTest extends TestCase
         self::assertSame(['status' => false], $exception->response);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function jsonDecodedRequestException(): void
     {
         $exception = new PayURequestException('Exception', 0, $this->getPreviousException('{"status":true}'));

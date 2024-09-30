@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject;
 
-class Buyer
+readonly class Buyer
 {
     public function __construct(
-        public readonly string $email,
-        public readonly string $firstName,
-        public readonly string $lastName,
-        public readonly ?string $phone = null,
-        public readonly ?string $customerId = null,
-        public readonly ?string $extCustomerId = null,
-        public readonly ?string $nin = null,
-        public readonly ?string $language = null,
-        public readonly ?Delivery $delivery = null,
+        public string $email,
+        public string $firstName,
+        public string $lastName,
+        public ?string $phone = null,
+        public ?string $customerId = null,
+        public ?string $extCustomerId = null,
+        public ?string $nin = null,
+        public ?string $language = null,
+        public ?Delivery $delivery = null,
     ) {
     }
 
