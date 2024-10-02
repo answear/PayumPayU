@@ -6,13 +6,13 @@ namespace Answear\Payum\PayU\ValueObject\Request\Order;
 
 use Answear\Payum\PayU\Enum\PayMethodType;
 
-class PayMethod
+readonly class PayMethod
 {
     public function __construct(
-        public readonly PayMethodType $type,
-        public readonly ?string $value = null,
-        public readonly ?string $authorizationCode = null,
-        public readonly ?array $specificData = null,
+        public PayMethodType $type,
+        public ?string $value = null,
+        public ?string $authorizationCode = null,
+        public ?array $specificData = null,
     ) {
         if (PayMethodType::PaymentWall !== $this->type && empty($value)) {
             throw new \InvalidArgumentException(sprintf('Value is required for type %s.', $this->type->value));

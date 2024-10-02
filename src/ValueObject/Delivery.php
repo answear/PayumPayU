@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject;
 
-class Delivery
+readonly class Delivery
 {
     public function __construct(
-        public readonly string $street,
-        public readonly string $postalCode,
-        public readonly string $city,
-        public readonly ?string $countryCode = null,
-        public readonly ?string $name = null,
-        public readonly ?string $recipientName = null,
-        public readonly ?string $recipientEmail = null,
-        public readonly ?string $recipientPhone = null,
-        public readonly ?string $postalBox = null,
-        public readonly ?string $state = null,
+        public string $street,
+        public string $postalCode,
+        public string $city,
+        public ?string $countryCode = null,
+        public ?string $name = null,
+        public ?string $recipientName = null,
+        public ?string $recipientEmail = null,
+        public ?string $recipientPhone = null,
+        public ?string $postalBox = null,
+        public ?string $state = null,
     ) {
     }
 

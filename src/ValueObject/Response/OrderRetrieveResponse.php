@@ -6,16 +6,16 @@ namespace Answear\Payum\PayU\ValueObject\Response;
 
 use Webmozart\Assert\Assert;
 
-class OrderRetrieveResponse
+readonly class OrderRetrieveResponse
 {
     /**
      * @param array<Order> $orders
      * @param array<Property> $properties
      */
     public function __construct(
-        public readonly array $orders,
-        public readonly ResponseStatus $status,
-        public readonly array $properties,
+        public array $orders,
+        public ResponseStatus $status,
+        public array $properties,
     ) {
         Assert::allIsInstanceOf($this->orders, Order::class);
         Assert::allIsInstanceOf($this->properties, Property::class);

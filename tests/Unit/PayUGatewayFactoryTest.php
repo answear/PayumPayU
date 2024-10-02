@@ -16,17 +16,23 @@ use Http\Message\MessageFactory;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\LogicException;
 use Payum\Core\HttpClientInterface;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class PayUGatewayFactoryTest extends TestCase
 {
-    /**
-     * @test
-     *
-     * @dataProvider provideValidConfig
-     */
-    public function validConfigurationTest(array $config): void
+    #[Test]
+    public function validConfigurationTest(): void
     {
+        $config = [
+            'payum.action.capture' => $this->createMock(CaptureAction::class),
+            'payum.action.refund' => $this->createMock(RefundAction::class),
+            'payum.action.notify' => $this->createMock(NotifyAction::class),
+            'payum.action.status' => $this->createMock(StatusAction::class),
+            'payum.action.convert_payment' => $this->createMock(ConvertPaymentAction::class),
+            'payum.action.sync_payment' => $this->createMock(SyncPaymentAction::class),
+        ];
+
         $config['payum.http_client'] = $this->createMock(HttpClientInterface::class);
         $config['httplug.message_factory'] = $this->createMock(MessageFactory::class);
         $response = $this->getFactory()->createConfig($config);
@@ -49,13 +55,14 @@ class PayUGatewayFactoryTest extends TestCase
         self::assertArrayHasKey('payum.action.convert_payment', $response);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideInvalidConfig
-     */
-    public function invalidConfigurationTest(array $config, \Throwable $expectedException): void
+    #[Test]
+    public function invalidNoConfigConfigurationTest(): void
     {
+        $config = [];
+        $expectedException = new LogicException(
+            'The payum.action.capture, payum.action.refund, payum.action.notify, payum.action.status, payum.action.convert_payment, payum.action.sync_payment fields are required.'
+        );
+
         $this->expectException(get_class($expectedException));
         $this->expectExceptionMessage($expectedException->getMessage());
 
@@ -75,37 +82,35 @@ class PayUGatewayFactoryTest extends TestCase
         );
     }
 
-    public function provideInvalidConfig(): iterable
+    #[Test]
+    public function invalidNoFieldsConfigurationTest(): void
     {
-        yield 'no configs' => [
-            [],
-            new LogicException('The payum.action.capture, payum.action.refund, payum.action.notify, payum.action.status, payum.action.convert_payment, payum.action.sync_payment fields are required.'),
+        $config = [
+            'payum.action.capture' => $this->createMock(CaptureAction::class),
+            'payum.action.refund' => $this->createMock(RefundAction::class),
+            'payum.action.notify' => $this->createMock(NotifyAction::class),
+            'payum.action.status' => $this->createMock(StatusAction::class),
+            'payum.action.convert_payment' => $this->createMock(ConvertPaymentAction::class),
         ];
+        $expectedException = new LogicException('The payum.action.sync_payment fields are required.');
 
-        yield 'no fields' => [
-            [
-                'payum.action.capture' => $this->createMock(CaptureAction::class),
-                'payum.action.refund' => $this->createMock(RefundAction::class),
-                'payum.action.notify' => $this->createMock(NotifyAction::class),
-                'payum.action.status' => $this->createMock(StatusAction::class),
-                'payum.action.convert_payment' => $this->createMock(ConvertPaymentAction::class),
-            ],
-            new LogicException('The payum.action.sync_payment fields are required.'),
-        ];
-    }
+        $this->expectException(get_class($expectedException));
+        $this->expectExceptionMessage($expectedException->getMessage());
 
-    public function provideValidConfig(): iterable
-    {
-        yield 'simple' => [
+        $config['payum.http_client'] = $this->createMock(HttpClientInterface::class);
+        $config['httplug.message_factory'] = $this->createMock(MessageFactory::class);
+        $response = $this->getFactory()->createConfig($config);
+
+        $this->assertInstanceOf(\Closure::class, $response['payum.api']);
+        $api = $response['payum.api'](new ArrayObject($response));
+        $this->assertInstanceOf(Api::class, $api);
+
+        self::assertSame(
+            [$config['configs']],
             [
-                'payum.action.capture' => $this->createMock(CaptureAction::class),
-                'payum.action.refund' => $this->createMock(RefundAction::class),
-                'payum.action.notify' => $this->createMock(NotifyAction::class),
-                'payum.action.status' => $this->createMock(StatusAction::class),
-                'payum.action.convert_payment' => $this->createMock(ConvertPaymentAction::class),
-                'payum.action.sync_payment' => $this->createMock(SyncPaymentAction::class),
-            ],
-        ];
+                OverrideObjectPropertyUtil::getValue($api, 'configurations'),
+            ]
+        );
     }
 
     private function getFactory(): PayUGatewayFactory

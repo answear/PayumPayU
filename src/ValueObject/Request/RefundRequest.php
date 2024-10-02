@@ -7,13 +7,13 @@ namespace Answear\Payum\PayU\ValueObject\Request;
 use Answear\Payum\PayU\Enum\AuthType;
 use Answear\Payum\PayU\ValueObject\Request\Refund\Refund;
 
-class RefundRequest
+readonly class RefundRequest
 {
     public const METHOD = 'POST';
     public const AUTH_TYPE = AuthType::Basic;
 
     public function __construct(
-        public readonly Refund $refund
+        public Refund $refund,
     ) {
     }
 

@@ -11,12 +11,10 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.1"
+                    - "8.2"
                 deps:
                     - "normal"
-                include:
-                    - deps: "low"
-                      php-version: "8.1"
+                    - "low"
 
         steps:
             - name: "Checkout"

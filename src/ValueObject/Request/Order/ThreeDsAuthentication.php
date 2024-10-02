@@ -6,10 +6,10 @@ namespace Answear\Payum\PayU\ValueObject\Request\Order;
 
 use Answear\Payum\PayU\Enum\ChallengeRequestedType;
 
-class ThreeDsAuthentication
+readonly class ThreeDsAuthentication
 {
     public function __construct(
-        public readonly ChallengeRequestedType $challengeRequested,
+        public ChallengeRequestedType $challengeRequested,
     ) {
     }
 

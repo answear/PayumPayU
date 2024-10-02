@@ -11,13 +11,12 @@ use Answear\Payum\PayU\Service\UserIpService;
 use Answear\Payum\PayU\Tests\Payment;
 use Payum\Core\Model\CreditCard;
 use Payum\Core\Request\Convert;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class ConvertActionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function convertWithLowInfoTest(): void
     {
         $convertAction = new ConvertPaymentAction(new UserIpService());
@@ -69,9 +68,7 @@ class ConvertActionTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function convertWithFullDataTest(): void
     {
         $convertAction = new ConvertPaymentAction(new UserIpService());
@@ -135,9 +132,7 @@ class ConvertActionTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function convertButKeepCustomerIp(): void
     {
         $convertAction = new ConvertPaymentAction(new UserIpService());
@@ -170,7 +165,7 @@ class ConvertActionTest extends TestCase
         $payment->setPaidFor($paidFor);
         $payment->setDetails(
             [
-                ModelFields::CUSTOMER_IP => '111.222.333.444'
+                ModelFields::CUSTOMER_IP => '111.222.333.444',
             ]
         );
         $convert = new Convert($payment, 'array');

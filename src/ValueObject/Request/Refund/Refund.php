@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Request\Refund;
 
-class Refund
+readonly class Refund
 {
     public function __construct(
-        public readonly string $description,
-        public readonly ?int $amount,
-        public readonly ?string $extCustomerId = null,
-        public readonly ?string $extRefundId = null,
+        public string $description,
+        public ?int $amount,
+        public ?string $extCustomerId = null,
+        public ?string $extRefundId = null,
     ) {
     }
 

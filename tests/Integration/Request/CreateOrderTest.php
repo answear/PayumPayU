@@ -15,13 +15,12 @@ use Answear\Payum\PayU\ValueObject\Request\OrderRequest;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\OrderCreatedStatus;
 use Answear\Payum\PayU\ValueObject\Response\OrderCreated\StatusCode;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Log\NullLogger;
 
 class CreateOrderTest extends AbstractRequestTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function createTest(): void
     {
         $this->mockGuzzleResponse(
@@ -62,9 +61,7 @@ class CreateOrderTest extends AbstractRequestTestCase
         self::assertSame('extOrderId123', $orderCreated->extOrderId);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createUnauthorizedTest(): void
     {
         $this->mockGuzzleResponse(

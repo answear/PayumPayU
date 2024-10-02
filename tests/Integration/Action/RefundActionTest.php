@@ -11,13 +11,12 @@ use Answear\Payum\PayU\Request\RefundRequestService;
 use Answear\Payum\PayU\Tests\Payment;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\RefundCreatedResponse;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class RefundActionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function successTest(): void
     {
         $refundCreatedResponse = RefundCreatedResponse::fromResponse(FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/refundCreatedResponse.json'));
@@ -53,9 +52,7 @@ class RefundActionTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function errorTest(): void
     {
         $refundCreatedResponse = RefundCreatedResponse::fromResponse(

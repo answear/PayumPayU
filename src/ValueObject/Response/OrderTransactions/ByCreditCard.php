@@ -6,12 +6,12 @@ namespace Answear\Payum\PayU\ValueObject\Response\OrderTransactions;
 
 use Answear\Payum\PayU\ValueObject\PayMethod;
 
-class ByCreditCard implements OrderRetrieveTransactionsResponseInterface
+readonly class ByCreditCard implements OrderRetrieveTransactionsResponseInterface
 {
     public function __construct(
-        public readonly PayMethod $payMethod,
-        public readonly string $paymentFlow,
-        public readonly ?array $card,
+        public PayMethod $payMethod,
+        public string $paymentFlow,
+        public ?array $card,
     ) {
     }
 

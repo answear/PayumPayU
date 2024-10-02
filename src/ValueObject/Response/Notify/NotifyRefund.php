@@ -7,18 +7,18 @@ namespace Answear\Payum\PayU\ValueObject\Response\Notify;
 use Answear\Payum\PayU\Enum\RefundStatus;
 use Webmozart\Assert\Assert;
 
-class NotifyRefund
+readonly class NotifyRefund
 {
     public function __construct(
-        public readonly string $refundId,
-        public readonly ?string $extRefundId,
-        public readonly int $amount,
-        public readonly string $currencyCode,
-        public readonly RefundStatus $status,
-        public readonly \DateTimeImmutable $statusDateTime,
-        public readonly string $reason,
-        public readonly string $reasonDescription,
-        public readonly \DateTimeImmutable $refundDate,
+        public string $refundId,
+        public ?string $extRefundId,
+        public int $amount,
+        public string $currencyCode,
+        public RefundStatus $status,
+        public \DateTimeImmutable $statusDateTime,
+        public string $reason,
+        public string $reasonDescription,
+        public \DateTimeImmutable $refundDate,
     ) {
     }
 

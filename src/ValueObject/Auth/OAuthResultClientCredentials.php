@@ -8,14 +8,14 @@ use Answear\Payum\PayU\Enum\OAuthGrantType;
 use Psr\Http\Message\ResponseInterface;
 use Webmozart\Assert\Assert;
 
-class OAuthResultClientCredentials
+readonly class OAuthResultClientCredentials
 {
     public function __construct(
-        public readonly string $accessToken,
-        public readonly string $tokenType,
-        public readonly int $expiresIn,
-        public readonly OAuthGrantType $grantType,
-        public readonly \DateTimeImmutable $expireDate
+        public string $accessToken,
+        public string $tokenType,
+        public int $expiresIn,
+        public OAuthGrantType $grantType,
+        public \DateTimeImmutable $expireDate,
     ) {
     }
 

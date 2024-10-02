@@ -10,13 +10,12 @@ use Answear\Payum\PayU\ValueObject\PayMethod;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByCreditCard;
 use Answear\Payum\PayU\ValueObject\Response\OrderTransactions\ByPBL;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Log\NullLogger;
 
 class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function retrieveByCardTest(): void
     {
         $this->mockGuzzleResponse(
@@ -56,9 +55,7 @@ class OrderRetrieveTransactionsTest extends AbstractRequestTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function retrieveByPBLTest(): void
     {
         $this->mockGuzzleResponse(

@@ -17,13 +17,12 @@ use Answear\Payum\PayU\ValueObject\Response\Order;
 use Answear\Payum\PayU\ValueObject\Response\Property;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Log\NullLogger;
 
 class OrderRetrieveTest extends AbstractRequestTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function retrieveTest(): void
     {
         $this->mockGuzzleResponse(
@@ -83,9 +82,7 @@ class OrderRetrieveTest extends AbstractRequestTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function retrieveWithPayMethodTest(): void
     {
         $this->mockGuzzleResponse(
@@ -143,9 +140,7 @@ class OrderRetrieveTest extends AbstractRequestTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function notFoundTest(): void
     {
         $this->mockGuzzleResponse(

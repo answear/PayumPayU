@@ -9,6 +9,8 @@ use Answear\Payum\PayU\DependencyInjection\Configuration;
 use Answear\Payum\PayU\Enum\Environment;
 use Answear\Payum\PayU\Service\ConfigProvider;
 use Matthias\SymfonyConfigTest\PhpUnit\ConfigurationTestCaseTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -22,11 +24,8 @@ class ConfigurationTest extends TestCase
         parent::setUp();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideValidConfig
-     */
+    #[Test]
+    #[DataProvider('provideValidConfig')]
     public function validTest(array $configs): void
     {
         $this->assertConfigurationIsValid($configs);
@@ -42,11 +41,8 @@ class ConfigurationTest extends TestCase
         self::assertSame($configs[0]['configs'], $configProviderDefinition->getArgument(1));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideInvalidConfig
-     */
+    #[Test]
+    #[DataProvider('provideInvalidConfig')]
     public function invalid(array $config, ?string $expectedMessage = null): void
     {
         $this->assertConfigurationIsInvalid(
@@ -55,11 +51,8 @@ class ConfigurationTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideMoreInvalidConfig
-     */
+    #[Test]
+    #[DataProvider('provideMoreInvalidConfig')]
     public function moreInvalidTest(array $configs, \Throwable $expectedException): void
     {
         $this->expectException(get_class($expectedException));
@@ -73,7 +66,7 @@ class ConfigurationTest extends TestCase
         $extension->load($configs, $builder);
     }
 
-    public function provideInvalidConfig(): iterable
+    public static function provideInvalidConfig(): iterable
     {
         yield [
             [
@@ -170,7 +163,7 @@ class ConfigurationTest extends TestCase
         ];
     }
 
-    public function provideMoreInvalidConfig(): iterable
+    public static function provideMoreInvalidConfig(): iterable
     {
         yield [
             [
@@ -192,7 +185,7 @@ class ConfigurationTest extends TestCase
         ];
     }
 
-    public function provideValidConfig(): iterable
+    public static function provideValidConfig(): iterable
     {
         yield [
             [

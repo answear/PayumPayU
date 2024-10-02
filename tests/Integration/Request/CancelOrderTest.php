@@ -12,13 +12,12 @@ use Answear\Payum\PayU\Request\OrderRequestService;
 use Answear\Payum\PayU\Tests\Util\FileTestUtil;
 use Answear\Payum\PayU\ValueObject\Response\ResponseStatus;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Log\NullLogger;
 
 class CancelOrderTest extends AbstractRequestTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function createTest(): void
     {
         $this->mockGuzzleResponse(
@@ -39,9 +38,7 @@ class CancelOrderTest extends AbstractRequestTestCase
         self::assertSame('extOrderId123', $response->extOrderId);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createUnauthorizedTest(): void
     {
         $this->mockGuzzleResponse(
@@ -53,9 +50,7 @@ class CancelOrderTest extends AbstractRequestTestCase
         $this->getOrderRequestService()->cancel('WZHF5FFDRJ140731GUEST000P01', null);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function notFoundTest(): void
     {
         $this->mockGuzzleResponse(
@@ -69,9 +64,7 @@ class CancelOrderTest extends AbstractRequestTestCase
         $this->getOrderRequestService()->cancel('WZHF5FFDRJ140731GUEST000P01', null);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function internalServerErrorTest(): void
     {
         $this->mockGuzzleResponse(

@@ -20,13 +20,12 @@ use Payum\Core\Model\Token;
 use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\Notify;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class NotifyActionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function orderNotifyTest(): void
     {
         $notifyAction = $this->getNotifyAction();
@@ -59,9 +58,7 @@ class NotifyActionTest extends TestCase
         self::assertSame(['PAYMENT_ID' => '151471228'], $model['properties'] ?? []);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function refundNotifyTest(): void
     {
         $notifyAction = $this->getNotifyAction(

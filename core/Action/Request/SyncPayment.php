@@ -7,9 +7,9 @@ namespace Answear\Payum\Action\Request;
 use Payum\Core\Model\ModelAggregateInterface;
 use Payum\Core\Model\PaymentInterface;
 
-class SyncPayment implements ModelAggregateInterface
+readonly class SyncPayment implements ModelAggregateInterface
 {
-    public function __construct(private readonly PaymentInterface $model)
+    public function __construct(private PaymentInterface $model)
     {
     }
 

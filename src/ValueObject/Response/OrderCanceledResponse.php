@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\ValueObject\Response;
 
-class OrderCanceledResponse
+readonly class OrderCanceledResponse
 {
     public function __construct(
-        public readonly ResponseStatus $status,
-        public readonly string $orderId,
-        public readonly ?string $extOrderId = null
+        public ResponseStatus $status,
+        public string $orderId,
+        public ?string $extOrderId = null,
     ) {
     }
 

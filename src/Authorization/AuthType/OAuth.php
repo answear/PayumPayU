@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Answear\Payum\PayU\Authorization\AuthType;
 
-class OAuth implements AuthType
+readonly class OAuth implements AuthType
 {
-    public function __construct(private readonly string $accessToken)
+    public function __construct(private string $accessToken)
     {
     }
 
