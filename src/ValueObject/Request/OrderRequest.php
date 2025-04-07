@@ -27,7 +27,7 @@ class OrderRequest
         public readonly string $currencyCode,
         public readonly int $totalAmount,
         public readonly string $customerIp,
-        public readonly string $notifyUrl,
+        public readonly ?string $notifyUrl = null,
         public readonly array $products = [],
         public readonly ?int $validityTime = null,
         public readonly ?string $extOrderId = null,
