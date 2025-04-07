@@ -8,13 +8,13 @@ class UserIpService
 {
     public function getIp(): ?string
     {
-        $ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_TRUE_CLIENT_IP'];
+        $ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_TRUE_CLIENT_IP'] ?? null;
 
         if (!empty($ip)) {
             return $ip;
         }
 
-        $xForwardedFor = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        $xForwardedFor = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
         if (!empty($xForwardedFor)) {
             return trim(explode(',', $xForwardedFor)[0]);
         }
