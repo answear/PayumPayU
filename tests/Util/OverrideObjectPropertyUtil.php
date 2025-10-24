@@ -10,10 +10,7 @@ class OverrideObjectPropertyUtil
     {
         $reflection = new \ReflectionClass(get_class($object));
 
-        $property = $reflection->getProperty($propertyName);
-        $property->setAccessible(true);
-
-        return $property->getValue($object);
+        return $reflection->getProperty($propertyName)->getValue($object);
     }
 
     public static function override(object $object, string $propertyName, $value): void
@@ -21,7 +18,6 @@ class OverrideObjectPropertyUtil
         $reflection = new \ReflectionClass(get_class($object));
 
         $property = $reflection->getProperty($propertyName);
-        $property->setAccessible(true);
         $property->setValue($object, $value);
     }
 
@@ -31,7 +27,6 @@ class OverrideObjectPropertyUtil
 
         foreach ($properties as $propertyName => $value) {
             $property = $reflection->getProperty($propertyName);
-            $property->setAccessible(true);
             $property->setValue($object, $value);
         }
     }
