@@ -14,6 +14,7 @@ readonly class OrderCreatedResponse
         public string $orderId,
         public ?string $extOrderId = null,
         public ?array $payMethods = null,
+        public ?array $iframeAllowed = null,
     ) {
     }
 
@@ -24,7 +25,8 @@ readonly class OrderCreatedResponse
             $response['redirectUri'] ?? null,
             $response['orderId'],
             $response['extOrderId'] ?? null,
-            $response['payMethods'] ?? null
+            $response['payMethods'] ?? null,
+            $response['iframeAllowed'] ?? null
         );
     }
 
@@ -36,6 +38,7 @@ readonly class OrderCreatedResponse
             'orderId' => $this->orderId,
             'extOrderId' => $this->extOrderId,
             'payMethods' => $this->payMethods,
+            'iframeAllowed' => $this->iframeAllowed,
         ];
     }
 }
