@@ -14,7 +14,7 @@ readonly class OrderCreatedResponse
         public string $orderId,
         public ?string $extOrderId = null,
         public ?array $payMethods = null,
-        public ?array $iframeAllowed = null,
+        public ?bool $iframeAllowed = null,
     ) {
     }
 

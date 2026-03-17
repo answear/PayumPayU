@@ -77,7 +77,7 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
             $this->updatePayment($model, $orderCreatedResponse, $firstModel, $token);
             $request->setModel($model);
 
-            throw new Continue3DsHttpRedirect(!(null === $orderCreatedResponse->iframeAllowed), $orderCreatedResponse->redirectUri);
+            throw new Continue3DsHttpRedirect($orderCreatedResponse->iframeAllowed ?? false, $orderCreatedResponse->redirectUri);
         }
 
         throw PayUException::withResponse(
