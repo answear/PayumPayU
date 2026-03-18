@@ -153,7 +153,7 @@ class CaptureActionTest extends TestCase
                     'orderId' => '',
                     'extOrderId' => 'vjis3d90tsozmuj0rjgs3i',
                     'payMethods' => null,
-                    'iframeAllowed' => null,
+                    'iframeAllowed' => false,
                 ],
                 $exception->response
             );
@@ -189,7 +189,7 @@ class CaptureActionTest extends TestCase
                             'orderId' => '',
                             'extOrderId' => 'vjis3d90tsozmuj0rjgs3i',
                             'payMethods' => null,
-                            'iframeAllowed' => null,
+                            'iframeAllowed' => false,
                         ],
                     ]
                 ),

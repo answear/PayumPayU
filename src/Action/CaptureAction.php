@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Action;
 
 use Answear\Payum\Model\Payment;
-use Answear\Payum\PayU\Core\Reply\Continue3DsHttpRedirect;
+use Answear\Payum\PayU\Core\Reply\IframeHttpRedirect;
 use Answear\Payum\PayU\Enum\PayMethodType;
 use Answear\Payum\PayU\Enum\RecurringEnum;
 use Answear\Payum\PayU\Exception\PayUException;
@@ -77,7 +77,10 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
             $this->updatePayment($model, $orderCreatedResponse, $firstModel, $token);
             $request->setModel($model);
 
-            throw new Continue3DsHttpRedirect($orderCreatedResponse->iframeAllowed ?? false, $orderCreatedResponse->redirectUri);
+            throw match($orderCreatedResponse->iframeAllowed) {
+                true => new IframeHttpRedirect($orderCreatedResponse->redirectUri),
+                default => new HttpRedirect($orderCreatedResponse->redirectUri),
+            };
         }
 
         throw PayUException::withResponse(
