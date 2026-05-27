@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Tests\Integration\Action;
 
 use Answear\Payum\PayU\Action\CaptureAction;
+use Answear\Payum\PayU\Core\Reply\IframeHttpRedirect;
 use Answear\Payum\PayU\Enum\ChallengeRequestedType;
 use Answear\Payum\PayU\Enum\ModelFields;
 use Answear\Payum\PayU\Enum\PayMethodType;
@@ -28,6 +29,7 @@ use Payum\Core\Request\Convert;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\GenericTokenFactory;
 use Payum\Core\Security\TokenInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -202,6 +204,83 @@ class CaptureActionTest extends TestCase
     }
 
     #[Test]
+    #[DataProvider('provideWarningContinue3dsData')]
+    public function captureWithWarningContinue3dsTest(bool $iframeAllowed, string $expectedRedirectClass): void
+    {
+        $redirectUri = 'http://redirect-3ds.url';
+
+        $captureAction = $this->getCaptureAction(
+            new OrderCreatedResponse(
+                new OrderCreatedStatus(
+                    StatusCode::WarningContinue3ds,
+                    'Wymagana autoryzacja 3DS.'
+                ),
+                $redirectUri,
+                'WZHF5FFDRJ140731GUEST000P01',
+                'vjis3d90tsozmuj0rjgs3i',
+                null,
+                $iframeAllowed
+            )
+        );
+
+        $captureToken = new Token();
+        $capture = new Capture($captureToken);
+        $capture->setModel(new \Answear\Payum\PayU\Tests\Payment());
+        $capture->setModel(FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
+
+        $redirected = false;
+        try {
+            $captureAction->execute($capture);
+        } catch (HttpRedirect $httpRedirect) {
+            $redirected = true;
+            self::assertInstanceOf($expectedRedirectClass, $httpRedirect);
+            self::assertSame($redirectUri, $httpRedirect->getUrl());
+        }
+
+        self::assertTrue($redirected);
+    }
+
+    public static function provideWarningContinue3dsData(): iterable
+    {
+        yield 'iframe allowed' => [true, IframeHttpRedirect::class];
+        yield 'iframe not allowed' => [false, HttpRedirect::class];
+    }
+
+    #[Test]
+    public function captureWithWarningContinueCVVTest(): void
+    {
+        $redirectUri = 'http://redirect-cvv.url';
+
+        $captureAction = $this->getCaptureAction(
+            new OrderCreatedResponse(
+                new OrderCreatedStatus(
+                    StatusCode::WarningContinueCVV,
+                    'Wymagana weryfikacja CVV.'
+                ),
+                $redirectUri,
+                'WZHF5FFDRJ140731GUEST000P01',
+                'vjis3d90tsozmuj0rjgs3i'
+            )
+        );
+
+        $captureToken = new Token();
+        $capture = new Capture($captureToken);
+        $capture->setModel(new \Answear\Payum\PayU\Tests\Payment());
+        $capture->setModel(FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
+
+        $redirected = false;
+        try {
+            $captureAction->execute($capture);
+        } catch (HttpRedirect $httpRedirect) {
+            $redirected = true;
+            self::assertNotInstanceOf(IframeHttpRedirect::class, $httpRedirect);
+            self::assertSame($redirectUri, $httpRedirect->getUrl());
+        }
+
+        self::assertTrue($redirected);
+    }
+
+    #[Test]
     public function captureWithOrderIdFailsTest(): void
     {
         $captureAction = $this->getCaptureAction(null, FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/detailsWithOrderId.json'));
@@ -276,7 +355,7 @@ class CaptureActionTest extends TestCase
                                     ->willReturn($details ?? FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
                             }
                             if ($payment instanceof PaymentInterface) {
-                                $payment->setDetails($details ?? FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json'));
+                                $payment->setDetails(new \ArrayObject($details ?? FileTestUtil::decodeJsonFromFile(__DIR__ . '/data/details.json')));
                             }
                         }
 

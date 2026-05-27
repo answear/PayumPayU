@@ -38,12 +38,14 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
 
     public function __construct(
         private OrderRequestService $orderRequestService,
-        private PayMethodsRequestService $payMethodsRequestService
+        private PayMethodsRequestService $payMethodsRequestService,
     ) {
     }
 
     /**
      * @param Capture $request
+     *
+     * @throws HttpRedirect|IframeHttpRedirect|PayUException
      */
     public function execute($request): void
     {
@@ -66,21 +68,21 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
 
         $orderCreatedResponse = $this->orderRequestService->create($orderRequest, $configKey);
         $model->setPayUResponse($orderCreatedResponse);
-        if (StatusCode::Success === $orderCreatedResponse->status->statusCode) {
+
+        $statusCode = $orderCreatedResponse->status->statusCode;
+        $httpRedirect = match (true) {
+            StatusCode::Success === $statusCode => new HttpRedirect($orderCreatedResponse->redirectUri ?? $token->getAfterUrl()),
+            (StatusCode::WarningContinue3ds === $statusCode && $orderCreatedResponse->iframeAllowed) => new IframeHttpRedirect($orderCreatedResponse->redirectUri),
+            StatusCode::WarningContinue3ds === $statusCode,
+            StatusCode::WarningContinueCVV === $statusCode => new HttpRedirect($orderCreatedResponse->redirectUri),
+            default => null,
+        };
+
+        if (null !== $httpRedirect) {
             $this->updatePayment($model, $orderCreatedResponse, $firstModel, $token);
             $request->setModel($model);
 
-            throw new HttpRedirect($orderCreatedResponse->redirectUri ?? $token->getAfterUrl());
-        }
-
-        if (StatusCode::WarningContinue3ds === $orderCreatedResponse->status->statusCode) {
-            $this->updatePayment($model, $orderCreatedResponse, $firstModel, $token);
-            $request->setModel($model);
-
-            throw match($orderCreatedResponse->iframeAllowed) {
-                true => new IframeHttpRedirect($orderCreatedResponse->redirectUri),
-                default => new HttpRedirect($orderCreatedResponse->redirectUri),
-            };
+            throw $httpRedirect;
         }
 
         throw PayUException::withResponse(
@@ -103,7 +105,7 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
         Model $model,
         OrderCreatedResponse $orderCreatedResponse,
         PaymentInterface $payment,
-        TokenInterface $token
+        TokenInterface $token,
     ): void {
         $model->setOrderId($orderCreatedResponse->orderId);
         if ($payment instanceof Payment) {
