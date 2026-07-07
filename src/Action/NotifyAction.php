@@ -38,7 +38,7 @@ class NotifyAction implements ActionInterface, GatewayAwareInterface
     public function __construct(
         private OrderRequestService $orderRequestService,
         private SignatureValidator $signatureValidator,
-        private PayULogger $logger
+        private PayULogger $logger,
     ) {
     }
 
@@ -134,6 +134,8 @@ class NotifyAction implements ActionInterface, GatewayAwareInterface
     private function refundNotify(Model $model, PaymentInterface $firstModel, array $refundData): void
     {
         $orderId = PaymentHelper::getOrderId($model, $firstModel);
+        Assert::notNull($orderId, 'OrderId must be set for refund notify.');
+
         $this->updatePaymentStatus($model, $orderId, $firstModel);
         $model->updateRefundData($refundData);
     }

@@ -10,13 +10,15 @@ use Psr\Log\NullLogger;
 
 class PayULogger extends AbstractLogger
 {
-    public function __construct(private ?LoggerInterface $logger)
+    private LoggerInterface $innerLogger;
+
+    public function __construct(?LoggerInterface $logger)
     {
-        $this->logger = $this->logger ?? new NullLogger();
+        $this->innerLogger = $logger ?? new NullLogger();
     }
 
     public function log($level, $message, array $context = []): void
     {
-        $this->logger->log($level, '[Payum] ' . $message, $context + ['gateway' => 'payu']);
+        $this->innerLogger->log($level, '[Payum] ' . $message, $context + ['gateway' => 'payu']);
     }
 }

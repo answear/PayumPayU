@@ -103,9 +103,10 @@ class Model extends ArrayObject
         }
 
         $type = $this[ModelFields::PAY_METHODS][ModelFields::PAY_METHOD][ModelFields::PAY_METHOD_TYPE] ?? '';
+        $payMethodType = $type instanceof PayMethodType ? $type : PayMethodType::from($type);
 
         return new PayMethod(
-            $type instanceof PayMethodType ? $type : PayMethodType::tryFrom($type),
+            $payMethodType,
             $this[ModelFields::PAY_METHODS][ModelFields::PAY_METHOD][ModelFields::PAY_METHOD_VALUE],
             $this[ModelFields::PAY_METHODS][ModelFields::PAY_METHOD][ModelFields::PAY_METHOD_AUTHORIZATION_CODE] ?? null,
             $this[ModelFields::PAY_METHODS][ModelFields::PAY_METHOD][ModelFields::PAY_METHOD_SPECIFIC_DATA] ?? null,

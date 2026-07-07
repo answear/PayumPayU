@@ -13,6 +13,7 @@ use Answear\Payum\PayU\Util\PaymentHelper;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Model\PaymentInterface;
+use Webmozart\Assert\Assert;
 
 class SyncPaymentAction implements ActionInterface
 {
@@ -39,22 +40,24 @@ class SyncPaymentAction implements ActionInterface
 
     public function supports($request): bool
     {
-        return
-            $request instanceof SyncPayment
-            && $request->getModel() instanceof PaymentInterface;
+        return $request instanceof SyncPayment;
     }
 
     protected function updatePayment(PaymentInterface $payment, Model $model): void
     {
         $payment->setDetails($model);
         if ($payment instanceof Payment) {
-            $payment->setOrderId($model->orderId());
+            $orderId = $model->orderId();
+            Assert::notNull($orderId, 'OrderId must be set.');
+            $payment->setOrderId($orderId);
         }
     }
 
     protected function updatePaymentStatus(Model $model, PaymentInterface $payment): void
     {
-        $response = $this->orderRequestService->retrieve($model->orderId(), PaymentHelper::getConfigKey($model, $payment));
+        $orderId = $model->orderId();
+        Assert::notNull($orderId, 'OrderId must be set.');
+        $response = $this->orderRequestService->retrieve($orderId, PaymentHelper::getConfigKey($model, $payment));
         if (ResponseStatusCode::Success === $response->status->statusCode) {
             $model->setStatus($response->orders[0]->status);
             foreach ($response->properties as $property) {

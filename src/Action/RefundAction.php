@@ -30,7 +30,6 @@ class RefundAction implements ActionInterface
 
         $model = Model::ensureArrayObject($request->getModel());
         $firstModel = PaymentHelper::ensurePayment($request->getFirstModel());
-        Assert::notNull($firstModel, 'Payment must be set on refund action.');
         $orderId = PaymentHelper::getOrderId($model, $firstModel);
         Assert::notEmpty($orderId, 'OrderId must be set on refund action.');
 

@@ -18,6 +18,7 @@ use GuzzleHttp\Psr7\Request as HttpRequest;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
+use Webmozart\Assert\Assert;
 
 class Client
 {
@@ -26,10 +27,11 @@ class Client
     private const METHOD_POST = 'POST';
 
     private ?OAuthResultClientCredentials $clientCredentials = null;
+    private ClientInterface $client;
 
     public function __construct(
         private ConfigProvider $configProvider,
-        private ?ClientInterface $client = null
+        ?ClientInterface $client = null,
     ) {
         $this->client = $client ?? new \GuzzleHttp\Client(['timeout' => self::TIMEOUT, 'connect_timeout' => self::CONNECTION_TIMEOUT]);
     }
@@ -38,7 +40,7 @@ class Client
         AuthType $authType,
         ?string $configKey,
         ?string $email = null,
-        ?string $extCustomerId = null
+        ?string $extCustomerId = null,
     ): AuthorizationAuthType {
         $config = $this->configProvider->getConfig($configKey);
 
@@ -61,9 +63,11 @@ class Client
         OAuthGrantType $oauthGrantType,
         Configuration $configuration,
         ?string $email = null,
-        ?string $extCustomerId = null
+        ?string $extCustomerId = null,
     ): string {
         if ($this->hasValidAccessToken($oauthGrantType)) {
+            Assert::notNull($this->clientCredentials, 'Credentials must be set.');
+
             return $this->clientCredentials->accessToken;
         }
 
@@ -107,7 +111,7 @@ class Client
         return $psrResponse;
     }
 
-    private function tokenRequest(string $pathUrl, ?array $data = null): ResponseInterface
+    private function tokenRequest(string $pathUrl, array $data): ResponseInterface
     {
         $psrRequest = new HttpRequest(
             self::METHOD_POST,
@@ -135,6 +139,7 @@ class Client
             return false;
         }
 
+        // @phpstan-ignore-next-line
         return $this->clientCredentials->grantType === $oauthGrantType;
     }
 }
