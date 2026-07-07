@@ -30,6 +30,7 @@ use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
 use Payum\Core\Security\TokenInterface;
+use Webmozart\Assert\Assert;
 
 class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterface, GatewayAwareInterface
 {
@@ -53,6 +54,7 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
 
         $firstModel = PaymentHelper::ensurePayment($request->getFirstModel());
         $token = $request->getToken();
+        Assert::notNull($token);
 
         $this->convertAction($firstModel, $token);
         $model = Model::ensureArrayObject($firstModel->getDetails());
@@ -70,13 +72,25 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
         $model->setPayUResponse($orderCreatedResponse);
 
         $statusCode = $orderCreatedResponse->status->statusCode;
-        $httpRedirect = match (true) {
-            StatusCode::Success === $statusCode => new HttpRedirect($orderCreatedResponse->redirectUri ?? $token->getAfterUrl()),
-            (StatusCode::WarningContinue3ds === $statusCode && $orderCreatedResponse->iframeAllowed) => new IframeHttpRedirect($orderCreatedResponse->redirectUri),
-            StatusCode::WarningContinue3ds === $statusCode,
-            StatusCode::WarningContinueCVV === $statusCode => new HttpRedirect($orderCreatedResponse->redirectUri),
-            default => null,
-        };
+        $redirectUri = $orderCreatedResponse->redirectUri;
+
+        switch (true) {
+            case StatusCode::Success === $statusCode:
+                $httpRedirect = new HttpRedirect($redirectUri ?? $token->getAfterUrl());
+                break;
+            case StatusCode::WarningContinue3ds === $statusCode && $orderCreatedResponse->iframeAllowed:
+                Assert::notNull($redirectUri);
+                $httpRedirect = new IframeHttpRedirect($redirectUri);
+                break;
+            case StatusCode::WarningContinue3ds === $statusCode:
+            case StatusCode::WarningContinueCVV === $statusCode:
+                Assert::notNull($redirectUri);
+                $httpRedirect = new HttpRedirect($redirectUri);
+                break;
+            default:
+                $httpRedirect = null;
+                break;
+        }
 
         if (null !== $httpRedirect) {
             $this->updatePayment($model, $orderCreatedResponse, $firstModel, $token);
@@ -138,11 +152,14 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
             $payMethod = $request->payMethod;
         }
 
+        $customerIp = $model->customerIp();
+        Assert::notNull($customerIp, 'Customer IP must be set.');
+
         return new OrderRequest(
             $model->description(),
             $model->currencyCode(),
             $model->totalAmount(),
-            $model->customerIp(),
+            $customerIp,
             $this->tokenFactory->createNotifyToken($token->getGatewayName(), $token->getDetails())->getTargetUrl(),
             $model->getProducts() ?: [
                 new Product(
@@ -166,7 +183,12 @@ class CaptureAction implements ActionInterface, GenericTokenFactoryAwareInterfac
 
     private function setRecurringStandardPayment(OrderRequest $orderRequest, Model $model, ?string $configKey): void
     {
-        $payMethods = $this->payMethodsRequestService->retrieveForUser($model->clientEmail(), $model->clientId(), $configKey);
+        $clientEmail = $model->clientEmail();
+        $clientId = $model->clientId();
+        Assert::notNull($clientEmail, 'Client email must be set for recurring payment.');
+        Assert::notNull($clientId, 'Client id must be set for recurring payment.');
+
+        $payMethods = $this->payMethodsRequestService->retrieveForUser($clientEmail, $clientId, $configKey);
         if (empty($payMethods->cardTokens)) {
             throw new \InvalidArgumentException('Cannot make this recurring payment. Token for user does not exist.');
         }

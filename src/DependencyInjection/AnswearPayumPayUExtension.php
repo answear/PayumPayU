@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Webmozart\Assert\Assert;
 
 class AnswearPayumPayUExtension extends Extension implements PrependExtensionInterface
 {
@@ -34,6 +35,7 @@ class AnswearPayumPayUExtension extends Extension implements PrependExtensionInt
         $loader->load('services.yaml');
 
         $configuration = $this->getConfiguration($configs, $container);
+        Assert::notNull($configuration);
         $config = $this->processConfiguration($configuration, $configs);
 
         $this->setConfigProvider(

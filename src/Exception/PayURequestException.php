@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Answear\Payum\PayU\Exception;
 
 use GuzzleHttp\Exception\ClientException;
-use Psr\Http\Message\ResponseInterface;
 
 class PayURequestException extends PayUException
 {
@@ -18,7 +17,7 @@ class PayURequestException extends PayUException
 
     private function setOriginalResponse(?\Throwable $previous): void
     {
-        if ($previous instanceof ClientException && $previous->getResponse() instanceof ResponseInterface) {
+        if ($previous instanceof ClientException) {
             $originalResponse = $previous->getResponse()->getBody()->getContents();
             $this->response = json_decode($originalResponse, true);
         }
