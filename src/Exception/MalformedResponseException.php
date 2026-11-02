@@ -10,6 +10,8 @@ class MalformedResponseException extends \RuntimeException
 
     public function __construct(public array $response, ?\Throwable $previous = null)
     {
-        parent::__construct(self::MESSAGE, $previous?->getCode() ?? 0, $previous);
+        $code = $previous?->getCode();
+
+        parent::__construct(self::MESSAGE, \is_int($code) ? $code : 0, $previous);
     }
 }
